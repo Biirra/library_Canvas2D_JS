@@ -1,0 +1,42 @@
+<html>
+    <head>
+        <script src="Lib_2D_JS_Biirra.js"></script>
+    </head>
+    <body>
+        <canvas id="field" width="500" height="500"></canvas>
+    </body>
+    <script>
+        let canvas = document.getElementById("field");
+        let ctx = canvas.getContext("2d");
+        ctx.width = 500;
+        ctx.height = 500;
+        
+
+        let coinImage = new Image();
+        coinImage.src = "assets/coin-sprite-animation.png"; 
+        let coin = new Sprite({
+            context: ctx,
+            img: coinImage,
+            width: 100,      // width of the sprite
+            height: 100      // height of the sprite
+        });
+        
+        (function() {
+
+            let i = 0;
+            function gameLoop () {
+                i++;
+                window.requestAnimationFrame(gameLoop);
+                // Clear the canvas
+                //ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                coin.update();
+                coin.render();
+                console.log(i);
+            }
+            gameLoop();
+        })();
+        
+        
+    </script>
+</html>
