@@ -157,21 +157,42 @@ class Vector2d{
 A basic sprite. Contains a width a hight property's to be visible on the canvas.
 http://www.williammalone.com/articles/create-html5-canvas-javascript-sprite-animation/
 */
+
 class Sprite{
     constructor(options){
         this.context = options.context; // the canvas this sprite is going to be drawn upon.
 
         this.width = options.width || 0;
         this.height = options.height || 0;
+        this.location = options.location || Vector2d.zero();
 
-        this.img = new Image(this.width, this.height);
-        this.img.src = options.imgSource || "";
-        this.frameIndex = 0;    //The current frame to be displayed
-        this.tickCount = 0;     //The number updates since the current frame was first displayed
-        this.ticksPerFrame = 0; //The number updates until the next frame should be displayed
-        this.numberOfFrames = 1;//The number of frames your spritesheet contains.
+        this.img = options.img;
+        
+        this.frameIndex = options.frameIndex || 1;      //The current frame to be displayed
+        this.numberOfFrames = 10;                        //The number of frames your spritesheet contains.
+        this.frames = [];                               //holds the bitmapped frames
+
+        this.tickCount = 0;                             //The number updates since the current frame was first displayed
+        this.ticksPerFrame = 0;                         //The number updates until the next frame should be displayed
 
         this.visible = true;
+
+        console.log(this);
+    }
+    update() {
+        this.tickCount += 1;
+        if (this.tickCount > this.ticksPerFrame) {
+            this.tickCount = 0;
+            // If the current frame index is in range
+            if (this.frameIndex < this.numberOfFrames - 1) {	
+                // Go to the next frame
+                this.frameIndex += 1;
+            }	
+        }
+    };
+    loadImg(src){
+        this.img = new Image(); // change this to global since we dont want to keep looking for the image. 
+        this.img.src = src;
     }
     toggleVisible(){
         this.visible = !this.visible;
@@ -182,21 +203,36 @@ class Sprite{
     getIMG(){
         return this.img;
     }
-    setImgSource(src){
-        this.imgSource = src;
+    getFrames(){
+        if(this.frames.length > 0)
+            return this.frames;
+
+        this.frames = [];
+        for(let i = 0; i < this.numberOfFrames; i++){
+            this.frames[i] = createImageBitmap(
+                        this.img, 
+                        i * this.width, 
+                        0, 
+                        this.width, 
+                        this.height);
+        }
+        
+        return this.frames;
+    }
+    draw(sprites){
+        // Draw each sprite onto the canvas
+        this.context.drawImage(sprites[this.frameIndex], 0, 0);
     }
     render(){
-        this.context.drawImage(
-            img, 
-            sx, 
-            sy, 
-            sw, 
-            sh, 
-            dx, 
-            dy, 
-            dw, 
-            dh
-            )
+        // Wait for the sprite sheet to load
+        let self = this;
+        this.img.onload = function(e) {
+            Promise.all(
+                self.getFrames()
+            ).then(function(sprites) {
+                self.draw(sprites);
+            });
+        }
     }
 }
 
