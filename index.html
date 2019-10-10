@@ -11,22 +11,43 @@
         ctx.width = 500;
         ctx.height = 500;
         
-
         let coinImage = new Image();
         coinImage.src = "assets/coin-sprite-animation.png"; 
         let coin = new Sprite({
             context: ctx,
             img: coinImage,
             width: 100,      // width of the sprite
-            height: 100      // height of the sprite
+            height: 100,     // height of the sprite
+            numberOfFrames: 10,
+            animationSpeed: 0,
+            loop: true,
+            location:new Vector2d(100,100)
         });
+        let coin2 = new Sprite({
+            context: ctx,
+            img: coinImage,
+            width: 100,      // width of the sprite
+            height: 100,     // height of the sprite
+            numberOfFrames: 10,
+            animationSpeed: 0,
+            loop: true,
+            location:new Vector2d(50,50)
+        });
+
         
         (function() {
-            coin.render();
-            coin.render();
-            coin.render();
+            function gameLoop () {
+                //window.requestAnimationFrame(gameLoop);
+                ctx.clearRect(0, 0, 500, 500);
+                coin.update();
+                coin.render();
+                coin2.update();
+                coin2.render();
+
+                
+            }
+            //gameLoop();
+            setInterval(gameLoop, 60);
         })();
-        
-        
     </script>
 </html>
