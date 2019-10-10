@@ -22,19 +22,9 @@
         });
         
         (function() {
-
-            let i = 0;
-            function gameLoop () {
-                i++;
-                window.requestAnimationFrame(gameLoop);
-                // Clear the canvas
-                //ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-                coin.update();
-                coin.render();
-                console.log(i);
-            }
-            gameLoop();
+            coin.render();
+            coin.render();
+            coin.render();
         })();
         
         

@@ -168,7 +168,7 @@ class Sprite{
 
         this.img = options.img;
         
-        this.frameIndex = options.frameIndex || 1;      //The current frame to be displayed
+        this.frameIndex = options.frameIndex || 0;      //The current frame to be displayed
         this.numberOfFrames = 10;                        //The number of frames your spritesheet contains.
         this.frames = [];                               //holds the bitmapped frames
 
@@ -176,8 +176,6 @@ class Sprite{
         this.ticksPerFrame = 0;                         //The number updates until the next frame should be displayed
 
         this.visible = true;
-
-        console.log(this);
     }
     update() {
         this.tickCount += 1;
@@ -203,36 +201,21 @@ class Sprite{
     getIMG(){
         return this.img;
     }
-    getFrames(){
-        if(this.frames.length > 0)
-            return this.frames;
-
-        this.frames = [];
-        for(let i = 0; i < this.numberOfFrames; i++){
-            this.frames[i] = createImageBitmap(
-                        this.img, 
-                        i * this.width, 
-                        0, 
-                        this.width, 
-                        this.height);
-        }
-        
-        return this.frames;
-    }
-    draw(sprites){
-        // Draw each sprite onto the canvas
-        this.context.drawImage(sprites[this.frameIndex], 0, 0);
+    draw(){
+        this.context.drawImage(
+            this.img,                           //img	Source image object	Sprite sheet
+            this.frameIndex*this.width,         //sx	Source x	Frame index times frame width
+            0,                                  //sy	Source y	0
+            this.width,                         //sw	Source width	Frame width
+            this.height,                        //sh	Source height	Frame height
+            this.location.x,                    //dx	Destination x	0
+            this.location.y,                    //dy	Destination y	0
+            this.width,                         //dw	Destination width	Frame width
+            this.height                         //dh	Destination height	Frame height
+            );
     }
     render(){
-        // Wait for the sprite sheet to load
-        let self = this;
-        this.img.onload = function(e) {
-            Promise.all(
-                self.getFrames()
-            ).then(function(sprites) {
-                self.draw(sprites);
-            });
-        }
+        this.img.onload = this.draw.bind(this);
     }
 }
 
