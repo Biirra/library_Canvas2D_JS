@@ -127,11 +127,23 @@ class Vector2d{
         return new Vector2d(v1.getX() / div, v1.getY() / div);
     }
     /*
-    Shortcut function to het a new Vector2d with the coordinates of x:0, y:0
+    Shortcut functions to create a new Vector2d
     */
     static zero(){
         return new Vector2d(0,0);
-    };
+    }
+    static up(){
+        return new Vector2d(0,1);
+    }
+    static down(){
+        return new Vector2d(0,-1);
+    }
+    static right(){
+        return new Vector2d(1,0);
+    }
+    static left(){
+        return new Vector2d(-1,0);
+    }
     /*
     Returns a Vector2d with random coordinates from 0 to 1.
     Use a multiplier to increase this.
@@ -154,58 +166,68 @@ class Vector2d{
 }
 
 /*
-A basic sprite. Contains a width a hight property's to be visible on the canvas.
+A sprite. Contains a width a hight property's to be visible on the canvas.
+
+with inspiration from:
 http://www.williammalone.com/articles/create-html5-canvas-javascript-sprite-animation/
 */
 
 class Sprite{
+    _frameIndex = 0;                                    // The current frame to be displayed
+    _tickCount = 0;                                     // The number updates since the current frame was first displayed
+    
+    visible = true;                                     // Sprite can be drawn. will still update the animation.
+
     constructor(options){
-        this.context = options.context; // the canvas this sprite is going to be drawn upon.
+        this.context = options.context;                         // The canvas this sprite is going to be drawn upon.
 
-        this.width = options.width || 0;
-        this.height = options.height || 0;
-        this.location = options.location || Vector2d.zero();
+        this.location = options.location || Vector2d.zero();    // The location on the canvas where the sprite will be drawn. 
 
-        this.img = options.img;
+        this.width = options.width || 0;                        // Height of sprite on the spritesheet in pixels.
+        this.height = options.height || 0;                      // Width of sprite on the spritesheet in pixels.
+
+        this.img = options.img;                                 // The spritesheet that belongs to this sprite.
+        this.imgRow = options.imgRow || 0;            // If your spritesheet contains more rows select the correct row to animate.
         
-        this.frameIndex = options.frameIndex || 0;      //The current frame to be displayed
-        this.numberOfFrames = 10;                        //The number of frames your spritesheet contains.
-        this.frames = [];                               //holds the bitmapped frames
+        this.numberOfFrames = options.numberOfFrames || 1;      // The number of frames your spritesheet contains.
+        this.ticksPerFrame = options.animationSpeed || 1;       // The number updates until the next frame should be displayed. Speed is calculeted by window.requestAnimationFrame / this.ticksPerFrame (i.e.: 60fps/4 = 16fps)
+        this.loop = options.loop || false;                      // The animation will loop or not.
 
-        this.tickCount = 0;                             //The number updates since the current frame was first displayed
-        this.ticksPerFrame = 0;                         //The number updates until the next frame should be displayed
-
-        this.visible = true;
+    }
+    setLocation(x,y){
+        this.location = new Vector2d(x,y);
     }
     update() {
-        this.tickCount += 1;
-        if (this.tickCount > this.ticksPerFrame) {
-            this.tickCount = 0;
+        this._tickCount += 1;
+        if (this._tickCount > this.ticksPerFrame) {
+            this._tickCount = 0;
             // If the current frame index is in range
-            if (this.frameIndex < this.numberOfFrames - 1) {	
+            if (this._frameIndex < this.numberOfFrames - 1) {	
                 // Go to the next frame
-                this.frameIndex += 1;
+                this._frameIndex += 1;
             }	
+            else if (this.loop) {
+                this._frameIndex = 0;
+            }
         }
-    };
-    loadImg(src){
-        this.img = new Image(); // change this to global since we dont want to keep looking for the image. 
+    }
+    setImg(src){
+        this.img = new Image(); 
         this.img.src = src;
     }
     toggleVisible(){
         this.visible = !this.visible;
     }
-    getColor(){
-        return this.color;
-    }
-    getIMG(){
-        return this.img;
-    }
-    draw(){
+    render(){
+        if(!this.visible)
+            return;
+        // Clear the canvas        
+
+        this.context.beginPath();
         this.context.drawImage(
             this.img,                           //img	Source image object	Sprite sheet
-            this.frameIndex*this.width,         //sx	Source x	Frame index times frame width
-            0,                                  //sy	Source y	0
+            this._frameIndex*this.width,         //sx	Source x	Frame index times frame width
+            this.imgRow*this.height,                                  //sy	Source y	0
             this.width,                         //sw	Source width	Frame width
             this.height,                        //sh	Source height	Frame height
             this.location.x,                    //dx	Destination x	0
@@ -213,18 +235,17 @@ class Sprite{
             this.width,                         //dw	Destination width	Frame width
             this.height                         //dh	Destination height	Frame height
             );
-    }
-    render(){
-        this.img.onload = this.draw.bind(this);
+        this.context.closePath();
+
     }
 }
 
 class Entity extends Sprite{
-    constructor(location, velocity, acceleration){
-        super();
-        this.setLocation(location);
-        this.setVelocity(velocity);
-        this.setAcceleration(acceleration);
+    alive = true;   // false to mark for deletion.
+    constructor(options){
+        super(options);
+        this.velocity = options.velocity || Vector2d.zero();
+        this.acceleration = options.acceleration || Vector2d.zero();
     }
     isWithinRange(point, range){
         return this.location.x - range < point.x &&
@@ -249,5 +270,8 @@ class Entity extends Sprite{
     }
     getLocation(){
         return this.location;
+    }
+    kill(){
+        this.alive = false;
     }
 }
