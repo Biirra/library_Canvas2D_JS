@@ -287,7 +287,7 @@ class Sprite{
                          
         this.numberOfFrames = options.numberOfFrames    || 1;   // The number of frames your spritesheet contains.
         this.numberOfRows   = options.numberOfRows      || 1;   // If your sprite contains more rows select the correct row to animate.
-        this.ticksPerFrame  = options.animationSpeed    || 1;   // The number updates until the next frame should be displayed. Speed is calculeted by window.requestAnimationFrame / this.ticksPerFrame (i.e.: 60fps/4 = 16fps)
+        this.ticksPerFrame  = options.ticksPerFrame    || 1;   // The number updates until the next frame should be displayed. Speed is calculeted by window.requestAnimationFrame / this.ticksPerFrame (i.e.: 60fps/4 = 16fps)
         this.loop = options.loop || false;                      // The animation will loop or not.
         this.reverse = options.reverse || false;                // Determines if the animation will play in reverse.
     }

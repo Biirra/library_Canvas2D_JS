@@ -14,14 +14,14 @@
         let earthImage = new Image();
         earthImage.src = "assets/Earth1024x1024_256Frames.png"; // source: https://s3.us-east-2.amazonaws.com/singular-assets/Global/Earth1024x1024_256Frames.png
         
-        let earth = new Entity({
+        let earth = new Sprite({
             context: ctx,
             img: earthImage,
             width: 64,      // width of the sprite
             height: 64,     // height of the sprite
             numberOfFrames: 16,
             numberOfRows: 16,
-            animationSpeed: 0,
+            ticksPerFrame: 0,
             loop: true,
             reverse: true,
             location:new Vector2d(50,50)
@@ -36,7 +36,7 @@
             width: 100,      // width of the sprite
             height: 100,     // height of the sprite
             numberOfFrames: 10,
-            animationSpeed: 0,
+            ticksPerFrame: 0,
             loop: true,
             reverse:true,
             location:new Vector2d(50,50)
@@ -51,7 +51,7 @@
             width: 100,      // width of the sprite
             height: 100,     // height of the sprite
             numberOfFrames: 10,
-            animationSpeed: 0,
+            ticksPerFrame: 0,
             loop: true,
             reverse:false,
             location:new Vector2d(300,0)
