@@ -189,7 +189,7 @@ class Vector2d{
      * @returns {Vector2d}          Contains a new Vector2d with divided values.
      */
     static div(v1, div){
-        return new Vector2d(v1.getX() / div, v1.getY() / div);
+        return new Vector2d(v1.x / div, v1.y / div);
     }
     /*
     Shortcut functions to create a new Vector2d
@@ -333,7 +333,6 @@ class Sprite{
             this.width,                         //dw	Destination width	Frame width
             this.height                         //dh	Destination height	Frame height
             );
-
     }
     /**
      * Set the location where the object will be drawn on the canvas.
@@ -390,12 +389,27 @@ class Entity extends Sprite{
         super(options);
         this._velocity = options.velocity || Vector2d.zero();
         this._acceleration = options.acceleration || Vector2d.zero();
+        this.mass = options.mass || 1;
     }
     isWithinRange(vector2d, range){
         return this.location.x - range < vector2d.x &&
             this.location.x + range > vector2d.x &&
             this.location.y - range < vector2d.y &&
             this.location.y + range > vector2d.y;
+    }
+    update(){
+        super.update();
+        this.velocity.add(this.acceleration);
+        this.location.add(this.velocity);
+        this.acceleration.mult(0);
+    }
+    /**
+     * Add a force to the object that influenses the location of this object.
+     * @param {Vector2d} force The force applied to the acceleration of the object.
+     */
+    applyForce(force){
+        let f = Vector2d.div(force, this.mass);
+        this.acceleration.add(f);
     }
     set acceleration(vector2d){
         this._acceleration = vector2d;
