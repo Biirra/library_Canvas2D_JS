@@ -282,8 +282,12 @@ class Sprite{
 
         this._img = options.img;                                // The spritesheet that belongs to this sprite.
         this.imgRow = options.imgRow || 0;                      // If your spritesheet contains more rows select the correct row to animate.
-        this._visible = this._img !== undefined;                 // Sprite can be drawn.
+        this._imgRotation = options.imgRotation || 0;            // Draw the image with rotation.
+        this._visible = this._img !== undefined;                // Sprite can be drawn.
         
+        this.frameCenter = this.width != 0 || this.height != 0 
+                            ? new Vector2d(this.location.x+(this.width/2), this.location.y+(this.height/2)) 
+                            : this.location;
         this.numberOfFrames = options.numberOfFrames || 1;      // The number of frames your spritesheet contains.
         this.ticksPerFrame = options.animationSpeed || 1;       // The number updates until the next frame should be displayed. Speed is calculeted by window.requestAnimationFrame / this.ticksPerFrame (i.e.: 60fps/4 = 16fps)
         this.loop = options.loop || false;                      // The animation will loop or not.
@@ -323,18 +327,30 @@ class Sprite{
     render(){
         if(!this.visible)
             return;      
-
+        
+        let offsetCenterX = this.width / 2;
+        let offsetCenterY = this.height / 2;
+        this.context.translate(this.location.x+offsetCenterX, this.location.y+offsetCenterY);
+        this.context.rotate(this.imgRotation);
         this.context.drawImage(
             this._img,                          //img	Source image        object	Sprite sheet
             this._frameIndex*this.width,        //sx	Source x	        Frame index times frame width
             this.imgRow*this.height,            //sy	Source y	        0
             this.width,                         //sw	Source width	    Frame width
             this.height,                        //sh	Source height	    Frame height
-            this._location.x,                   //dx	Destination x	    Location x
-            this._location.y,                   //dy	Destination y	    Location y
+            -offsetCenterX,                                  //dx	Destination x	    Location x
+            -offsetCenterY,                                  //dy	Destination y	    Location y
             this.width,                         //dw	Destination width	Frame width
             this.height                         //dh	Destination height	Frame height
             );
+        this.context.rotate(-this.imgRotation);
+        this.context.translate(-(this.location.x+offsetCenterX), -(this.location.y+offsetCenterY));
+    }
+    set imgRotation(radian){
+        this._imgRotation = radian;
+    }
+    get imgRotation(){
+        return this._imgRotation;
     }
     /**
      * Set the location where the object will be drawn on the canvas.
@@ -397,25 +413,28 @@ class Entity extends Sprite{
         this.mass = options.mass || 1;
     }
     /**
-     * Detect if this enters the targets boundry's
+     * Detect if self is touching the targets.
      * @param  {Sprite} target     The sprite object it comes into contact with.
      * @param  {number} [offset=0]
      * @return {boolean}
+     * 
+     * TODO:    Test if offset works correctly if self comes in with y-- and x--
+     *          Test if things work correctly if self.velocity is zero and target is hitting self.
      */
-    detectCollision(target, offset=0){
+    onCollisionEnter(target, offset=0){
         return this.location.x < target.location.x + target.width + offset   // check collision with the right side of target
             && this.location.x + this.width + offset > target.location.x     // check collision with the left side of target
             && this.location.y < target.location.y + target.height + offset  // check collision with the bottom side of target
             && this.location.y + this.height + offset > target.location.y;   // check collision with the top side of target
     }
     /**
-     * Detect if this leaves the targets boundry's. Note that target needs to have a bigger width and height than self to work propperly.
+     * Check if self is not touching the target. Note that target needs to have a bigger width and height than self to work propperly.
      * @param   {Sprite} target 
      * @param   {number} [offset=0] 
      * @returns {boolean}
      */
-    detectBorder(target, offset=0){
-        return !this.detectCollision(target, offset);
+    onCollisionLeave(target, offset=0){
+        return !this.onCollisionEnter(target, offset);
     }
     update(){
         super.update();
