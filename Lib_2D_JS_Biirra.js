@@ -285,20 +285,36 @@ class Sprite{
         this.numberOfFrames = options.numberOfFrames || 1;      // The number of frames your spritesheet contains.
         this.ticksPerFrame = options.animationSpeed || 1;       // The number updates until the next frame should be displayed. Speed is calculeted by window.requestAnimationFrame / this.ticksPerFrame (i.e.: 60fps/4 = 16fps)
         this.loop = options.loop || false;                      // The animation will loop or not.
+        this.reverse = options.reverse || false;                // Determines if the animation will play in reverse.
     }
-    // update to the next frame in the animation.
     update() {
         this._tickCount += 1;
         if (this._tickCount > this.ticksPerFrame) {
             this._tickCount = 0;
-            // If the current frame index is in range
-            if (this._frameIndex < this.numberOfFrames - 1) {	
-                // Go to the next frame
-                this._frameIndex += 1;
-            }	
-            else if (this.loop) {
-                this._frameIndex = 0;
-            }
+            if(!this.reverse)
+                this.nextFrame();
+            else
+                this.previousFrame();
+        }
+    }
+    previousFrame(){
+        // If the current frame index is in range
+        if (this._frameIndex > 0) {	
+            // Go to the next frame
+            this._frameIndex -= 1;
+        }	
+        else if (this.loop) {
+            this._frameIndex = this.numberOfFrames-1;
+        }
+    }
+    nextFrame(){
+        // If the current frame index is in range
+        if (this._frameIndex < this.numberOfFrames - 1) {	
+            // Go to the next frame
+            this._frameIndex += 1;
+        }	
+        else if (this.loop) {
+            this._frameIndex = 0;
         }
     }
     // draw's itself to the canvas.
