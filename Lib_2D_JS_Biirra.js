@@ -319,37 +319,46 @@ class Sprite{
             );
 
     }
-    // Set the location where the object will be drawn on the canvas.
     /**
-     * @param {{ vector2d: Vector2d; }} vector2d
+     * Set the location where the object will be drawn on the canvas.
+     * @param {Vector2d} vector2d
      */
     set location(vector2d){
         this._location = vector2d;
     }
-    // Get the location of the object. Returns a Vector2d
+    /**
+     * Get the location of the object. Returns a Vector2d
+     * @returns {Vector2d} Returns the current location of this object.
+     */
     get location(){
         return this._location;
     }
-    // Set a new image sprite sheet. 
     /**
-     * @param {{ src: string; }} src
+     * Set a new image sprite sheet.
+     * @param {string} src The source string of where the image is location in your folder.
      */
     set img(src){
         this._img = new Image(); 
         this._img.src = src;
     }
-    // Get the current image spritesheet. Returns a html img element.
+    /**
+     * Get the current image spritesheet. Returns a html img element.
+     * @returns {Image} Returns the image element of this object.
+     */
     get img(){
         return this._img;
     }
-    // set the visibility of the object.
     /**
+     * Set the visibility of the object.
      * @param {boolean} visible
      */
     set visible(visible){
         this.visible = visible;
     }
-    // Get the visibility of the object.
+    /**
+     * Get the visibility of the object.
+     * @returns {boolean}
+     */
     get visible(){
         return this.visible;
     }
@@ -363,32 +372,26 @@ class Entity extends Sprite{
     alive = true;   // false to mark for deletion.
     constructor(options){
         super(options);
-        this.velocity = options.velocity || Vector2d.zero();
-        this.acceleration = options.acceleration || Vector2d.zero();
+        this._velocity = options.velocity || Vector2d.zero();
+        this._acceleration = options.acceleration || Vector2d.zero();
     }
-    isWithinRange(point, range){
-        return this._location.x - range < point.x &&
-            this._location.x + range > point.x &&
-            this._location.y - range < point.y &&
-            this._location.y + range > point.y;
+    isWithinRange(vector2d, range){
+        return this.location.x - range < vector2d.x &&
+            this.location.x + range > vector2d.x &&
+            this.location.y - range < vector2d.y &&
+            this.location.y + range > vector2d.y;
     }
-    setAcceleration(vector2d){
-        this.acceleration = vector2d;
+    set acceleration(vector2d){
+        this._acceleration = vector2d;
     }
-    getAcceleration(){
-        return this.acceleration;
+    get acceleration(){
+        return this._acceleration;
     }
-    setVelocity(vector2d){
-        this.velocity = vector2d;
+    set velocity(vector2d){
+        this._velocity = vector2d;
     }
-    getVelocity(){
-        return this.velocity;
-    }
-    setLocation(vector2d){
-        this._location = vector2d;
-    }
-    getLocation(){
-        return this._location;
+    get velocity(){
+        return this._velocity;
     }
     kill(){
         this.alive = false;
