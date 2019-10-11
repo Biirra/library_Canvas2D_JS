@@ -264,13 +264,14 @@ A sprite is used to display a img or animation on the canvas.
 
 with inspiration from:
 http://www.williammalone.com/articles/create-html5-canvas-javascript-sprite-animation/
+
+TODO:   Add way of scaling the image.
+        Add way to rotate the image. Should not change the workings of phisics. 
 */
 class Sprite{
     _frameIndex = 0;                                            // The current frame to be displayed
     _tickCount = 0;                                             // The number updates since the current frame was first displayed
     
-    visible = true;                                             // Sprite can be drawn. will still update the animation.
-
     constructor(options){
         this.context = options.context;                         // The canvas this sprite is going to be drawn upon.
 
@@ -281,6 +282,7 @@ class Sprite{
 
         this._img = options.img;                                // The spritesheet that belongs to this sprite.
         this.imgRow = options.imgRow || 0;                      // If your spritesheet contains more rows select the correct row to animate.
+        this._visible = this._img !== undefined;                 // Sprite can be drawn.
         
         this.numberOfFrames = options.numberOfFrames || 1;      // The number of frames your spritesheet contains.
         this.ticksPerFrame = options.animationSpeed || 1;       // The number updates until the next frame should be displayed. Speed is calculeted by window.requestAnimationFrame / this.ticksPerFrame (i.e.: 60fps/4 = 16fps)
@@ -323,13 +325,13 @@ class Sprite{
             return;      
 
         this.context.drawImage(
-            this._img,                          //img	Source image object	Sprite sheet
-            this._frameIndex*this.width,        //sx	Source x	Frame index times frame width
-            this.imgRow*this.height,            //sy	Source y	0
-            this.width,                         //sw	Source width	Frame width
-            this.height,                        //sh	Source height	Frame height
-            this._location.x,                   //dx	Destination x	0
-            this._location.y,                   //dy	Destination y	0
+            this._img,                          //img	Source image        object	Sprite sheet
+            this._frameIndex*this.width,        //sx	Source x	        Frame index times frame width
+            this.imgRow*this.height,            //sy	Source y	        0
+            this.width,                         //sw	Source width	    Frame width
+            this.height,                        //sh	Source height	    Frame height
+            this._location.x,                   //dx	Destination x	    Location x
+            this._location.y,                   //dy	Destination y	    Location y
             this.width,                         //dw	Destination width	Frame width
             this.height                         //dh	Destination height	Frame height
             );
@@ -368,34 +370,52 @@ class Sprite{
      * @param {boolean} visible
      */
     set visible(visible){
-        this.visible = visible;
+        this._visible = visible;
     }
     /**
      * Get the visibility of the object.
      * @returns {boolean}
      */
     get visible(){
-        return this.visible;
+        return this._visible;
     }
     // Toggle the visibility of the object. If false the object will update but will not be drawn to canvas.
     toggleVisible(){
-        this.visible = !this.visible;
+        this._visible = !this._visible;
     }
 }
 
+/*
+TODO: Add way to rotate object.
+*/
 class Entity extends Sprite{
-    alive = true;   // false to mark for deletion.
+    alive = true;   // false = mark for deletion.
     constructor(options){
         super(options);
         this._velocity = options.velocity || Vector2d.zero();
         this._acceleration = options.acceleration || Vector2d.zero();
         this.mass = options.mass || 1;
     }
-    isWithinRange(vector2d, range){
-        return this.location.x - range < vector2d.x &&
-            this.location.x + range > vector2d.x &&
-            this.location.y - range < vector2d.y &&
-            this.location.y + range > vector2d.y;
+    /**
+     * Detect if this enters the targets boundry's
+     * @param  {Sprite} target     The sprite object it comes into contact with.
+     * @param  {number} [offset=0]
+     * @return {boolean}
+     */
+    detectCollision(target, offset=0){
+        return this.location.x < target.location.x + target.width + offset   // check collision with the right side of target
+            && this.location.x + this.width + offset > target.location.x     // check collision with the left side of target
+            && this.location.y < target.location.y + target.height + offset  // check collision with the bottom side of target
+            && this.location.y + this.height + offset > target.location.y;   // check collision with the top side of target
+    }
+    /**
+     * Detect if this leaves the targets boundry's. Note that target needs to have a bigger width and height than self to work propperly.
+     * @param   {Sprite} target 
+     * @param   {number} [offset=0] 
+     * @returns {boolean}
+     */
+    detectBorder(target, offset=0){
+        return !this.detectCollision(target, offset);
     }
     update(){
         super.update();
