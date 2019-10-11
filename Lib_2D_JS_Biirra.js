@@ -91,54 +91,50 @@ class Vector2d{
         this._x = x;
         this._y = y;
     }
-    // set the x parameter of the object.
     /**
-     * @param {number} x
+     * Overwrite the current parameters with a Vector2d.
+     * @param {Vector2d} vector2d Value to overwrite object parameters with.
      */
-    set x(x){
-        this._x = parseFloat(x);
-    }
-    // het the x parameter of the object.
-    get x(){
-        return this._x;
-    }
-    // set the y parameter of the object.
-    /**
-     * @param {number} y
-     */
-    set y(y){
-        this._y = parseFloat(y);
-    }
-    // get the y parameter of the object.
-    get y(){
-        return this._y;
-    }
-    // overwrite the current parameters with a Vector2d
     set(vector2d){
         this.setX(vector2d.getX());
         this.setY(vector2d.getY());
     }
-    // add the values of a Vector2d to the current parameters.
+    /**
+     * Add the values of a Vector2d to the current parameters.
+     * @param {Vector2d} vector2d Value to overwrite object parameters with.
+     */
     add(vector2d) {
         this._x += vector2d.x;
         this._y += vector2d.y;
     };
-    // subtract the values of a Vector2d from the current parameters.
+    /**
+     * Subtract the values of a Vector2d from the current parameters.
+     * @param {Vector2d} vector2d Value to overwrite object parameters with.
+     */
     sub(vector2d) {
         this._x -= vector2d.x;
         this._y -= vector2d.y;
     };
-    // multiply the current parameters with a multiplier.
+    /**
+     * Multiply the current parameters with a multiplier.
+     * @param {number} mult Value to multiply object parameters with.
+     */
     mult(mult) {
         this._x *= mult;
         this._y *= mult;
     };
-    // divide the current parameters with a divider.
+    /**
+     * Divide the current parameters with a divider.
+     * @param {number} div Value to divide object parameters with.
+     */
     div(div) {
         this._x /= div;
         this._y /= div;
-    };
-    // return the magnitude of the object.
+    }; 
+    /**
+     * Return the magnitude of the object.
+     * @returns {number} Contains the magnitude of this object.
+     */
     mag() {
         return Math.sqrt((this._x * this._x) + (this._y * this._y));
     };
@@ -149,26 +145,49 @@ class Vector2d{
             this.div(m);
         }
     };
-    // Set a max to the parameters of this object. 
+    /**
+     * If the current parameters have values above the max this function will overwrite the parameters of this object to the maximal value it can have. 
+     * @param {number} max Maximal value this object can have. 
+     */
     limit(max) {
         if (this.mag() > max) {
             this.norm();
             this.mult(max);
         }
     };
-    // Add two Vector2d's together.
+    /**
+     * Add two Vector2d's together.
+     * @param   {Vector2d} v1 
+     * @param   {Vector2d} v2 
+     * @returns {Vector2d}      Contains a new Vector2d with combined values.
+     */
     static add(v1, v2){
         return new Vector2d(v1.getX() + v2.getX(), v1.getY() + v2.getY());
     }
-    // Subtract two Vector2d's from eachother.
+    /**
+     * Subtract two Vector2d's from eachother.
+     * @param   {Vector2d} v1 
+     * @param   {Vector2d} v2 
+     * @returns {Vector2d}      Contains a new Vector2d with combined values.
+     */
     static sub(v1, v2){
         return new Vector2d(v1.getX() - v2.getX(), v1.getY() - v2.getY());
     }
-    // Multiply a given Vector2d with a value.
+    /**
+     * Multiply a given Vector2d with a value.
+     * @param   {Vector2d}  v1 
+     * @param   {number}    mult 
+     * @returns {Vector2d}          Contains a new Vector2d with Multiplied values.
+     */
     static mult(v1, mult){
         return new Vector2d(v1.getX() * mult, v1.getY() * mult);
     }
-    // Divide a given Vector2d with a value.
+    /**
+     * Divide a given Vector2d with a value.
+     * @param   {Vector2d}  v1 
+     * @param   {number}    div 
+     * @returns {Vector2d}          Contains a new Vector2d with divided values.
+     */
     static div(v1, div){
         return new Vector2d(v1.getX() / div, v1.getY() / div);
     }
@@ -190,10 +209,12 @@ class Vector2d{
     static left(){
         return new Vector2d(-1,0);
     }
-    /*
-    Returns a Vector2d with random coordinates from 0 to 1.
-    Use a multiplier to increase this.
-    */
+    /**
+     * Returns a Vector2d with random coordinates from 0 to 1.
+     * Use a multiplier to increase this.
+     * @param   {number}    multiplier  
+     * @returns {Vector2d}              Contains a new Vector with random parameters.
+     */
     static random(multiplier){
         let vector;
         let random = Math.random();
@@ -207,6 +228,34 @@ class Vector2d{
             vector = new Vector2d(Math.random() * multiplier, Math.random() * multiplier);
         }
         return vector;
+    }
+    /**
+     * Set the x parameter of the object.
+     * @param {number} x Value will be parsed to float before set.
+     */
+    set x(x){
+        this._x = parseFloat(x);
+    }
+    /**
+     * Get the x parameter of the object.  
+     * @returns {number} Returns the value of this._x.
+     */ 
+    get x(){
+        return this._x;
+    }
+    /**
+     * Set the y parameter of the object.
+     * @param {number} y Value will be parsed to float before set.
+     */
+    set y(y){
+        this._y = parseFloat(y);
+    }
+    /**
+     * Get the y parameter of the object.  
+     * @returns {number} Returns the value of this._y.
+     */ 
+    get y(){
+        return this._y;
     }
 }
 
