@@ -25,13 +25,34 @@
             reverse:true,
             location:new Vector2d(50,50)
         });
+        let wind = new Vector2d(3,0);
+        coin.applyForce(wind);
 
         
+        let coin2 = new Entity({
+            context: ctx,
+            img: coinImage,
+            width: 100,      // width of the sprite
+            height: 100,     // height of the sprite
+            numberOfFrames: 10,
+            animationSpeed: 0,
+            loop: true,
+            reverse:false,
+            location:new Vector2d(300,50)
+        });
+
+
         (function() {
             function gameLoop () {
                 ctx.clearRect(0, 0, 500, 500);
                 coin.update();
                 coin.render();
+
+                coin2.update();
+                coin2.render();
+                if(coin.detectCollision(coin2, -50)){
+                    coin.velocity.mult(-1);
+                }
             }
             //gameLoop();
             setInterval(gameLoop, 60);
