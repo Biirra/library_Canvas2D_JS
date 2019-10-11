@@ -266,10 +266,10 @@ with inspiration from:
 http://www.williammalone.com/articles/create-html5-canvas-javascript-sprite-animation/
 
 TODO:   Add way of scaling the image.
-        Add way to rotate the image. Should not change the workings of phisics. 
 */
 class Sprite{
     _frameIndex = 0;                                            // The current frame to be displayed
+    _frameRow =  0;                                             // The current row to be displayed
     _tickCount = 0;                                             // The number updates since the current frame was first displayed
     
     constructor(options){
@@ -281,15 +281,13 @@ class Sprite{
         this.height = options.height || 0;                      // Width of sprite on the spritesheet in pixels.
 
         this._img = options.img;                                // The spritesheet that belongs to this sprite.
-        this.imgRow = options.imgRow || 0;                      // If your spritesheet contains more rows select the correct row to animate.
-        this._imgRotation = options.imgRotation || 0;            // Draw the image with rotation.
+        this._imgRotation = options.imgRotation || 0;           // Draw the image with rotation.
         this._visible = this._img !== undefined;                // Sprite can be drawn.
         
-        this.frameCenter = this.width != 0 || this.height != 0 
-                            ? new Vector2d(this.location.x+(this.width/2), this.location.y+(this.height/2)) 
-                            : this.location;
-        this.numberOfFrames = options.numberOfFrames || 1;      // The number of frames your spritesheet contains.
-        this.ticksPerFrame = options.animationSpeed || 1;       // The number updates until the next frame should be displayed. Speed is calculeted by window.requestAnimationFrame / this.ticksPerFrame (i.e.: 60fps/4 = 16fps)
+                         
+        this.numberOfFrames = options.numberOfFrames    || 1;   // The number of frames your spritesheet contains.
+        this.numberOfRows   = options.numberOfRows      || 1;   // If your sprite contains more rows select the correct row to animate.
+        this.ticksPerFrame  = options.animationSpeed    || 1;   // The number updates until the next frame should be displayed. Speed is calculeted by window.requestAnimationFrame / this.ticksPerFrame (i.e.: 60fps/4 = 16fps)
         this.loop = options.loop || false;                      // The animation will loop or not.
         this.reverse = options.reverse || false;                // Determines if the animation will play in reverse.
     }
@@ -308,9 +306,14 @@ class Sprite{
         if (this._frameIndex > 0) {	
             // Go to the next frame
             this._frameIndex -= 1;
-        }	
-        else if (this.loop) {
+        }
+        else if(this._frameRow > 0){
             this._frameIndex = this.numberOfFrames-1;
+            this._frameRow -= 1;
+        }
+        else if (this.loop){
+            this._frameIndex = this.numberOfFrames-1;
+            this._frameRow = this.numberOfRows-1;
         }
     }
     nextFrame(){
@@ -319,8 +322,13 @@ class Sprite{
             // Go to the next frame
             this._frameIndex += 1;
         }	
-        else if (this.loop) {
+        else if(this._frameRow < this.numberOfRows -1){
             this._frameIndex = 0;
+            this._frameRow += 1;
+        }
+        else if (this.loop){
+            this._frameIndex = 0;
+            this._frameRow = 0;
         }
     }
     // draw's itself to the canvas.
@@ -328,6 +336,9 @@ class Sprite{
         if(!this.visible)
             return;      
         
+        this.draw();
+    }
+    draw(){
         let offsetCenterX = this.width / 2;
         let offsetCenterY = this.height / 2;
         this.context.translate(this.location.x+offsetCenterX, this.location.y+offsetCenterY);
@@ -335,11 +346,11 @@ class Sprite{
         this.context.drawImage(
             this._img,                          //img	Source image        object	Sprite sheet
             this._frameIndex*this.width,        //sx	Source x	        Frame index times frame width
-            this.imgRow*this.height,            //sy	Source y	        0
+            this._frameRow*this.height,         //sy	Source y	        Frame row times frame height
             this.width,                         //sw	Source width	    Frame width
             this.height,                        //sh	Source height	    Frame height
-            -offsetCenterX,                                  //dx	Destination x	    Location x
-            -offsetCenterY,                                  //dy	Destination y	    Location y
+            -offsetCenterX,                     //dx	Destination x	    0 - this.width / 2
+            -offsetCenterY,                     //dy	Destination y	    0 - this.height / 2
             this.width,                         //dw	Destination width	Frame width
             this.height                         //dh	Destination height	Frame height
             );
@@ -415,25 +426,25 @@ class Entity extends Sprite{
     /**
      * Detect if self is touching the targets.
      * @param  {Sprite} target     The sprite object it comes into contact with.
-     * @param  {number} [offset=0]
+     * @param  {Vector2d} [offset=Vector2d.zero()]
      * @return {boolean}
      * 
-     * TODO:    Test if offset works correctly if self comes in with y-- and x--
-     *          Test if things work correctly if self.velocity is zero and target is hitting self.
+     * TODO:    Test if things work correctly if self.velocity is zero and target is hitting self.
+     *          Change this so it will use a collision box.
      */
-    onCollisionEnter(target, offset=0){
-        return this.location.x < target.location.x + target.width + offset   // check collision with the right side of target
-            && this.location.x + this.width + offset > target.location.x     // check collision with the left side of target
-            && this.location.y < target.location.y + target.height + offset  // check collision with the bottom side of target
-            && this.location.y + this.height + offset > target.location.y;   // check collision with the top side of target
+    onCollisionEnter(target, offset=Vector2d.zero()){
+        return this.location.x < target.location.x + target.width + offset.x   // check collision with the right side of target
+            && this.location.x + this.width + offset.x > target.location.x     // check collision with the left side of target
+            && this.location.y < target.location.y + target.height + offset.y  // check collision with the bottom side of target
+            && this.location.y + this.height + offset.y > target.location.y;   // check collision with the top side of target
     }
     /**
      * Check if self is not touching the target. Note that target needs to have a bigger width and height than self to work propperly.
      * @param   {Sprite} target 
-     * @param   {number} [offset=0] 
+     * @param   {Vector2d} [offset=Vector2d.zero()] 
      * @returns {boolean}
      */
-    onCollisionLeave(target, offset=0){
+    onCollisionLeave(target, offset=Vector2d.zero()){
         return !this.onCollisionEnter(target, offset);
     }
     update(){
