@@ -10,6 +10,22 @@
         let ctx = canvas.getContext("2d");
         ctx.width = 500;
         ctx.height = 500;
+
+        let earthImage = new Image();
+        earthImage.src = "assets/Earth1024x1024_256Frames.png"; // source: https://s3.us-east-2.amazonaws.com/singular-assets/Global/Earth1024x1024_256Frames.png
+        
+        let earth = new Entity({
+            context: ctx,
+            img: earthImage,
+            width: 64,      // width of the sprite
+            height: 64,     // height of the sprite
+            numberOfFrames: 16,
+            numberOfRows: 16,
+            animationSpeed: 0,
+            loop: true,
+            reverse: true,
+            location:new Vector2d(50,50)
+        });
         
         let coinImage = new Image();
         coinImage.src = "assets/coin-sprite-animation.png"; 
@@ -25,7 +41,7 @@
             reverse:true,
             location:new Vector2d(50,50)
         });
-        let wind = new Vector2d(3,0);
+        let wind = new Vector2d(0,3);
         coin.applyForce(wind);
 
         
@@ -48,25 +64,28 @@
         });
 
         (function() {
+            
             function gameLoop () {
                 ctx.clearRect(0, 0, 500, 500);
-                coin.update();
-                coin.render();
+                //coin.update();
+                //coin.render();
                 
 
-                coin2.update();
-                coin2.render();
+                //coin2.update();
+                //coin2.render();
 
-                if(coin.onCollisionEnter(coin2)){
-                    coin.velocity.mult(-1);
-                }
-                if(coin.onCollisionLeave(world)){
-                    coin.velocity.mult(-1);
-                }
+                earth.update();
+                earth.render();
+
+                //if(coin.onCollisionEnter(coin2)){
+                    //coin.velocity.mult(-1);
+                //}
+                //if(coin.onCollisionLeave(world, new Vector2d(-coin.width, -coin.height))){
+                    //coin.velocity.mult(-1);
+                //}
 
             }
-            //gameLoop();
-            setInterval(gameLoop, 60);
+            setInterval(gameLoop, 10);
         })();
     </script>
 </html>
