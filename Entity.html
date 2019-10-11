@@ -38,21 +38,32 @@
             animationSpeed: 0,
             loop: true,
             reverse:false,
-            location:new Vector2d(300,50)
+            location:new Vector2d(300,0)
         });
 
+        let world = new Sprite({
+            context: ctx,
+            width: 500,      // width of the sprite
+            height: 500,     // height of the sprite
+        });
 
         (function() {
             function gameLoop () {
                 ctx.clearRect(0, 0, 500, 500);
                 coin.update();
                 coin.render();
+                
 
                 coin2.update();
                 coin2.render();
-                if(coin.detectCollision(coin2, -50)){
+
+                if(coin.onCollisionEnter(coin2)){
                     coin.velocity.mult(-1);
                 }
+                if(coin.onCollisionLeave(world)){
+                    coin.velocity.mult(-1);
+                }
+
             }
             //gameLoop();
             setInterval(gameLoop, 60);
