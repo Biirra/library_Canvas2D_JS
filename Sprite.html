@@ -23,7 +23,7 @@
             loop: true,
             location:new Vector2d(100,100)
         });
-        let coin2 = new Sprite({
+        let coin2 = new Entity({
             context: ctx,
             img: coinImage,
             width: 100,      // width of the sprite
@@ -34,6 +34,8 @@
             reverse:true,
             location:new Vector2d(50,50)
         });
+        let wind = new Vector2d(1,1);
+        coin2.applyForce(wind);
 
         
         (function() {
