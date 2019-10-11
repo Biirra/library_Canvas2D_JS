@@ -3,45 +3,65 @@ Color(r,g,b,o)
 r : red value
 g : green value
 b : blue value
-o : opacity value
+o : opacity value / alpha channel
 */
 class Color{
-    constructor(r,g,b,o=1){
+    constructor(r,g,b,a=1){
         this.red = r;
         this.green = g;
         this.blue = b;
-        this.opacity = o;
+        this.alpha = a;
     }
-    // Returns a rgba string that can be used for css.
-    getColorString(){
-        return "rgba("+this.red+","+this.green+","+this.blue+","+this.opacity+")";
+    /**
+     * Returns a rgba string that can be used for css.
+     * @returns {string} Contains the rgba value of the object in string format.
+     */
+    get colorString(){
+        return "rgba("+this.red+","+this.green+","+this.blue+","+this.alpha+")";
     }
-    // set the color with a hex value.
-    // hex value is not saved. use getColorHex to read out value.
-    setColorHex(hex){
+    /**
+     * Set the color with a hex value.
+     * @param {string} hex Value of a color in hex format.
+     */
+    set colorHex(hex){
         let rgb = Color.hexToRgb(hex);
         this.red = rgb.r;
         this.green = rgb.g;
         this.blue = rgb.b;
     }
-    // return the current color in hex. Opacity is lost.
-    getColorHex(){
+    /**
+     * Return the current color in hex. Opacity is lost.
+     * @returns {string} Returns a string containing the hex value of this object. 
+     */
+    get colorHex(){
         return Color.rgbToHex(this.red, this.green, this.blue);
     }
-    /*
-    returns the hex string of the rgb value given.
-    r:red value
-    g:green value
-    b:blue value
-    */
+    /**
+     * Returns the hex string of the rgb value given.
+     * @param {number} r Red value.
+     * @param {number} g Green value.
+     * @param {number} b Blue value.
+     */
     static rgbToHex(r, g, b) {
         return "#" + Color.componentToHex(r) + Color.componentToHex(g) + Color.componentToHex(b);
     }
+    /**
+     * Converts a number to hexadecimal.
+     * @param   {number} c      Value to convert to hexadecimal.
+     * @returns {string}        Returns a string containing the hexadecimal.
+     */
     static componentToHex(c) {
         let hex = c.toString(16);
         return hex.length === 1 ? "0" + hex : hex;
     }
-    // returns rgb object.
+    /**
+     * Returns rgb object.
+     * @param  {string} hex     Value of a color in hex format.
+     * @return {object}         Return an object with the following properties.
+     * @return {number}         Return r red value.
+     * @return {number}         Return g green value.
+     * @return {number}         Return b blue value.
+     */
     static hexToRgb(hex) {
         let result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
         return result ? {
@@ -50,79 +70,105 @@ class Color{
             b: parseInt(result[3], 16)
         } : null;
     }
-    // returns a Color object with a hex and alpha value
+    /**
+     * Returns a Color object with a hex and alpha value.
+     * @param   {string} hex        Contains the string that will be transformed to rgb values.
+     * @param   {number} alpha      Contains the alpha value to set the opacity of the object.
+     * @returns {Color}             Returns a new Color object with given parameters. 
+     */
     static hexToRgba(hex, alpha){
         let result = this.hexToRgb(hex);
         return new Color(result.r, result.g, result.b, alpha);
     }
 }
 
-// TODO: Docomentation
 /*
 An object that keeps track of data that has coordinates in 2d.
 For example the location, velocity, acceleration of a sprite.
 */
 class Vector2d{
     constructor(x, y){
-        this.setX(x);
-        this.setY(y);
+        this._x = x;
+        this._y = y;
     }
-    setX(x){
-        this.x = parseFloat(x);
+    // set the x parameter of the object.
+    /**
+     * @param {number} x
+     */
+    set x(x){
+        this._x = parseFloat(x);
     }
-    setY(y){
-        this.y = parseFloat(y);
+    // het the x parameter of the object.
+    get x(){
+        return this._x;
     }
-    getX(){
-        return this.x;
+    // set the y parameter of the object.
+    /**
+     * @param {number} y
+     */
+    set y(y){
+        this._y = parseFloat(y);
     }
-    getY(){
-        return this.y;
+    // get the y parameter of the object.
+    get y(){
+        return this._y;
     }
+    // overwrite the current parameters with a Vector2d
     set(vector2d){
         this.setX(vector2d.getX());
         this.setY(vector2d.getY());
     }
+    // add the values of a Vector2d to the current parameters.
     add(vector2d) {
-        this.x += vector2d.x;
-        this.y += vector2d.y;
+        this._x += vector2d.x;
+        this._y += vector2d.y;
     };
+    // subtract the values of a Vector2d from the current parameters.
     sub(vector2d) {
-        this.x -= vector2d.x;
-        this.y -= vector2d.y;
+        this._x -= vector2d.x;
+        this._y -= vector2d.y;
     };
+    // multiply the current parameters with a multiplier.
     mult(mult) {
-        this.x *= mult;
-        this.y *= mult;
+        this._x *= mult;
+        this._y *= mult;
     };
+    // divide the current parameters with a divider.
     div(div) {
-        this.x /= div;
-        this.y /= div;
+        this._x /= div;
+        this._y /= div;
     };
+    // return the magnitude of the object.
     mag() {
-        return Math.sqrt((this.x * this.x) + (this.y * this.y));
+        return Math.sqrt((this._x * this._x) + (this._y * this._y));
     };
+    // Normalize the parameters of this object.
     norm() {
         let m = this.mag();
         if (m !== 0) {
             this.div(m);
         }
     };
+    // Set a max to the parameters of this object. 
     limit(max) {
         if (this.mag() > max) {
             this.norm();
             this.mult(max);
         }
     };
+    // Add two Vector2d's together.
     static add(v1, v2){
         return new Vector2d(v1.getX() + v2.getX(), v1.getY() + v2.getY());
     }
+    // Subtract two Vector2d's from eachother.
     static sub(v1, v2){
         return new Vector2d(v1.getX() - v2.getX(), v1.getY() - v2.getY());
     }
+    // Multiply a given Vector2d with a value.
     static mult(v1, mult){
         return new Vector2d(v1.getX() * mult, v1.getY() * mult);
     }
+    // Divide a given Vector2d with a value.
     static div(v1, div){
         return new Vector2d(v1.getX() / div, v1.getY() / div);
     }
@@ -149,7 +195,6 @@ class Vector2d{
     Use a multiplier to increase this.
     */
     static random(multiplier){
-        // return a random Vector2d
         let vector;
         let random = Math.random();
         if (random <= 0.25) {
@@ -166,37 +211,33 @@ class Vector2d{
 }
 
 /*
-A sprite. Contains a width a hight property's to be visible on the canvas.
+A sprite is used to display a img or animation on the canvas. 
 
 with inspiration from:
 http://www.williammalone.com/articles/create-html5-canvas-javascript-sprite-animation/
 */
-
 class Sprite{
-    _frameIndex = 0;                                    // The current frame to be displayed
-    _tickCount = 0;                                     // The number updates since the current frame was first displayed
+    _frameIndex = 0;                                            // The current frame to be displayed
+    _tickCount = 0;                                             // The number updates since the current frame was first displayed
     
-    visible = true;                                     // Sprite can be drawn. will still update the animation.
+    visible = true;                                             // Sprite can be drawn. will still update the animation.
 
     constructor(options){
         this.context = options.context;                         // The canvas this sprite is going to be drawn upon.
 
-        this.location = options.location || Vector2d.zero();    // The location on the canvas where the sprite will be drawn. 
+        this._location = options.location || Vector2d.zero();   // The location on the canvas where the sprite will be drawn. 
 
         this.width = options.width || 0;                        // Height of sprite on the spritesheet in pixels.
         this.height = options.height || 0;                      // Width of sprite on the spritesheet in pixels.
 
-        this.img = options.img;                                 // The spritesheet that belongs to this sprite.
-        this.imgRow = options.imgRow || 0;            // If your spritesheet contains more rows select the correct row to animate.
+        this._img = options.img;                                // The spritesheet that belongs to this sprite.
+        this.imgRow = options.imgRow || 0;                      // If your spritesheet contains more rows select the correct row to animate.
         
         this.numberOfFrames = options.numberOfFrames || 1;      // The number of frames your spritesheet contains.
         this.ticksPerFrame = options.animationSpeed || 1;       // The number updates until the next frame should be displayed. Speed is calculeted by window.requestAnimationFrame / this.ticksPerFrame (i.e.: 60fps/4 = 16fps)
         this.loop = options.loop || false;                      // The animation will loop or not.
-
     }
-    setLocation(x,y){
-        this.location = new Vector2d(x,y);
-    }
+    // update to the next frame in the animation.
     update() {
         this._tickCount += 1;
         if (this._tickCount > this.ticksPerFrame) {
@@ -211,32 +252,61 @@ class Sprite{
             }
         }
     }
-    setImg(src){
-        this.img = new Image(); 
-        this.img.src = src;
-    }
-    toggleVisible(){
-        this.visible = !this.visible;
-    }
+    // draw's itself to the canvas.
     render(){
         if(!this.visible)
-            return;
-        // Clear the canvas        
+            return;      
 
-        this.context.beginPath();
         this.context.drawImage(
-            this.img,                           //img	Source image object	Sprite sheet
-            this._frameIndex*this.width,         //sx	Source x	Frame index times frame width
-            this.imgRow*this.height,                                  //sy	Source y	0
+            this._img,                          //img	Source image object	Sprite sheet
+            this._frameIndex*this.width,        //sx	Source x	Frame index times frame width
+            this.imgRow*this.height,            //sy	Source y	0
             this.width,                         //sw	Source width	Frame width
             this.height,                        //sh	Source height	Frame height
-            this.location.x,                    //dx	Destination x	0
-            this.location.y,                    //dy	Destination y	0
+            this._location.x,                   //dx	Destination x	0
+            this._location.y,                   //dy	Destination y	0
             this.width,                         //dw	Destination width	Frame width
             this.height                         //dh	Destination height	Frame height
             );
-        this.context.closePath();
 
+    }
+    // Set the location where the object will be drawn on the canvas.
+    /**
+     * @param {{ vector2d: Vector2d; }} vector2d
+     */
+    set location(vector2d){
+        this._location = vector2d;
+    }
+    // Get the location of the object. Returns a Vector2d
+    get location(){
+        return this._location;
+    }
+    // Set a new image sprite sheet. 
+    /**
+     * @param {{ src: string; }} src
+     */
+    set img(src){
+        this._img = new Image(); 
+        this._img.src = src;
+    }
+    // Get the current image spritesheet. Returns a html img element.
+    get img(){
+        return this._img;
+    }
+    // set the visibility of the object.
+    /**
+     * @param {boolean} visible
+     */
+    set visible(visible){
+        this.visible = visible;
+    }
+    // Get the visibility of the object.
+    get visible(){
+        return this.visible;
+    }
+    // Toggle the visibility of the object. If false the object will update but will not be drawn to canvas.
+    toggleVisible(){
+        this.visible = !this.visible;
     }
 }
 
@@ -248,10 +318,10 @@ class Entity extends Sprite{
         this.acceleration = options.acceleration || Vector2d.zero();
     }
     isWithinRange(point, range){
-        return this.location.x - range < point.x &&
-            this.location.x + range > point.x &&
-            this.location.y - range < point.y &&
-            this.location.y + range > point.y;
+        return this._location.x - range < point.x &&
+            this._location.x + range > point.x &&
+            this._location.y - range < point.y &&
+            this._location.y + range > point.y;
     }
     setAcceleration(vector2d){
         this.acceleration = vector2d;
@@ -266,10 +336,10 @@ class Entity extends Sprite{
         return this.velocity;
     }
     setLocation(vector2d){
-        this.location = vector2d;
+        this._location = vector2d;
     }
     getLocation(){
-        return this.location;
+        return this._location;
     }
     kill(){
         this.alive = false;
