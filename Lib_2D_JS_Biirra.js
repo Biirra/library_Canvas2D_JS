@@ -194,19 +194,19 @@ class Vector2d{
     /*
     Shortcut functions to create a new Vector2d
     */
-    static zero(){
+    static get zero(){
         return new Vector2d(0,0);
     }
-    static up(){
+    static get up(){
         return new Vector2d(0,1);
     }
-    static down(){
+    static get down(){
         return new Vector2d(0,-1);
     }
-    static right(){
+    static get right(){
         return new Vector2d(1,0);
     }
-    static left(){
+    static get left(){
         return new Vector2d(-1,0);
     }
     /**
@@ -260,6 +260,102 @@ class Vector2d{
 }
 
 /*
+Some predifined forces to be used.
+*/
+class Forces{
+    constructor(){}
+    //winds
+    static get breeze(){
+        return new Vector2d();
+    }
+    static get wind(){
+        return new Vector2d(0.01,0);
+    }
+    static get windy(){
+        return new Vector2d();
+    }
+    static get storm(){
+        return new Vector2d();
+    }
+    static get friction(){
+        return new Vector2d();
+    }
+    static get resistanceWater(){
+        return new Vector2d();
+    }
+    static get resistanceAir(){
+        return new Vector2d();
+    }
+    static get gravity(){
+        return new Vector2d(0,0.1);
+    }
+}
+
+/*
+Colider
+*/
+class Colider2d{
+    constructor(entity){
+        this._entity = entity;          // Contains the owner.
+        this._collisionTop = false;
+        this._collisionBottom = false;
+        this._collisionRight = false;
+        this._collisionLeft = false;
+    }
+    checkEdges(layer) { // checks if it has reached a side of the colider.
+        // check for collision on x axis
+        if (this._entity.location.x > layer.width) {
+            this.collisionRight = true;
+        } else if (this._entity.location.x < 0) {
+            this.collisionLeft = true;
+        } else {
+            this.collisionRight = false;
+            this.collisionLeft = false;
+        }
+
+        // check for collisions on y axis
+        if (this._entity.location.y > layer.height) {
+            this.collisionBottom = true;
+        }
+        else if (this._entity.location.y < 0) {
+            this.collisionTop = true;
+        }
+        else {
+            this.collisionTop = false;
+            this.collisionBottom = false;
+        }
+        
+    }
+    get collisionTop(){
+        return this._collisionTop;
+    }
+    set collisionTop(value){
+        this._collisionTop = value;
+    }
+    get collisionBottom(){
+        return this._collisionBottom;
+    }
+    set collisionBottom(value){
+        this._collisionBottom = value;
+    }
+    get collisionRight(){
+        return this._collisionRight;
+    }
+    set collisionRight(value){
+        this._collisionRight = value;
+    }
+    get collisionLeft(){
+        return this._collisionLeft;
+    }
+    set collisionLeft(value){
+        this._collisionLeft = value;
+    }
+    get entity(){
+        return this.entity;
+    }
+}
+
+/*
 A sprite is used to display a img or animation on the canvas. 
 
 with inspiration from:
@@ -275,14 +371,14 @@ class Sprite{
     constructor(options){
         this.context = options.context;                         // The canvas this sprite is going to be drawn upon.
 
-        this._location = options.location || Vector2d.zero();   // The location on the canvas where the sprite will be drawn. 
+        this._location = options.location || Vector2d.zero;   // The location on the canvas where the sprite will be drawn. 
 
         this.width = options.width || 0;                        // Height of sprite on the spritesheet in pixels.
         this.height = options.height || 0;                      // Width of sprite on the spritesheet in pixels.
 
         this._img = options.img;                                // The spritesheet that belongs to this sprite.
         this._imgRotation = options.imgRotation || 0;           // Draw the image with rotation.
-        this._visible = this._img !== undefined;                // Sprite can be drawn.
+        this._visible = this._img !== undefined                 // Sprite can be drawn. TODO: include somekind of warning or handle diffrently;
         
                          
         this.numberOfFrames = options.numberOfFrames    || 1;   // The number of frames your spritesheet contains.
@@ -339,6 +435,13 @@ class Sprite{
         this.draw();
     }
     draw(){
+        if(this.context === undefined){
+            console.error("Context is not found.");
+            console.error(this);
+            this._visible = false;
+            return;
+        }
+
         let offsetCenterX = this.width / 2;
         let offsetCenterY = this.height / 2;
         this.context.translate(this.location.x+offsetCenterX, this.location.y+offsetCenterY);
@@ -419,20 +522,21 @@ class Entity extends Sprite{
     alive = true;   // false = mark for deletion.
     constructor(options){
         super(options);
-        this._velocity = options.velocity || Vector2d.zero();
-        this._acceleration = options.acceleration || Vector2d.zero();
+        this._velocity = options.velocity || Vector2d.zero;
+        this._acceleration = options.acceleration || Vector2d.zero;
         this.mass = options.mass || 1;
+        
     }
     /**
      * Detect if self is touching the targets.
      * @param  {Sprite} target     The sprite object it comes into contact with.
-     * @param  {Vector2d} [offset=Vector2d.zero()]
+     * @param  {Vector2d} [offset=Vector2d.zero]
      * @return {boolean}
      * 
      * TODO:    Test if things work correctly if self.velocity is zero and target is hitting self.
      *          Change this so it will use a collision box.
      */
-    onCollisionEnter(target, offset=Vector2d.zero()){
+    onCollisionEnter(target, offset=Vector2d.zero){
         return this.location.x < target.location.x + target.width + offset.x   // check collision with the right side of target
             && this.location.x + this.width + offset.x > target.location.x     // check collision with the left side of target
             && this.location.y < target.location.y + target.height + offset.y  // check collision with the bottom side of target
@@ -441,10 +545,10 @@ class Entity extends Sprite{
     /**
      * Check if self is not touching the target. Note that target needs to have a bigger width and height than self to work propperly.
      * @param   {Sprite} target 
-     * @param   {Vector2d} [offset=Vector2d.zero()] 
+     * @param   {Vector2d} [offset=Vector2d.zero] 
      * @returns {boolean}
      */
-    onCollisionLeave(target, offset=Vector2d.zero()){
+    onCollisionLeave(target, offset=Vector2d.zero){
         return !this.onCollisionEnter(target, offset);
     }
     update(){
@@ -459,7 +563,7 @@ class Entity extends Sprite{
      */
     applyForce(force){
         let f = Vector2d.div(force, this.mass);
-        this.acceleration.add(f);
+        this.acceleration.add(force);
     }
     set acceleration(vector2d){
         this._acceleration = vector2d;
