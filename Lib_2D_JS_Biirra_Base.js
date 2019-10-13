@@ -258,3 +258,163 @@ class Vector2d{
         return this._y;
     }
 }
+
+/*
+A sprite is used to display a img or animation on the canvas. 
+
+with inspiration from:
+http://www.williammalone.com/articles/create-html5-canvas-javascript-sprite-animation/
+
+TODO:   Add way of scaling the image.
+*/
+class Sprite{
+    _frameIndex = 0;                                            // The current frame to be displayed
+    _frameRow =  0;                                             // The current row to be displayed
+    _tickCount = 0;                                             // The number updates since the current frame was first displayed
+    
+    constructor(options){
+        this.context = options.context;                         // The canvas this sprite is going to be drawn upon.
+
+        this._location = options.location || Vector2d.zero;     // The location on the canvas where the sprite will be drawn. 
+        this._angle = options.angle || 0;
+
+        this.width = options.width || 0;                        // Height of sprite on the spritesheet in pixels.
+        this.height = options.height || 0;                      // Width of sprite on the spritesheet in pixels.
+
+        this._img = options.img;                                // The spritesheet that belongs to this sprite.
+        this._visible = this._img !== undefined                 // Sprite can be drawn. TODO: include somekind of warning or handle diffrently;
+        
+                         
+        this.numberOfFrames = options.numberOfFrames    || 1;   // The number of frames your spritesheet contains.
+        this.numberOfRows   = options.numberOfRows      || 1;   // If your sprite contains more rows select the correct row to animate.
+        this.ticksPerFrame  = options.ticksPerFrame    || 1;   // The number updates until the next frame should be displayed. Speed is calculeted by window.requestAnimationFrame / this.ticksPerFrame (i.e.: 60fps/4 = 16fps)
+        this.loop = options.loop || false;                      // The animation will loop or not.
+        this.reverse = options.reverse || false;                // Determines if the animation will play in reverse.
+    }
+    update() {
+        this._tickCount += 1;
+        if (this._tickCount > this.ticksPerFrame) {
+            this._tickCount = 0;
+            if(!this.reverse)
+                this.nextFrame();
+            else
+                this.previousFrame();
+        }
+    }
+    previousFrame(){
+        // If the current frame index is in range
+        if (this._frameIndex > 0) {	
+            // Go to the next frame
+            this._frameIndex -= 1;
+        }
+        else if(this._frameRow > 0){
+            this._frameIndex = this.numberOfFrames-1;
+            this._frameRow -= 1;
+        }
+        else if (this.loop){
+            this._frameIndex = this.numberOfFrames-1;
+            this._frameRow = this.numberOfRows-1;
+        }
+    }
+    nextFrame(){
+        // If the current frame index is in range
+        if (this._frameIndex < this.numberOfFrames - 1) {	
+            // Go to the next frame
+            this._frameIndex += 1;
+        }	
+        else if(this._frameRow < this.numberOfRows -1){
+            this._frameIndex = 0;
+            this._frameRow += 1;
+        }
+        else if (this.loop){
+            this._frameIndex = 0;
+            this._frameRow = 0;
+        }
+    }
+    // draw's itself to the canvas.
+    render(){
+        if(!this.visible)
+            return;      
+        
+        if(this.context === undefined){
+            console.error("Context is not found.");
+            console.error(this);
+            this._visible = false;
+            return;
+        }
+
+        this.draw();
+    }
+    draw(){
+        let offsetCenterX = this.width / 2;
+        let offsetCenterY = this.height / 2;
+        this.context.translate(this.location.x+offsetCenterX, this.location.y+offsetCenterY);
+        this.context.rotate(this.angle);
+        this.context.drawImage(
+            this._img,                          //img	Source image        object	Sprite sheet
+            this._frameIndex*this.width,        //sx	Source x	        Frame index times frame width
+            this._frameRow*this.height,         //sy	Source y	        Frame row times frame height
+            this.width,                         //sw	Source width	    Frame width
+            this.height,                        //sh	Source height	    Frame height
+            -offsetCenterX,                     //dx	Destination x	    0 - this.width / 2
+            -offsetCenterY,                     //dy	Destination y	    0 - this.height / 2
+            this.width,                         //dw	Destination width	Frame width
+            this.height                         //dh	Destination height	Frame height
+            );
+        this.context.rotate(-this.angle);
+        this.context.translate(-(this.location.x+offsetCenterX), -(this.location.y+offsetCenterY));
+    }
+    set angle(angle){
+        this._angle = angle;
+    }
+    get angle(){
+        return this._angle;
+    }
+    /**
+     * Set the location where the object will be drawn on the canvas.
+     * @param {Vector2d} vector2d
+     */
+    set location(vector2d){
+        this._location = vector2d;
+    }
+    /**
+     * Get the location of the object. Returns a Vector2d
+     * @returns {Vector2d} Returns the current location of this object.
+     */
+    get location(){
+        return this._location;
+    }
+    /**
+     * Set a new image sprite sheet.
+     * @param {string} src The source string of where the image is location in your folder.
+     */
+    set img(src){
+        this._img = new Image(); 
+        this._img.src = src;
+    }
+    /**
+     * Get the current image spritesheet. Returns a html img element.
+     * @returns {Image} Returns the image element of this object.
+     */
+    get img(){
+        return this._img;
+    }
+    /**
+     * Set the visibility of the object.
+     * @param {boolean} visible
+     */
+    set visible(visible){
+        this._visible = visible;
+    }
+    /**
+     * Get the visibility of the object.
+     * @returns {boolean}
+     */
+    get visible(){
+        return this._visible;
+    }
+    // Toggle the visibility of the object. If false the object will update but will not be drawn to canvas.
+    toggleVisible(){
+        this._visible = !this._visible;
+    }
+}
