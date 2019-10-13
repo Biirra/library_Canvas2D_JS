@@ -10,20 +10,21 @@
     <script>
         let canvas = document.getElementById("field");
         let ctx = canvas.getContext("2d");
-        ctx.width = 564;
-        ctx.height = 564;
+        ctx.width = 500;
+        ctx.height = 500;
 
         let inputListener = new InputListener(canvas);
 
         let rectangleImg = new Image();
         rectangleImg.src = "assets/rectangle_black.png"; // source: https://s3.us-east-2.amazonaws.com/singular-assets/Global/Earth1024x1024_256Frames.png
         
-        let rctangle = new Entity({
+        let rctangle = new Oscillator({
             context: ctx,
             img: rectangleImg,
             width: 16,      // width of the sprite
-            height: 8,     // height of the sprite
-            location:new Vector2d(50,50)
+            height: 16,     // height of the sprite
+            location:new Vector2d(100,100),
+            mass: 0
         });
 
         let universe = new Sprite({
@@ -34,14 +35,12 @@
         (function() {
             
             function gameLoop () {
-                console.log(inputListener.mousePos);
-                
-                ctx.clearRect(0, 0, 564, 564);
+                ctx.clearRect(0, 0, 500, 500);
 
                 rctangle.update();
                 rctangle.render();
-                rctangle.applyForce(Forces.wind);
-                rctangle.applyForce(Forces.gravity);
+                //rctangle.applyForce(Forces.wind);
+                //rctangle.applyForce(Forces.gravity);
 
                 checkEdges(rctangle, universe);
             }
