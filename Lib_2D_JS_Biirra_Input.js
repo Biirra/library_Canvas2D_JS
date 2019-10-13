@@ -14,12 +14,12 @@ class InputListener{
 		return this;
     }
     enable(){
-        this.canvas.addEventListener('mousemove', this.updateMousePosition);
+        this.canvas.addEventListener('mousemove', this.updateMousePositionHadler);
 		return this;
     }
     updateMousePosition(){
-        let x = event.clientX || 0;
-        let y = event.clientY || 0;
+        let x = event.clientX || this._mousePosition.x;
+        let y = event.clientY || this._mousePosition.y;
         this._mousePosition =  new Vector2d(x,y);
     }
     get mousePos(){
