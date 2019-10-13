@@ -1,5 +1,7 @@
 <html>
     <head>
+        <script src="Lib_2D_JS_Biirra_Base.js"></script>
+        <script src="Lib_2D_JS_Biirra_Input.js"></script>
         <script src="Lib_2D_JS_Biirra.js"></script>
     </head>
     <body>
@@ -11,24 +13,20 @@
         ctx.width = 564;
         ctx.height = 564;
 
-        let earthImage = new Image();
-        earthImage.src = "assets/Earth1024x1024_256Frames.png"; // source: https://s3.us-east-2.amazonaws.com/singular-assets/Global/Earth1024x1024_256Frames.png
+        let inputListener = new InputListener(canvas);
+
+        let rectangleImg = new Image();
+        rectangleImg.src = "assets/rectangle_black.png"; // source: https://s3.us-east-2.amazonaws.com/singular-assets/Global/Earth1024x1024_256Frames.png
         
-        let earth = new Entity({
+        let rctangle = new Entity({
             context: ctx,
-            img: earthImage,
-            width: 64,      // width of the sprite
-            height: 64,     // height of the sprite
-            numberOfFrames: 16,
-            numberOfRows: 16,
-            ticksPerFrame: 0,
-            loop: true,
-            reverse: true,
+            img: rectangleImg,
+            width: 16,      // width of the sprite
+            height: 8,     // height of the sprite
             location:new Vector2d(50,50)
         });
 
         let universe = new Sprite({
-            img: earthImage,
             width: 500,      // width of the sprite
             height: 500,     // height of the sprite
         });
@@ -36,18 +34,16 @@
         (function() {
             
             function gameLoop () {
+                console.log(inputListener.mousePos);
+                
                 ctx.clearRect(0, 0, 564, 564);
 
-                earth.update();
-                earth.render();
-                earth.applyForce(Forces.wind);
-                earth.applyForce(Forces.gravity);
+                rctangle.update();
+                rctangle.render();
+                rctangle.applyForce(Forces.wind);
+                rctangle.applyForce(Forces.gravity);
 
-                checkEdges(earth, universe);
-                // TODO: Change collision, check gets to bulky if specified.
-                if(earth.onCollisionLeave(universe, new Vector2d(earth.width, earth.height))){
-                    //earth.velocity.mult(-1);
-                }
+                checkEdges(rctangle, universe);
             }
             setInterval(gameLoop, 10);
         })();
