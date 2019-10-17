@@ -5,20 +5,28 @@
         <script src="Lib_2D_JS_Biirra.js"></script>
     </head>
     <body>
-        <canvas id="field" width="564" height="564"></canvas>
+        <canvas id="field" width="500" height="500"></canvas>
     </body>
     <script>
+        class Mover extends Entity{
+            constructor(options){
+                super(options);
+            }
+            update(){
+                super.update();
+                this.angle = Math.atan2(this.velocity.y,this.velocity.x);
+            }
+        }
+
         let canvas = document.getElementById("field");
         let ctx = canvas.getContext("2d");
         ctx.width = 500;
         ctx.height = 500;
 
-        let inputListener = new InputListener(canvas);
-
         let rectangleImg = new Image();
         rectangleImg.src = "assets/rectangle_black.png"; // source: https://s3.us-east-2.amazonaws.com/singular-assets/Global/Earth1024x1024_256Frames.png
         
-        let rctangle = new Oscillator({
+        let osc = new Oscillator({
             context: ctx,
             img: rectangleImg,
             width: 16,      // width of the sprite
@@ -33,16 +41,16 @@
         });
         
         (function() {
-            
             function gameLoop () {
                 ctx.clearRect(0, 0, 500, 500);
 
-                rctangle.update();
-                rctangle.render();
+                osc.update();
+            
+                osc.render();
                 //rctangle.applyForce(Forces.wind);
                 //rctangle.applyForce(Forces.gravity);
 
-                checkEdges(rctangle, universe);
+                checkEdges(osc, universe);
             }
             setInterval(gameLoop, 10);
         })();
