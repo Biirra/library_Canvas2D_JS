@@ -1,0 +1,44 @@
+<html>
+    <head>
+        <script src="Lib_2D_JS_Biirra_Base.js"></script>
+        <script src="Lib_2D_JS_Biirra_Input.js"></script>
+        <script src="Lib_2D_JS_Biirra.js"></script>
+    </head>
+    <body>
+        <canvas id="field" width="500" height="500"></canvas>
+    </body>
+    <script>
+        let canvas = document.getElementById("field");
+        let ctx = canvas.getContext("2d");
+        ctx.width = 500;
+        ctx.height = 500;
+
+        let rectangleImg = new Image();
+        rectangleImg.src = "assets/rectangle_black.png"; // source: https://s3.us-east-2.amazonaws.com/singular-assets/Global/Earth1024x1024_256Frames.png
+        
+        let spaceShip = new Entity({
+                context: ctx,
+                img: rectangleImg,
+                width: 16,      // width of the sprite
+                height: 16,     // height of the sprite
+                location:new Vector2d(200,200)
+            });
+
+        let universe = new Sprite({
+            width: 500,      // width of the sprite
+            height: 500,     // height of the sprite
+        });
+        
+        (function() {
+
+            function gameLoop () {
+                ctx.clearRect(0, 0, 500, 500);
+
+                oscillator.update();
+                oscillator.render();
+            }
+            setInterval(gameLoop, 10);
+        })();
+        
+    </script>
+</html>
