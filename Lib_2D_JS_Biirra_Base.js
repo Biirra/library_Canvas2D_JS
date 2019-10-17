@@ -214,6 +214,7 @@ class Vector2d{
      * Use a multiplier to increase this.
      * @param   {number}    multiplier  
      * @returns {Vector2d}              Contains a new Vector with random parameters.
+     * TODO: Make sure it takes y coordinates in consideration aswell.
      */
     static random(multiplier){
         let vector;
@@ -228,6 +229,11 @@ class Vector2d{
             vector = new Vector2d(Math.random() * multiplier, Math.random() * multiplier);
         }
         return vector;
+    }
+    static polarToCartasian(length, angleDegree){
+        let x = length * cos(angleDegree);
+        let y = length * sin(angleDegree);
+        return new Vector2d(x,y);
     }
     /**
      * Set the x parameter of the object.
@@ -256,6 +262,10 @@ class Vector2d{
      */ 
     get y(){
         return this._y;
+    }
+    static randomFloat(min, max) {
+        let plusOrMinus = Math.random() < 0.5 ? -1 : 1;
+        return (Math.random() * (max - min) + min) * plusOrMinus; //The maximum is inclusive and the minimum is inclusive 
     }
 }
 
@@ -342,7 +352,7 @@ class Sprite{
             this._visible = false;
             return;
         }
-
+        //console.log("test");
         this.draw();
     }
     draw(){
