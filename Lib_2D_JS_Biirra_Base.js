@@ -290,9 +290,9 @@ class Sprite {
         this.context = options.context;
         this._texture = options.texture;
 
-        this.sLocation = options.sLocation;
-        this.sWidth = options.sWidth;
-        this.sHeight = options.sHeight;
+        this.sLocation = options.sLocation || Vector2d.zero;
+        this.sWidth = options.sWidth || 0;
+        this.sHeight = options.sHeight || 0;
 
         this.location = options.location || Vector2d.zero;
         this.width = options.width || this.sWidth;
@@ -481,6 +481,7 @@ class Animated_Sprite extends Sprite{
     }
     update() {
         this._tickCount += 1;
+        // TODO: let it skip frames when ticksPerFrame is less than 1 and higher than 0; 0.5 would be skipping every other frame;
         if (this._tickCount > this.ticksPerFrame) {
             this._tickCount = 0;
 
