@@ -62,3 +62,68 @@ class Colider2d{
     }
 }
 
+class Entity extends Animated_Sprite{
+    constructor(options){
+        super(options);
+        
+        this._velocity      = options.velocity      || Vector2d.zero;
+        this._acceleration  = options.acceleration  || Vector2d.zero;
+
+        this._aVelocity     = options.aVelocity     || 0;        // Angular velocity.
+        this._aAcceleration = options.aAcceleration || 0;    // Angular acceleration.
+
+        this.mass           = options.mass          || 1;
+    }
+    render(){
+        super.render();
+    }
+    update(){
+        this.velocity.add(this.acceleration);
+        this.location.add(this.velocity);
+        this.acceleration.mult(0);
+
+        this.aVelocity += this.aAcceleration;
+        this.rotation += this.aVelocity; 
+        this.aAcceleration = 0;
+        
+        super.update();
+    }
+    /**
+     * Add a force to the object that influenses the location of this object.
+     * @param {Vector2d} force The force applied to the acceleration of the object.
+     */
+    applyForce(force){
+        let f = Vector2d.div(force, this.mass);
+        this.acceleration.add(f);
+    }
+    applySpin(number){
+        this.aAcceleration += number;
+    }
+    get aAcceleration(){
+        return this._aAcceleration;
+    }
+    set aAcceleration(number){
+        this._aAcceleration = number;
+    }
+    get aVelocity(){
+        return this._aVelocity;
+    }
+    set aVelocity(number){
+        this._aVelocity = number;
+    }
+    set acceleration(vector2d){
+        this._acceleration = vector2d;
+    }
+    get acceleration(){
+        return this._acceleration;
+    }
+    set velocity(vector2d){
+        this._velocity = vector2d;
+    }
+    get velocity(){
+        return this._velocity;
+    }
+    kill(){
+        this.alive = false;
+    }
+}
