@@ -197,6 +197,9 @@ class Vector2d{
     static get zero(){
         return new Vector2d(0,0);
     }
+    static get one(){
+        return new Vector2d(1,1);
+    }
     static get up(){
         return new Vector2d(0,1);
     }
@@ -269,35 +272,210 @@ class Vector2d{
     }
 }
 
-/*
-A sprite is used to display a img or animation on the canvas. 
+/**
+ * Sprite texture. 
+ * Takes a Spritesheet or a Large image and take controll over which section to show on canvas or its parent.
+ */
+class Sprite {
+    _sLocation = Vector2d.zero;             // Source x & Source y
+    _sWidth = 0;                            // Source width
+    _sHeight = 0;                           // Source height
 
-with inspiration from:
-http://www.williammalone.com/articles/create-html5-canvas-javascript-sprite-animation/
+    _location = Vector2d.zero;             // Destination x & Destination y
+    _width = 0;                            // Destination width
+    _height = 0;                           // Destination height
 
-TODO:   Add way of scaling the image.
-*/
-class Sprite{
-    _frameIndex = 0;                                            // The current frame to be displayed
-    _frameRow =  0;                                             // The current row to be displayed
-    _tickCount = 0;                                             // The number updates since the current frame was first displayed
-    
-    constructor(options){
-        this.context = options.context;                         // The canvas this sprite is going to be drawn upon.
+    _visible = true;
+    constructor(options, debug = false){
+        this.context = options.context;
+        this._texture = options.texture;
 
-        this._location = options.location || Vector2d.zero;     // The location on the canvas where the sprite will be drawn. 
-        this._angle = options.angle || 0;
+        this.sLocation = options.sLocation;
+        this.sWidth = options.sWidth;
+        this.sHeight = options.sHeight;
 
-        this.width = options.width || 0;                        // Height of sprite on the spritesheet in pixels.
-        this.height = options.height || 0;                      // Width of sprite on the spritesheet in pixels.
+        this.location = options.location || Vector2d.zero;
+        this.width = options.width || this.sWidth;
+        this.height = options.height || this.sHeight;
 
-        this._img = options.img;                                // The spritesheet that belongs to this sprite.
-        this._visible = this._img !== undefined                 // Sprite can be drawn. TODO: include somekind of warning or handle diffrently;
+        this.anchor = options.anchor || Vector2d.zero;
+        this.rotation = options.rotation || 0;
+        this.scale = options.scale || Vector2d.one;
         
-                         
+        this.developerMode = debug;
+    }
+    render(){
+        if(!this.visible)
+            return;
+        this.draw()
+    }
+    draw(){
+
+        this.context.translate(this.location.x, this.location.y);
+        this.context.rotate(this.rotation);
+
+        this.context.drawImage(
+            this.texture,               //img	Source image 
+            this.sLocation.x,           //sx	Source x	        
+            this.sLocation.y,           //sy	Source y	        
+            this.sWidth,                //sw	Source width	   
+            this.sHeight,               //sh	Source height	   
+            -this.offset.x,             //dx	Destination x	 
+            -this.offset.y ,            //dy	Destination y	   
+            this.width* this.scale.x,   //dw	Destination width	
+            this.height * this.scale.y  //dh	Destination height	
+            );
+        
+        this.context.rotate(-this.rotation);
+        this.context.translate(-this.location.x, -this.location.y);
+    }
+    /**
+     * Readonly the offset from the original 0,0 position.
+     */
+    get offset(){
+        let x = (this._width * this._scale.x) * this._anchor.x;
+        let y = (this._height * this._scale.y) * this._anchor.y;
+        return new Vector2d(x,y);
+    }
+    /**
+     * texture
+     * @param {Image} image
+     */
+    set texture(image){
+        if(typeof image === string){
+            let result = new Image();
+            result.src = image;
+            this._texture = result;
+            if(this.developerMode){
+                Console.warn("New Image created for this.texture. If same source is used repeatedly, consider defining it first as a new Image(src) and use that instead.");
+                Console.warn(this);
+            }
+            return;
+        }
+        if(typeof image === Image){
+            this._texture = image;
+            return;
+        }
+            
+    }
+    get texture(){
+        return this._texture;
+    }
+    /**
+     * Source location.
+     * @param {Vector2d} vector2d
+     */
+    set sLocation(vector2d){
+        this._sLocation.x = vector2d.x;
+        this._sLocation.y = vector2d.y;
+    }
+    get sLocation(){
+        return this._sLocation;
+    }
+    /**
+     * Source height.
+     * @param {number} number
+     */
+    set sHeight(number){
+        this._sHeight = number;
+    }
+    get sHeight(){
+        return this._sHeight;
+    }
+    /**
+     * Source width.
+     * @param {number} number
+     */
+    set sWidth(number){
+        this._sWidth = number;
+    }
+    get sWidth(){
+        return this._sWidth;
+    }
+
+    /**
+     * Destination location.
+     * @param {Vector2d} vector2d
+     */
+    set location(vector2d){
+        this._location.x = vector2d.x;
+        this._location.y = vector2d.y;
+    }
+    get location(){
+        return this._location;
+    }
+    /**
+     * Destination height.
+     * @param {number} number
+     */
+    set height(number){
+        this._height = number;
+    }
+    get height(){
+        return this._height;
+    }
+    /**
+     * Destination width.
+     * @param {number} number
+     */
+    set width(number){
+        this._width = number;
+    }
+    get width(){
+        return this._width;
+    }
+    set anchor(vector2d){
+        this._anchor = vector2d;
+    }
+    get anchor(){
+        return this._anchor;
+    }
+    /**
+     * Set the rotation of the texture.
+     * @param {number} radian
+     */
+    set rotation(radian){
+        this._rotation = radian;
+    }
+    /**
+     * Get the rotation of the texture.
+     * @returns {number} 
+     */
+    get rotation(){
+        return this._rotation;
+    }
+    set scale(vector2d){
+        this._scale = vector2d;
+    }
+    get scale(){
+        return this._scale;
+    }
+    set visible(boolean){
+        this._vivible = boolean;
+    }
+    get visible(){
+        if(!this.context){
+            console.warn("Context not found. Visibility is set to false by force.");
+            console.warn(this);
+            return false;
+        }
+        return this._visible;
+    }
+}
+
+/**
+ * Sprite texture. 
+ * creates an animation of a spritesheet. 
+ */
+class Animated_Sprite extends Sprite{
+    _frameIndex = Vector2d.one;                                            // The current frame to be displayed
+    _tickCount = 0;                                             // The number updates since the current frame was first displayed
+
+    constructor(options){
+        super(options);
         this.numberOfFrames = options.numberOfFrames    || 1;   // The number of frames your spritesheet contains.
         this.numberOfRows   = options.numberOfRows      || 1;   // If your sprite contains more rows select the correct row to animate.
-        this.ticksPerFrame  = options.ticksPerFrame    || 1;   // The number updates until the next frame should be displayed. Speed is calculeted by window.requestAnimationFrame / this.ticksPerFrame (i.e.: 60fps/4 = 16fps)
+        this.ticksPerFrame  = options.ticksPerFrame     || 1;   // The number updates until the next frame should be displayed. Speed is calculeted by window.requestAnimationFrame / this.ticksPerFrame (i.e.: 60fps/4 = 16fps)
         this.loop = options.loop || false;                      // The animation will loop or not.
         this.reverse = options.reverse || false;                // Determines if the animation will play in reverse.
     }
@@ -305,126 +483,48 @@ class Sprite{
         this._tickCount += 1;
         if (this._tickCount > this.ticksPerFrame) {
             this._tickCount = 0;
+
+            // calculate next frame.
             if(!this.reverse)
                 this.nextFrame();
             else
                 this.previousFrame();
         }
+        // set source location on Spritesheet.
+        this.sLocation.x = this._sWidth * this.frameIndex.x;
+        this.sLocation.y = this._sHeight * this.frameIndex.y;
     }
     previousFrame(){
         // If the current frame index is in range
-        if (this._frameIndex > 0) {	
+        if (this.frameIndex.x > 0) {	
             // Go to the next frame
-            this._frameIndex -= 1;
+            this.frameIndex.x -= 1;
         }
-        else if(this._frameRow > 0){
-            this._frameIndex = this.numberOfFrames-1;
-            this._frameRow -= 1;
+        else if(this._frameIndex.y > 0){
+            this.frameIndex.x = this.numberOfFrames-1;
+            this.frameIndex.y -= 1;
         }
         else if (this.loop){
-            this._frameIndex = this.numberOfFrames-1;
-            this._frameRow = this.numberOfRows-1;
+            this.frameIndex.x = this.numberOfFrames-1;
+            this.frameIndex.y = this.numberOfRows-1;
         }
     }
     nextFrame(){
         // If the current frame index is in range
-        if (this._frameIndex < this.numberOfFrames - 1) {	
+        if (this.frameIndex.x < this.numberOfFrames - 1) {	
             // Go to the next frame
-            this._frameIndex += 1;
+            this.frameIndex.x += 1;
         }	
-        else if(this._frameRow < this.numberOfRows -1){
-            this._frameIndex = 0;
-            this._frameRow += 1;
+        else if(this._frameIndex.y < this.numberOfRows -1){
+            this.frameIndex.x = 0;
+            this.frameIndex.y += 1;
         }
         else if (this.loop){
-            this._frameIndex = 0;
-            this._frameRow = 0;
+            this.frameIndex.x = 0;
+            this.frameIndex.y = 0;
         }
     }
-    // draw's itself to the canvas.
-    render(){
-        if(!this.visible)
-            return;      
-        
-        if(this.context === undefined){
-            console.error("Context is not found.");
-            console.error(this);
-            this._visible = false;
-            return;
-        }
-        //console.log("test");
-        this.draw();
-    }
-    draw(){
-        let offsetCenterX = this.width / 2;
-        let offsetCenterY = this.height / 2;
-        this.context.translate(this.location.x+offsetCenterX, this.location.y+offsetCenterY);
-        this.context.rotate(this.angle);
-        this.context.drawImage(
-            this._img,                          //img	Source image        object	Sprite sheet
-            this._frameIndex*this.width,        //sx	Source x	        Frame index times frame width
-            this._frameRow*this.height,         //sy	Source y	        Frame row times frame height
-            this.width,                         //sw	Source width	    Frame width
-            this.height,                        //sh	Source height	    Frame height
-            -offsetCenterX,                     //dx	Destination x	    0 - this.width / 2
-            -offsetCenterY,                     //dy	Destination y	    0 - this.height / 2
-            this.width,                         //dw	Destination width	Frame width
-            this.height                         //dh	Destination height	Frame height
-            );
-        this.context.rotate(-this.angle);
-        this.context.translate(-(this.location.x+offsetCenterX), -(this.location.y+offsetCenterY));
-    }
-    set angle(angle){
-        this._angle = angle;
-    }
-    get angle(){
-        return this._angle;
-    }
-    /**
-     * Set the location where the object will be drawn on the canvas.
-     * @param {Vector2d} vector2d
-     */
-    set location(vector2d){
-        this._location = vector2d;
-    }
-    /**
-     * Get the location of the object. Returns a Vector2d
-     * @returns {Vector2d} Returns the current location of this object.
-     */
-    get location(){
-        return this._location;
-    }
-    /**
-     * Set a new image sprite sheet.
-     * @param {string} src The source string of where the image is location in your folder.
-     */
-    set img(src){
-        this._img = new Image(); 
-        this._img.src = src;
-    }
-    /**
-     * Get the current image spritesheet. Returns a html img element.
-     * @returns {Image} Returns the image element of this object.
-     */
-    get img(){
-        return this._img;
-    }
-    /**
-     * Set the visibility of the object.
-     * @param {boolean} visible
-     */
-    set visible(visible){
-        this._visible = visible;
-    }
-    /**
-     * Get the visibility of the object.
-     * @returns {boolean}
-     */
-    get visible(){
-        return this._visible;
-    }
-    // Toggle the visibility of the object. If false the object will update but will not be drawn to canvas.
-    toggleVisible(){
-        this._visible = !this._visible;
+    get frameIndex(){
+        return this._frameIndex;
     }
 }
