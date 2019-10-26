@@ -31,9 +31,7 @@ class Forces{
         return new Vector2d(0,0.1);
     }
 }
-/*
-TODO: Add way to rotate object.
-*/
+
 class Entity extends Sprite{
     constructor(options){
         super(options);
