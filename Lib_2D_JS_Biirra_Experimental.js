@@ -62,68 +62,115 @@ class Colider2d{
     }
 }
 
-class Entity extends Animated_Sprite{
+class Ball extends Entity{
     constructor(options){
         super(options);
-        
-        this._velocity      = options.velocity      || Vector2d.zero;
-        this._acceleration  = options.acceleration  || Vector2d.zero;
+        this.impactScale = new Vector2d(0.75,0.75);
+        this.blounceSpeed = 0.01;
+    }
+    bounce(){
+        let maxSizeX = this.original.scale.x + this.impactScale.x;
+        let maxSizeY = this.original.scale.y + this.impactScale.y;
+        let minSizeX = this.original.scale.x - this.impactScale.x;
+        let minSizeY = this.original.scale.y - this.impactScale.y;
 
-        this._aVelocity     = options.aVelocity     || 0;        // Angular velocity.
-        this._aAcceleration = options.aAcceleration || 0;    // Angular acceleration.
+        // go bigger if
+        //  its not above max
+        //  its not going smaller.
+        let max = this.scale.x > maxSizeX && this.scale.y > maxSizeY;
+        let min = this.scale.x < minSizeX && this.scale.y < minSizeY;
+        if(max){
+            this._animatingEnlarge = false;
+            this.scale.x = maxSizeX;
+            this.scale.y = maxSizeY;
+        }
+        else if(!max && !this._animatingDiminish){
+            this.scale.x += this.blounceSpeed;
+            this.scale.y += this.blounceSpeed;
+            if(!this._animatingEnlarge){
+                this._animatingEnlarge = true;
+                this._animatingDiminish = false;
+            }
+        }
 
-        this.mass           = options.mass          || 1;
+        // go smaller if
+        //  its not below min
+        //  its not going bigger.
+        if (min){
+            this._animatingDiminish = false;
+            this.scale.x = minSizeX;
+            this.scale.y = minSizeY;
+            //this._jumping = false;
+        }
+        else if(!min && !this._animatingEnlarge){
+            this.scale.x -= this.blounceSpeed;
+            this.scale.y -= this.blounceSpeed;
+            if(!this._animatingDiminish){
+                this._animatingDiminish = true;
+                this._animatingEnlarge = false;
+            }
+        }
     }
-    render(){
-        super.render();
-    }
-    update(){
-        this.velocity.add(this.acceleration);
-        this.location.add(this.velocity);
-        this.acceleration.mult(0);
+}
 
-        this.aVelocity += this.aAcceleration;
-        this.rotation += this.aVelocity; 
-        this.aAcceleration = 0;
-        
-        super.update();
+
+// CHECK OUT http://processingjs.org/learning/topic/simpleparticlesystem/
+// Good start for creating particles. 
+class particle{
+    _location = Vector2d.zero;
+    _velocity = Vector2d.zero;
+    _acceleration = Vector2d.zero;
+    _tickCount = 100;
+    _radius = 0;
+    _alive = true;
+    _color = new Color(0 ,0, 0, 1);
+    constructor(){
+
     }
-    /**
-     * Add a force to the object that influenses the location of this object.
-     * @param {Vector2d} force The force applied to the acceleration of the object.
-     */
-    applyForce(force){
-        let f = Vector2d.div(force, this.mass);
-        this.acceleration.add(f);
+    update() {
+        this._tickCount -= 1;
+        this._velocity.add(this._acceleration);
+        this._location.add(this._velocity);
     }
-    applySpin(number){
-        this.aAcceleration += number;
+    // Method to display
+    render() {
+        // draw particle.
     }
-    get aAcceleration(){
-        return this._aAcceleration;
+    get alive() {
+        if (timer <= 0.0) 
+            return true;
+        return false;
     }
-    set aAcceleration(number){
-        this._aAcceleration = number;
+}
+class ParticleSystem {
+    particles;    // An arraylist for all the particles
+    origin;        // An origin point for where particles are birthed
+    constructor( num,  vector2d) {
+        particles = new ArrayList();              // Initialize the arraylist
+        origin = vector2d.copy();                        // Store the origin point
+        for (let i = 0; i < num; i++) {
+            particles.add(new Particle(origin));    // Add "num" amount of particles to the arraylist
+        }
     }
-    get aVelocity(){
-        return this._aVelocity;
+    run() {
+        // Cycle through the ArrayList backwards b/c we are deleting
+        for (let i = particles.length-1; i >= 0; i--) {
+            let p = particles[i];
+            p.run();
+            if (!p.alive) {
+                particles.remove(i);
+            }
+        }
     }
-    set aVelocity(number){
-        this._aVelocity = number;
+    addParticle() {
+        particles.add(new Particle(origin));
     }
-    set acceleration(vector2d){
-        this._acceleration = vector2d;
+    addParticle(p) {
+        particles.add(p);
     }
-    get acceleration(){
-        return this._acceleration;
-    }
-    set velocity(vector2d){
-        this._velocity = vector2d;
-    }
-    get velocity(){
-        return this._velocity;
-    }
-    kill(){
-        this.alive = false;
+    get alive(){
+        if (particles.length === 0) 
+            return true;
+        return false;
     }
 }
