@@ -106,7 +106,7 @@ class Vector2d{
     add(vector2d) {
         this._x += vector2d.x;
         this._y += vector2d.y;
-    };
+    }
     /**
      * Subtract the values of a Vector2d from the current parameters.
      * @param {Vector2d} vector2d Value to overwrite object parameters with.
@@ -114,7 +114,7 @@ class Vector2d{
     sub(vector2d) {
         this._x -= vector2d.x;
         this._y -= vector2d.y;
-    };
+    }
     /**
      * Multiply the current parameters with a multiplier.
      * @param {number} mult Value to multiply object parameters with.
@@ -122,7 +122,7 @@ class Vector2d{
     mult(mult) {
         this._x *= mult;
         this._y *= mult;
-    };
+    }
     /**
      * Divide the current parameters with a divider.
      * @param {number} div Value to divide object parameters with.
@@ -130,7 +130,7 @@ class Vector2d{
     div(div) {
         this._x /= div;
         this._y /= div;
-    }; 
+    }
     /**
      * Return the magnitude of the object.
      * @returns {number} Contains the magnitude of this object.
@@ -144,7 +144,7 @@ class Vector2d{
         if (m !== 0) {
             this.div(m);
         }
-    };
+    }
     /**
      * If the current parameters have values above the max this function will overwrite the parameters of this object to the maximal value it can have. 
      * @param {number} max Maximal value this object can have. 
@@ -154,7 +154,7 @@ class Vector2d{
             this.norm();
             this.mult(max);
         }
-    };
+    }
     /**
      * Add two Vector2d's together.
      * @param   {Vector2d} v1 
@@ -270,7 +270,12 @@ class Vector2d{
         let plusOrMinus = Math.random() < 0.5 ? -1 : 1;
         return (Math.random() * (max - min) + min) * plusOrMinus; //The maximum is inclusive and the minimum is inclusive 
     }
+    get copy(){
+        let result = new Vector2d(this.x, this.y);
+        return result;
+    }
 }
+
 
 /**
  * Sprite texture. 
@@ -284,62 +289,60 @@ class Sprite {
     _location = Vector2d.zero;             // Destination x & Destination y
     _width = 0;                            // Destination width
     _height = 0;                           // Destination height
+    _offset = Vector2d.zero;
 
     _visible = true;
-    constructor(options, debug = false){
-        this.context = options.context;
-        this._texture = options.texture;
+    constructor(options){
+        this.context    = options.context;
+        this._texture   = options.texture;
 
-        this.sLocation = options.sLocation || Vector2d.zero;
-        this.sWidth = options.sWidth || 0;
-        this.sHeight = options.sHeight || 0;
+        this.sLocation  = options.sLocation     || Vector2d.zero;
+        this.sWidth     = options.sWidth        || 0;
+        this.sHeight    = options.sHeight       || 0;
 
-        this.location = options.location || Vector2d.zero;
-        this.width = options.width || this.sWidth;
-        this.height = options.height || this.sHeight;
-
-        this.anchor = options.anchor || Vector2d.zero;
-        this.rotation = options.rotation || 0;
-        this.scale = options.scale || Vector2d.one;
+        this.location   = options.location      || Vector2d.zero;
+        this.anchor     = options.anchor        || Vector2d.zero;
+        this.scale      = options.scale         || Vector2d.one;
+        this.offset     = options.offset        || Vector2d.zero;
+        this.width      = options.width         || this.sWidth;
+        this.height     = options.height        || this.sHeight;
         
-        this.developerMode = debug;
+        this.rotation   = options.rotation      || 0;
     }
-    render(){
-        if(!this.visible)
-            return;
-        this.draw()
+    render(){   // TODO: It looks like this is called multiple times in performance tab when more than 1 object exists. Check this and find out why this happens.
+        
+        this.location.sub(this.offset);
+        if(this.visible)
+            this.draw();
     }
-    draw(){
-
-        this.context.translate(this.location.x, this.location.y);
+    draw(){ 
         this.context.rotate(this.rotation);
-
         this.context.drawImage(
             this.texture,               //img	Source image 
             this.sLocation.x,           //sx	Source x	        
             this.sLocation.y,           //sy	Source y	        
             this.sWidth,                //sw	Source width	   
             this.sHeight,               //sh	Source height	   
-            -this.offset.x,             //dx	Destination x	 
-            -this.offset.y ,            //dy	Destination y	   
-            this.width* this.scale.x,   //dw	Destination width	
-            this.height * this.scale.y  //dh	Destination height	
+            this.location.x,            //dx	Destination x	 
+            this.location.y,            //dy	Destination y	   
+            this.width,                 //dw	Destination width	
+            this.height                 //dh	Destination height	
             );
-        
         this.context.rotate(-this.rotation);
-        this.context.translate(-this.location.x, -this.location.y);
     }
     /**
      * Readonly the offset from the original 0,0 position.
      */
     get offset(){
-        let x = (this._width * this._scale.x) * this._anchor.x;
-        let y = (this._height * this._scale.y) * this._anchor.y;
-        return new Vector2d(x,y);
+        return this._offset;
+    }
+    set offset(vector2d){ // TODO: It works but be sure of what this is supposed to do and check if it works as expected. 
+        this._offset.x = ((this._width * this._scale.x) * this._anchor.x) + vector2d.x;
+        this._offset.y = ((this._height * this._scale.y) * this._anchor.y) + vector2d.y;
     }
     /**
      * texture
-     * @param {Image} image
+     * @param {Image||string} image
      */
     set texture(image){
         if(typeof image === string){
@@ -409,7 +412,7 @@ class Sprite {
      * @param {number} number
      */
     set height(number){
-        this._height = number;
+        this._height = number*this.scale.y;
     }
     get height(){
         return this._height;
@@ -419,7 +422,7 @@ class Sprite {
      * @param {number} number
      */
     set width(number){
-        this._width = number;
+        this._width = number*this.scale.x;
     }
     get width(){
         return this._width;
@@ -461,6 +464,22 @@ class Sprite {
         }
         return this._visible;
     }
+    get copy(){
+        let result = new Sprite({
+            context:        this.context,                       // The context.
+            texture:        this.texture,                       // The image. May be a Image or a string of the source.
+            sLocation:      this.sLocation.copy,                // Top right location of the selected area on the image.
+            sWidth:         this.sWidth,                        // The height of the selected area on the image.
+            sHeight:        this.sHeight,                       // The Widht of the selected area on the image.
+            location:       this.location.copy,                 // The location where to draw the selected area on the canvas.
+            anchor:         this.anchor.copy,                   // The center of the selected area. Vector.one = bottom right corner.
+            width:          this.width,                         // The width that scales the selected area.
+            height:         this.height,                        // The height that scales the selected area.
+            scale:          this.scale.copy,                    // The scale of the selected area.
+            rotation:       this.rotation,                      // The rotation.
+        });
+        return result;
+    }
 }
 
 /**
@@ -468,22 +487,21 @@ class Sprite {
  * creates an animation of a spritesheet. 
  */
 class Animated_Sprite extends Sprite{
-    _frameIndex = Vector2d.one;                                            // The current frame to be displayed
+    _frameIndex = Vector2d.zero;                                // The current frame to be displayed
     _tickCount = 0;                                             // The number updates since the current frame was first displayed
 
     constructor(options){
         super(options);
-        this.numberOfFrames = options.numberOfFrames    || 1;   // The number of frames your spritesheet contains.
-        this.numberOfRows   = options.numberOfRows      || 1;   // If your sprite contains more rows select the correct row to animate.
-        this.ticksPerFrame  = options.ticksPerFrame     || 1;   // The number updates until the next frame should be displayed. Speed is calculeted by window.requestAnimationFrame / this.ticksPerFrame (i.e.: 60fps/4 = 16fps)
-        this.loop = options.loop || false;                      // The animation will loop or not.
-        this.reverse = options.reverse || false;                // Determines if the animation will play in reverse.
+        this.numberOfFrames = options.numberOfFrames    || 1;       // The number of frames your spritesheet contains.
+        this.numberOfRows   = options.numberOfRows      || 1;       // If your sprite contains more rows select the correct row to animate.
+        this.ticksPerFrame  = options.ticksPerFrame     || 1;       // The number updates until the next frame should be displayed. Less than 1 will skip frames.
+        this.loop           = options.loop              || false;   // The animation will loop or not.
+        this.reverse        = options.reverse           || false;   // Determines if the animation will play in reverse.
     }
     update() {
         this._tickCount += 1;
-        // TODO: let it skip frames when ticksPerFrame is less than 1 and higher than 0; 0.5 would be skipping every other frame;
-        if (this._tickCount > this.ticksPerFrame) {
-            this._tickCount = 0;
+        while (this._tickCount > this.ticksPerFrame) {
+            this._tickCount -= this.ticksPerFrame;
 
             // calculate next frame.
             if(!this.reverse)
@@ -527,5 +545,111 @@ class Animated_Sprite extends Sprite{
     }
     get frameIndex(){
         return this._frameIndex;
+    }
+    set frameIndex(vector2d){
+        if(vector2d.y > this.numberOfRows){
+            console.warn(`Frameindex.y is bigger than the total amount of rows that has been set. Changing frameindex.y to ${this.numberOfRows}`);
+            vector2d.y = this.numberOfRows;
+        }
+        if(vector2d.x > this.numberOfFrames){
+            console.warn(`Frameindex.x is bigger than the total amount of frames that has been set. Changing frameindex.x to ${this.numberOfFrames}`);
+            vector2d.y = this.numberOfFrames;
+        }
+        this._frameIndex = vector2d;
+    }
+    get copy(){
+        let result = new Animated_Sprite({
+            context:        this.context,                       // The context.
+            texture:        this.texture,                       // The image. May be a Image or a string of the source.
+            sLocation:      this.sLocation.copy,                // Top right location of the selected area on the image.
+            sWidth:         this.sWidth,                        // The height of the selected area on the image.
+            sHeight:        this.sHeight,                       // The Widht of the selected area on the image.
+            location:       this.location.copy,                 // The location where to draw the selected area on the canvas.
+            anchor:         this.anchor.copy,                   // The center of the selected area. Vector.one = bottom right corner.
+            width:          this.width,                         // The width that scales the selected area.
+            height:         this.height,                        // The height that scales the selected area.
+            scale:          this.scale.copy,                    // The scale of the selected area.
+            rotation:       this.rotation,                      // The rotation.
+
+            numberOfFrames: this.numberOfFrames,                // The amount of frames horizontaly on the spritesheet. Left to right.
+	        numberOfRows:   this.numberOfRows,                  // The amount of frames vertically on the spritesheet. Top to bottom.
+	        loop:           this.loop,                          // The animation will start over if its finished.
+	        reverse:        this.reverse                        // Play the animation in reverse
+        });
+        return result;
+    }
+}
+
+/**
+ * Sprite that uses phisycs
+ */
+class Entity extends Animated_Sprite{
+    _original;
+    constructor(options){
+        super(options);
+        this._velocity      = options.velocity      || Vector2d.zero;
+        this._acceleration  = options.acceleration  || Vector2d.zero;
+
+        this._aVelocity     = options.aVelocity     || 0;        // Angular velocity.
+        this._aAcceleration = options.aAcceleration || 0;       // Angular acceleration.
+
+        this.mass           = options.mass          || 1;
+
+        this.init();
+    }
+    init(){
+        this.original = this.copy;
+    }
+    update(){
+        this.velocity.add(this.acceleration);
+        this.location.add(this.velocity);
+        this.acceleration.mult(0);
+
+        this.aVelocity += this.aAcceleration;
+        this.rotation += this.aVelocity; 
+        this.aAcceleration = 0;
+        
+        super.update();
+    }
+    /**
+     * Add a force to the object that influenses the location of this object.
+     * @param {Vector2d} force The force applied to the acceleration of the object.
+     */
+    applyForce(force){
+        let f = Vector2d.div(force, this.mass);
+        this.acceleration.add(f);
+    }
+    applySpin(number){
+        this.aAcceleration += number / this.mass;
+    }
+    get aAcceleration(){
+        return this._aAcceleration;
+    }
+    set aAcceleration(number){
+        this._aAcceleration = number;
+    }
+    get aVelocity(){
+        return this._aVelocity;
+    }
+    set aVelocity(number){
+        this._aVelocity = number;
+    }
+    set acceleration(vector2d){
+        this._acceleration = vector2d;
+    }
+    get acceleration(){
+        return this._acceleration;
+    }
+    set velocity(vector2d){
+        this._velocity = vector2d;
+    }
+    get velocity(){
+        return this._velocity;
+    }
+    get original(){
+        return this._original;
+    }
+    set original(value){
+        this._original = value;
     }
 }
