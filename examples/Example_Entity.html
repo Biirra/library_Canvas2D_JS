@@ -23,7 +23,7 @@
                     texture:earthImage,                 // The image. May be a Image or a string of the source.
                     sWidth: 64,                         // The height of the selected area on the image.
                     sHeight: 64,                        // The Widht of the selected area on the image.
-                    ticksPerFrame: 7,                   // Try to keep it above 0.2 for perfermance reasons.
+                    ticksPerFrame: 0.2 *i,                   // Try to keep it above 0.2 for perfermance reasons.
                     location: new Vector2d(i*64,j*64),  // The location where to draw the selected area on the canvas.
                     anchor: new Vector2d(0,0),          // The center of the selected area. Vector.one = bottom right corner.
                     scale: new Vector2d(1,1),
