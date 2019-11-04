@@ -1,0 +1,71 @@
+<html>
+    <head>
+            <script src="Lib_2D_JS_Biirra_Base.js"></script>
+    </head>
+    <body>
+        <canvas id="field" width="1024" height="1024"></canvas>
+    </body>
+    <script>
+
+        // TODO: still happens something weird with the performance where the drawing is inconsistent.
+        let canvas = document.getElementById("field");
+        let ctx = canvas.getContext("2d");
+
+        let earthImage = new Image();
+        earthImage.src = "assets/Earth1024x1024_256Frames.png"; // source: https://s3.us-east-2.amazonaws.com/singular-assets/Global/Earth1024x1024_256Frames.png
+
+        let earths = [];
+
+        for(let i = 0; i < 16; i++){
+            for(let j = 0; j < 16; j++){
+                let earth = new Entity({
+                    context:ctx,                        // The context.
+                    texture:earthImage,                 // The image. May be a Image or a string of the source.
+                    sWidth: 64,                         // The height of the selected area on the image.
+                    sHeight: 64,                        // The Widht of the selected area on the image.
+                    ticksPerFrame: 0.2 *(i+1),         // Try to keep it above 0.2 for perfermance reasons. else it will stutter on the while loop.
+                    location: new Vector2d(i*64,j*64),  // The location where to draw the selected area on the canvas.
+                    anchor: new Vector2d(0,0),          // The center of the selected area. Vector.one = bottom right corner.
+                    scale: new Vector2d(1,1),
+
+                    numberOfFrames: 16,                 // The amount of frames horizontaly on the spritesheet. Left to right.
+                    numberOfRows: 16,                   // The amount of frames vertically on the spritesheet. Top to bottom.
+                    loop: true,                         // The animation will start over if its finished.
+                    reverse: false                      // Play the animation in reverse
+                },{});
+                earth.frameIndex = new Vector2d(i,j);
+                earths.push(earth);
+
+            }
+        }
+
+        loop();
+        
+        function loop () {
+            let force = new Vector2d(0.1,0.1);
+            ctx.clearRect(0, 0, 1024, 1024);
+            for(let i = 0; i < earths.length; i++){
+                earths[i].update();                     // update the object so it can do its math.
+                earths[i].render();                     // render the object so it will be painted to the canvas again.
+
+                earths[i].applyForce(force);            // apply a force to the object so it will move.
+                checkEdges(earths[i]);                  // check if the object redches the end bounds of the screen.
+            }
+            window.requestAnimationFrame(loop);
+        }        
+        function checkEdges(object) {
+            if (object.location.x > canvas.width-object.width) {
+                object.location.x = canvas.width-object.width;
+                object.velocity.x *= -1;
+            } else if (location.x < 0) {
+                object.location.x = 0;
+                object.velocity.x *= -1;
+            }
+            
+            if (object.location.y > canvas.height-object.height) {
+                object.location.y = canvas.height-object.height;
+                object.velocity.y *= -1;
+            }
+        }
+    </script>
+</html>
