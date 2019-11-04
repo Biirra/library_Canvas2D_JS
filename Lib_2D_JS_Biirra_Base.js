@@ -276,7 +276,6 @@ class Vector2d{
     }
 }
 
-
 /**
  * Sprite texture. 
  * Takes a Spritesheet or a Large image and take controll over which section to show on canvas or its parent.
