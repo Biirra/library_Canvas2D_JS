@@ -1,3 +1,10 @@
+/**
+ * Cause this is not a default method for some reason. 
+ */
+Math.randomFloatBetween = function (a, b) {
+    return Math.random() * (b - a + 1) + a;
+};
+
 /*
 Color(r,g,b,o)
 r : red value
@@ -294,6 +301,7 @@ class Sprite {
     constructor(options){
         this.context    = options.context;
         this._texture   = options.texture;
+        this.alpha = options.alpha || 1;
 
         this.sLocation  = options.sLocation     || Vector2d.zero;
         this.sWidth     = options.sWidth        || 0;
@@ -309,12 +317,13 @@ class Sprite {
         this.rotation   = options.rotation      || 0;
     }
     render(){   // TODO: It looks like this is called multiple times in performance tab when more than 1 object exists. Check this and find out why this happens.
-        
         this.location.sub(this.offset);
         if(this.visible)
             this.draw();
     }
     draw(){ 
+        this.context.globalAlpha = this.alpha;
+        this.context.translate(this.location.x, this.location.y);
         this.context.rotate(this.rotation);
         this.context.drawImage(
             this.texture,               //img	Source image 
@@ -322,12 +331,14 @@ class Sprite {
             this.sLocation.y,           //sy	Source y	        
             this.sWidth,                //sw	Source width	   
             this.sHeight,               //sh	Source height	   
-            this.location.x,            //dx	Destination x	 
-            this.location.y,            //dy	Destination y	   
+            0,                          //dx	Destination x	 
+            0,                          //dy	Destination y	   
             this.width,                 //dw	Destination width	
             this.height                 //dh	Destination height	
             );
         this.context.rotate(-this.rotation);
+        this.context.translate(-this.location.x, -this.location.y);
+        this.context.globalAlpha = 1;
     }
     /**
      * Readonly the offset from the original 0,0 position.
@@ -457,8 +468,8 @@ class Sprite {
     }
     get visible(){
         if(!this.context){
-            console.warn("Context not found. Visibility is set to false by force.");
-            console.warn(this);
+            //console.warn("Context not found. Visibility is set to false by force.");
+            //console.warn(this);
             return false;
         }
         return this._visible;
@@ -573,7 +584,8 @@ class Animated_Sprite extends Sprite{
             numberOfFrames: this.numberOfFrames,                // The amount of frames horizontaly on the spritesheet. Left to right.
 	        numberOfRows:   this.numberOfRows,                  // The amount of frames vertically on the spritesheet. Top to bottom.
 	        loop:           this.loop,                          // The animation will start over if its finished.
-	        reverse:        this.reverse                        // Play the animation in reverse
+            reverse:        this.reverse,                       // Play the animation in reverse
+            ticksPerFrame:  this.ticksPerFrame
         });
         return result;
     }
@@ -652,3 +664,135 @@ class Entity extends Animated_Sprite{
         this._original = value;
     }
 }
+
+
+/**
+ * A default particle to be used in a particle system.
+ */
+class Particle extends Animated_Sprite{
+    _velocity = Vector2d.zero;
+    _acceleration = Vector2d.zero;
+    _timer = 100;   // amount of time the particle stay's alive. Measured in fps updates. 
+    constructor(options){
+        super(options);
+        this.velocity = new Vector2d(Math.randomFloatBetween(-1,1), Math.randomFloatBetween(-2,0)); // TODO: Does not belong here.
+        this.acceleration = options.acceleration || Vector2d.zero;
+        this.fadeOut = options.fadeOut || false;
+        this.fadeOutSpeed = options.fadeOutSpeed || 0.01;
+    }
+    update() {
+        super.update();
+        this._timer -= 1;
+        if(this.fadeOut && this.alpha > 0)
+            this.alpha = this.fadeOutSpeed*this._timer;
+        this._velocity.add(this._acceleration);
+        this._location.add(this._velocity);
+    }
+    set velocity(value){
+        this._velocity = value;
+    }
+    get velocity(){
+        return this._velocity;
+    }
+    set acceleration(value){
+        this._acceleration = value;
+    }
+    get acceleration(){
+        return this._acceleration;
+    }
+    set timer(value){
+        this._timer = value;
+    }
+    get timer(){
+        return this._timer;
+    }
+    get alive() {
+        if (this._timer <= 0.0) 
+            return false;
+        return true;
+    }
+    get copy(){
+        return new Particle({
+            // Sprite specific
+            context:        this.context,                       // The context.
+            texture:        this.texture,                       // The image. May be a Image or a string of the source.
+            sLocation:      this.sLocation.copy,                // Top right location of the selected area on the image.
+            sWidth:         this.sWidth,                        // The height of the selected area on the image.
+            sHeight:        this.sHeight,                       // The Widht of the selected area on the image.
+            location:       this.location.copy,                 // The location where to draw the selected area on the canvas.
+            anchor:         this.anchor.copy,                   // The center of the selected area. Vector.one = bottom right corner.
+            width:          this.width,                         // The width that scales the selected area.
+            height:         this.height,                        // The height that scales the selected area.
+            scale:          this.scale.copy,                    // The scale of the selected area.
+            rotation:       this.rotation,                      // The rotation.
+
+            // Animated Sprite specific
+            numberOfFrames: this.numberOfFrames,                // The amount of frames horizontaly on the spritesheet. Left to right.
+	        numberOfRows:   this.numberOfRows,                  // The amount of frames vertically on the spritesheet. Top to bottom.
+	        loop:           this.loop,                          // The animation will start over if its finished.
+            reverse:        this.reverse,                       // Play the animation in reverse
+            ticksPerFrame:  this.ticksPerFrame,
+            
+            // Particle specific
+            fadeOut:        this.fadeOut,                       // particle will fade out if its time.
+            fadeOutSpeed:   this.fadeOutSpeed,                  // the speed at which the particle fades out. 
+            acceleration:   this.acceleration.copy
+        });
+    }
+}
+
+/**
+ * A particle system that will create and show set particle.
+ */
+class ParticleSystem {
+    particles = [];    // An array for all the particles
+    _tickCount = 0;
+    constructor(options) {                     
+        this.location = options.location || Vector2d.zero;      // An origin point for where particles are birthed
+        this.maxNoP = options.maxNumberOfParticles || 1;        // the maximum amount of pixels this system can have at the moment of existing.
+
+        this.originParticle = options.originParticle;           // The original particle. All spawned particles will be copy's
+        this.spawnSpeed = options.spawnSpeed || 1;              // amount of frames it needs to be eligeble to spawn a new particle.    
+        this.batchSize = options.batchSize || 1;                // The amount of particles that spawn per update.
+
+        // TODO: Add possibility to stop spawning new Particles.
+    }
+    update() {
+        this._tickCount += 1;
+        // Cycle through the ArrayList backwards b/c we are deleting
+        for (let i = this.particles.length-1; i >= 0; i--) {
+            let particle = this.particles[i];
+            particle.update();
+            if (!particle.alive) {
+                this.particles.splice(i,1);
+            }
+        }
+        
+        // if its time to create a new particle.
+        if(this._tickCount >= this.spawnSpeed){
+            this._tickCount = 0;
+            // if there is room for new pixels
+            if(this.maxNoP+this.batchSize > this.particles.length){
+                for(let i = 0; i < this.batchSize; i++){
+                    this.addOriginParticle();
+                }
+            }
+        }
+    }
+    renderChildren(){
+        // cylcle backwards so the new particles are displayed behind older particles.
+        for (let i = this.particles.length-1; i >= 0; i--) {
+            this.particles[i].render();
+        }
+    }
+    addOriginParticle(){
+        let p = this.originParticle.copy;
+        p.location = this.location.copy;
+        this.particles.push(p);
+    }
+    get alive(){
+        if (this.particles.length === 0) 
+            return false;
+        return true;
+    }
+} 
