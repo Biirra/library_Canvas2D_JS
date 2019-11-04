@@ -1,7 +1,7 @@
 /*
 Colider
 */
-class Colider2d{
+class Colision_Body{
     constructor(entity){
         this._entity = entity;          // Contains the owner.
         this._collisionTop = false;
@@ -58,7 +58,7 @@ class Colider2d{
         this._collisionLeft = value;
     }
     get entity(){
-        return this.entity;
+        return this._entity;
     }
 }
 
@@ -120,15 +120,15 @@ class particle{
     _location = Vector2d.zero;
     _velocity = Vector2d.zero;
     _acceleration = Vector2d.zero;
-    _tickCount = 100;
+    _timer = 100;
     _radius = 0;
     _alive = true;
     _color = new Color(0 ,0, 0, 1);
-    constructor(){
-
+    constructor(origin){
+        this.location = origin.copy;
     }
     update() {
-        this._tickCount -= 1;
+        this._timer -= 1;
         this._velocity.add(this._acceleration);
         this._location.add(this._velocity);
     }
@@ -136,41 +136,54 @@ class particle{
     render() {
         // draw particle.
     }
+    set location(value){
+        this._location = value;
+    }
+    get location(){
+        return this._location;
+    }
+    set timer(value){
+        this._timer = value;
+    }
+    get timer(){
+        return this._timer;
+    }
     get alive() {
-        if (timer <= 0.0) 
+        if (this._timer <= 0.0) 
             return true;
         return false;
     }
 }
 class ParticleSystem {
-    particles;    // An arraylist for all the particles
-    origin;        // An origin point for where particles are birthed
     constructor( num,  vector2d) {
-        particles = new ArrayList();              // Initialize the arraylist
-        origin = vector2d.copy();                        // Store the origin point
+        this.particles = new ArrayList();              // An arraylist for all the particles
+        this.origin = vector2d.copy();                 // An origin point for where particles are birthed
+        this.init(num);
+    }
+    init(num){
         for (let i = 0; i < num; i++) {
-            particles.add(new Particle(origin));    // Add "num" amount of particles to the arraylist
+            this.addParticle();
         }
     }
-    run() {
+    update() {
         // Cycle through the ArrayList backwards b/c we are deleting
-        for (let i = particles.length-1; i >= 0; i--) {
-            let p = particles[i];
-            p.run();
-            if (!p.alive) {
-                particles.remove(i);
+        for (let i = this.particles.length-1; i >= 0; i--) {
+            let particle = this.particles[i];
+            particle.update();
+            if (!particle.alive) {
+                this.particles.splice(i,1);
             }
         }
     }
     addParticle() {
-        particles.add(new Particle(origin));
+        this.particles.push(new Particle(this.origin));
     }
     addParticle(p) {
-        particles.add(p);
+        this.particles.push(p);
     }
     get alive(){
-        if (particles.length === 0) 
+        if (this.particles.length === 0) 
             return true;
         return false;
     }
-}
+} 
