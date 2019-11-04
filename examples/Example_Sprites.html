@@ -26,7 +26,7 @@
             height: 128,                        // The height that scales the selected area.
             scale: new Vector2d(0.5,1),         // The scale of the selected area.
             rotation: 45                        // The rotation.
-        }, true);                             
+        });                             
         
         let earthAnimatedSprite = new Animated_Sprite({
             context:ctx,                        // The context.
@@ -45,7 +45,7 @@
 	        numberOfRows: 16,                   // The amount of frames vertically on the spritesheet. Top to bottom.
 	        loop: true,                         // The animation will start over if its finished.
 	        reverse: false                      // Play the animation in reverse
-        }, true);
+        });
 
 
         loop();
