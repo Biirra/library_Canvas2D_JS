@@ -32,18 +32,18 @@
 
             fadeOut: true,                      // particle will fade out if its time.
             fadeOutSpeed: 0.05,                 // the speed at which the particle fades out. 
-            acceleration: new Vector2d(0, 0.05) 
+            acceleration: new Vector2d(0.1, 0.05) 
         });
 
         let ps = new ParticleSystem({
-            location: new Vector2d(canvas.width/2, canvas.height/2),    // birth location of the particles
+            location: new Vector2d(canvas.width/2, canvas.height/4),    // birth location of the particles
             maxNumberOfParticles: 100,                                  // max number of particles the system can spawn at a given moment.
             spawnSpeed: 10,                                             // how many updates before it will spawn a new batch of particles.
             batchSize: 5,                                               // the amount of particles it will spawn when it is time to add particles.
             originParticle: particleEarth
         });
+
         loop();
-        
         function loop () {
             ctx.clearRect(0, 0, 1024, 1024);
             ps.update();
