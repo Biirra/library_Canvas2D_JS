@@ -16,31 +16,35 @@
         earthImage.src = "../assets/Earth1024x1024_256Frames.png"; // source: https://s3.us-east-2.amazonaws.com/singular-assets/Global/Earth1024x1024_256Frames.png
 
         let particleEarth = new Particle({
-            context:ctx,                        // The context.
-            texture:earthImage,                 // The image. May be a Image or a string of the source.
-            sLocation: Vector2d.zero,           // Top right location of the selected area on the image.
-            sWidth: 64,                         // The height of the selected area on the image.
-            sHeight: 64,                        // The Widht of the selected area on the image.
-            width: 64,                          // The width that scales the selected area.
-            height: 64,                         // The height that scales the selected area.
-            ticksPerFrame: 0.2,                 // Try to keep it above 0.2 for perfermance reasons. else it will stutter on the while loop.
+            context:ctx,                            // The context.
+            texture:earthImage,                     // The image. May be a Image or a string of the source.
+            sLocation: Vector2d.zero,               // Top right location of the selected area on the image.
+            sWidth: 64,                             // The height of the selected area on the image.
+            sHeight: 64,                            // The Widht of the selected area on the image.
+            width: 64,                              // The width that scales the selected area.
+            height: 64,                             // The height that scales the selected area.
+            ticksPerFrame: 0.2,                     // Try to keep it above 0.2 for perfermance reasons. else it will stutter on the while loop.
 
-            numberOfFrames: 16,                 // The amount of frames horizontaly on the spritesheet. Left to right.
-	        numberOfRows: 16,                   // The amount of frames vertically on the spritesheet. Top to bottom.
-	        loop: true,                         // The animation will start over if its finished.
-            reverse: false,                     // Play the animation in reverse
+            numberOfFrames: 16,                     // The amount of frames horizontaly on the spritesheet. Left to right.
+	        numberOfRows: 16,                       // The amount of frames vertically on the spritesheet. Top to bottom.
+	        loop: true,                             // The animation will start over if its finished.
+            reverse: false,                         // Play the animation in reverse
 
-            fadeOut: true,                      // particle will fade out if its time.
-            fadeOutSpeed: 0.05,                 // the speed at which the particle fades out. 
-            acceleration: new Vector2d(0.1, 0.05) 
+            fadeOut: true,                          // Particle will fade out if its time.
+            fadeOutSpeed: 0.05,                     // The speed at which the particle fades out. 
+            acceleration: new Vector2d(0.1, 0.05),  // Outside force it has to take in consideration. Used for gravity for example. Use applyForce to add aditional forces.
+            ticksAlive: 70,                         // The time in ticks it stays alive before dissapearing. 
+
+            type: "example"                         // Use a pre-programmed behavior
         });
 
         let ps = new ParticleSystem({
-            location: new Vector2d(canvas.width/2, canvas.height/4),    // birth location of the particles
-            maxNumberOfParticles: 100,                                  // max number of particles the system can spawn at a given moment.
-            spawnSpeed: 10,                                             // how many updates before it will spawn a new batch of particles.
-            batchSize: 5,                                               // the amount of particles it will spawn when it is time to add particles.
-            originParticle: particleEarth
+            location: new Vector2d(canvas.width/2, canvas.height/4),    // Birth location of the particles
+            maxNumberOfParticles: 100,                                  // Max number of particles the system can spawn at a given moment.
+            spawnSpeed: 10,                                             // How many updates before it will spawn a new batch of particles.
+            batchSize: 5,                                               // The amount of particles it will spawn when it is time to add particles.
+            originParticle: particleEarth,                              // The particle it will try to create copy's of
+            paused : false                                              // Spawning new particles is halted. Particle system can still die if it has no particles. 
         });
 
         loop();
@@ -48,6 +52,7 @@
             ctx.clearRect(0, 0, 1024, 1024);
             ps.update();
             ps.renderChildren();
+            
             window.requestAnimationFrame(loop);
         }        
     </script>
