@@ -672,7 +672,7 @@ class Entity extends Animated_Sprite{
 class Particle extends Animated_Sprite{
     _velocity = Vector2d.zero;
     _acceleration = Vector2d.zero;
-    _timer = 100;   // amount of time the particle stay's alive. Measured in fps updates. 
+    _timer = 100;   // amount of time the particle stay's alive. Measured in fps updates. TODO: Should be able to set this.
     constructor(options){
         super(options);
         this.velocity = new Vector2d(Math.randomFloatBetween(-1,1), Math.randomFloatBetween(-2,0)); // TODO: Does not belong here.
