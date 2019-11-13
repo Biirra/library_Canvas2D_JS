@@ -1,19 +1,28 @@
-/**
- * Cause this is not a default method for some reason. 
- */
+ /**
+  * Returns a float between a min and max.
+  * @param {number} a Min value.
+  * @param {number} b Max value.
+  * @returns {number} Random float between a and b
+  */
 Math.randomFloatBetween = function (a, b) {
     return Math.random() * (b - a + 1) + a;
 };
+/**
+  * Returns a int between a min and max.
+  * @param {number} a Min value.
+  * @param {number} b Max value.
+  * @returns {number} Random int between a and b
+  */
 Math.randomIntBetween = function(a, b) { 
     return Math.floor(Math.random() * (b - a + 1) + a);
 };
 
 /*
-Color(r,g,b,o)
+Color(r,g,b,a)
 r : red value
 g : green value
 b : blue value
-o : opacity value / alpha channel
+a : opacity value / alpha channel
 */
 class Color{
     constructor(r,g,b,a=1){
@@ -223,25 +232,31 @@ class Vector2d{
         return new Vector2d(-1,0);
     }
     /**
-     * Returns a Vector2d with random coordinates from 0 to 1.
-     * Use a multiplier to increase this.
-     * @param   {number}    multiplier  
+     * Returns a Vector2d with random coordinates.
+     * @param   {number}    minX        minimal value for x coordinate
+     * @param   {number}    maxX        maximal value for x coordinate
+     * @param   {number}    minY        minimal value for y coordinate
+     * @param   {number}    maxY        maximal value for y coordinate
      * @returns {Vector2d}              Contains a new Vector with random parameters.
-     * TODO: Make sure it takes y coordinates in consideration aswell.
      */
-    static random(multiplier){
-        let vector;
-        let random = Math.random();
-        if (random <= 0.25) {
-            vector = new Vector2d(-Math.random() * multiplier, -Math.random() * multiplier);
-        } else if (random > 0.25 && random <= 0.5) {
-            vector = new Vector2d(-Math.random() * multiplier, Math.random() * multiplier);
-        } else if (random > 0.5 && random <= 0.75) {
-            vector = new Vector2d(Math.random() * multiplier, -Math.random() * multiplier);
+    static random(minX, maxX, minY, maxY){
+        let result;
+        let decider = Math.random();
+
+        let x = Math.randomFloatBetween(minX, maxX);
+        let y = Math.randomFloatBetween(minY, maxY);
+        
+        if (decider <= 0.25) {
+            result = new Vector2d(-x, -y);
+        } else if (decider > 0.25 && decider <= 0.5) {
+            result = new Vector2d(-x, y);
+        } else if (decider > 0.5 && decider <= 0.75) {
+            result = new Vector2d(x, -y);
         } else {
-            vector = new Vector2d(Math.random() * multiplier, Math.random() * multiplier);
+            result = new Vector2d(x, y);
         }
-        return vector;
+        
+        return result;
     }
     /**
      * Untested. Prepared for usage of translating an angle and distance to a x,y coordinate.
@@ -281,10 +296,18 @@ class Vector2d{
     get y(){
         return this._y;
     }
+    /**
+     * TODO: Remove somewhere in the future
+     */
     static randomFloat(min, max) {
+        console.warn("randomFloat is depricated. use Math.randomFloatBetween instead");
         let plusOrMinus = Math.random() < 0.5 ? -1 : 1;
         return (Math.random() * (max - min) + min) * plusOrMinus; //The maximum is inclusive and the minimum is inclusive 
     }
+    /**
+     * Get a copy of this object. 
+     * @returns {Vector2d} Returns a copy of this.
+     */ 
     get copy(){
         return new Vector2d(this.x, this.y);
     }
@@ -299,12 +322,12 @@ class Sprite {
     _sWidth = 0;                            // Source width
     _sHeight = 0;                           // Source height
 
-    _location = Vector2d.zero;             // Destination x & Destination y
-    _width = 0;                            // Destination width
-    _height = 0;                           // Destination height
-    _offset = Vector2d.zero;
+    _location = Vector2d.zero;              // Destination x & Destination y
+    _width = 0;                             // Destination width
+    _height = 0;                            // Destination height
+    _offset = Vector2d.zero;                // TODO: Figure out what this do's and what it is supposed to do.
 
-    _visible = true;
+    _visible = true;                        // Object can be drawn on the canvas.
     constructor(options){
         this.context    = options.context;
         this._texture   = options.texture;
@@ -323,7 +346,7 @@ class Sprite {
         
         this.rotation   = options.rotation      || 0;
     }
-    render(){   // TODO: It looks like this is called multiple times in performance tab when more than 1 object exists. Check this and find out why this happens.
+    render(){ 
         this.location.sub(this.offset);
         if(this.visible)
             this.draw();
@@ -359,7 +382,7 @@ class Sprite {
     }
     /**
      * texture
-     * @param {Image||string} image
+     * @param {Image||string} image set the texture with either an Image object or a (String)src of the image. Img object reccomended
      */
     set texture(image){
         if(typeof image === string){
@@ -475,12 +498,17 @@ class Sprite {
     }
     get visible(){
         if(!this.context){
+            // TODO: Fix this so it will not print forever than reactivate warnings if in developer mode.
             //console.warn("Context not found. Visibility is set to false by force.");
             //console.warn(this);
             return false;
         }
         return this._visible;
     }
+    /**
+     * Generates a copy of itself and returns it.
+     * @returns {Sprite} copy of self
+     */
     get copy(){
         let result = new Sprite({
             context:        this.context,                       // The context.
@@ -564,16 +592,21 @@ class Animated_Sprite extends Sprite{
         return this._frameIndex;
     }
     set frameIndex(vector2d){
+        let result = vector2d.copy;
         if(vector2d.y > this.numberOfRows){
             console.warn(`Frameindex.y is bigger than the total amount of rows that has been set. Changing frameindex.y to ${this.numberOfRows}`);
-            vector2d.y = this.numberOfRows;
+            result.y = this.numberOfRows;
         }
         if(vector2d.x > this.numberOfFrames){
             console.warn(`Frameindex.x is bigger than the total amount of frames that has been set. Changing frameindex.x to ${this.numberOfFrames}`);
-            vector2d.y = this.numberOfFrames;
+            result.x = this.numberOfFrames;
         }
-        this._frameIndex = vector2d;
+        this._frameIndex = result;
     }
+    /**
+     * Generates a copy of itself and returns it.
+     * @returns {Animated_Sprite} copy of self
+     */
     get copy(){
         let result = new Animated_Sprite({
             context:        this.context,                       // The context.
@@ -630,8 +663,8 @@ class Entity extends Animated_Sprite{
         super.update();
     }
     /**
-     * Add a force to the object that influenses the location of this object.
-     * @param {Vector2d} force The force applied to the acceleration of the object.
+     * Add a force to self that influenses the location of this object.
+     * @param {Vector2d} force The force applied to the acceleration of self.
      */
     applyForce(force){
         let f = Vector2d.div(force, this.mass);
@@ -671,7 +704,6 @@ class Entity extends Animated_Sprite{
         this._original = value;
     }
 }
-
 
 /**
  * A default particle to be used in a particle system.
@@ -733,6 +765,10 @@ class Particle extends Animated_Sprite{
             return false;
         return true;
     }
+    /**
+     * Generates a copy of itself and returns it.
+     * @returns {Particle} copy of self
+     */
     get copy(){
         return new Particle({
             // Sprite specific
@@ -843,4 +879,4 @@ class ParticleSystem {
 
 
 
-// TODO: Create reliable error/warning system. Currently all error's and warning's are spammed if in developer mode.
+// TODO: Create reliable error/warning system. Currently most error's and warning's are spammed if in developer mode.
