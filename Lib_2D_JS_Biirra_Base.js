@@ -23,8 +23,8 @@ class Color{
         this.alpha = a;
     }
     /**
-     * Returns a rgba string that can be used for css.
-     * @returns {string} Contains the rgba value of the object in string format.
+     * Returns a rgba string that can be used for css or fillstyle on canvas.
+     * @returns {string} Returns the rgba value of the object in string format.
      */
     get colorString(){
         return "rgba("+this.red+","+this.green+","+this.blue+","+this.alpha+")";
@@ -243,6 +243,11 @@ class Vector2d{
         }
         return vector;
     }
+    /**
+     * Untested. Prepared for usage of translating an angle and distance to a x,y coordinate.
+     * @param {*} length 
+     * @param {*} angleDegree 
+     */
     static polarToCartasian(length, angleDegree){
         let x = length * cos(angleDegree);
         let y = length * sin(angleDegree);
@@ -281,14 +286,13 @@ class Vector2d{
         return (Math.random() * (max - min) + min) * plusOrMinus; //The maximum is inclusive and the minimum is inclusive 
     }
     get copy(){
-        let result = new Vector2d(this.x, this.y);
-        return result;
+        return new Vector2d(this.x, this.y);
     }
 }
 
 /**
  * Sprite texture. 
- * Takes a Spritesheet or a Large image and take controll over which section to show on canvas or its parent.
+ * Takes a Spritesheet or a Large image and take controll over which section to show on canvas.
  */
 class Sprite {
     _sLocation = Vector2d.zero;             // Source x & Source y
@@ -818,9 +822,25 @@ class ParticleSystem {
         p.location = this.location.copy;
         this.particles.push(p);
     }
+    addParticleByBatch(particle, batchSize){
+        if(this.maxNoP+batchSize > this.particles.length){
+            for(let i = 0; i < batchSize; i++){
+                this.addParticle(particle);
+            }
+        }
+    }
+    addParticle(particle){
+        let p = particle.copy;
+        p.location = this.location.copy;
+        this.particles.push(p);
+    }
     get alive(){
         if (this.particles.length === 0) 
             return false;
         return true;
     }
 } 
+
+
+
+// TODO: Create reliable error/warning system. Currently all error's and warning's are spammed if in developer mode.
