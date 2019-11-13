@@ -4,6 +4,9 @@
 Math.randomFloatBetween = function (a, b) {
     return Math.random() * (b - a + 1) + a;
 };
+Math.randomIntBetween = function(a, b) { 
+    return Math.floor(Math.random() * (b - a + 1) + a);
+};
 
 /*
 Color(r,g,b,o)
@@ -504,7 +507,7 @@ class Animated_Sprite extends Sprite{
         super(options);
         this.numberOfFrames = options.numberOfFrames    || 1;       // The number of frames your spritesheet contains.
         this.numberOfRows   = options.numberOfRows      || 1;       // If your sprite contains more rows select the correct row to animate.
-        this.ticksPerFrame  = options.ticksPerFrame     || 1;       // The number updates until the next frame should be displayed. Less than 1 will skip frames.
+        this.ticksPerFrame  = options.ticksPerFrame     || 1;       // The speed it will loop trough it's frames. Will skip frames if below 1 to mimic speedup.
         this.loop           = options.loop              || false;   // The animation will loop or not.
         this.reverse        = options.reverse           || false;   // Determines if the animation will play in reverse.
     }
@@ -585,7 +588,7 @@ class Animated_Sprite extends Sprite{
 	        numberOfRows:   this.numberOfRows,                  // The amount of frames vertically on the spritesheet. Top to bottom.
 	        loop:           this.loop,                          // The animation will start over if its finished.
             reverse:        this.reverse,                       // Play the animation in reverse
-            ticksPerFrame:  this.ticksPerFrame
+            ticksPerFrame:  this.ticksPerFrame                  // The speed it will loop trough it's frames. Will skip frames if below 1 to mimic speedup.
         });
         return result;
     }
@@ -672,19 +675,34 @@ class Entity extends Animated_Sprite{
 class Particle extends Animated_Sprite{
     _velocity = Vector2d.zero;
     _acceleration = Vector2d.zero;
-    _timer = 100;   // amount of time the particle stay's alive. Measured in fps updates. TODO: Should be able to set this.
+    _ticksAlive = 1;   // amount of time the particle stay's alive. Measured in fps updates. TODO: Should be able to set this.
     constructor(options){
         super(options);
-        this.velocity = new Vector2d(Math.randomFloatBetween(-1,1), Math.randomFloatBetween(-2,0)); // TODO: Does not belong here.
         this.acceleration = options.acceleration || Vector2d.zero;
         this.fadeOut = options.fadeOut || false;
         this.fadeOutSpeed = options.fadeOutSpeed || 0.01;
+        this.ticksAlive = options.ticksAlive || 100;
+
+        this.type = options.type;  // Some default options that can be chosen.
+
+        this.init();
+    }
+    init(){
+        switch(this.type){
+            case "example":
+                this.velocity = new Vector2d(Math.randomFloatBetween(-1,1), Math.randomFloatBetween(-2,0)); 
+                this.frameIndex = new Vector2d(Math.randomIntBetween(0, this.numberOfFrames), Math.randomIntBetween(0, this.numberOfRows));
+                break;
+            default:
+                break;
+        }
+        
     }
     update() {
         super.update();
-        this._timer -= 1;
+        this._ticksAlive -= 1;
         if(this.fadeOut && this.alpha > 0)
-            this.alpha = this.fadeOutSpeed*this._timer;
+            this.alpha = this.fadeOutSpeed*this._ticksAlive;
         this._velocity.add(this._acceleration);
         this._location.add(this._velocity);
     }
@@ -700,14 +718,14 @@ class Particle extends Animated_Sprite{
     get acceleration(){
         return this._acceleration;
     }
-    set timer(value){
-        this._timer = value;
+    set ticksAlive(value){
+        this._ticksAlive = value;
     }
-    get timer(){
-        return this._timer;
+    get ticksAlive(){
+        return this._ticksAlive;
     }
     get alive() {
-        if (this._timer <= 0.0) 
+        if (this._ticksAlive <= 0.0) 
             return false;
         return true;
     }
@@ -731,12 +749,14 @@ class Particle extends Animated_Sprite{
 	        numberOfRows:   this.numberOfRows,                  // The amount of frames vertically on the spritesheet. Top to bottom.
 	        loop:           this.loop,                          // The animation will start over if its finished.
             reverse:        this.reverse,                       // Play the animation in reverse
-            ticksPerFrame:  this.ticksPerFrame,
+            ticksPerFrame:  this.ticksPerFrame,                 // The speed it will loop trough it's frames. Will skip frames if below 1 to mimic speedup.
             
             // Particle specific
-            fadeOut:        this.fadeOut,                       // particle will fade out if its time.
-            fadeOutSpeed:   this.fadeOutSpeed,                  // the speed at which the particle fades out. 
-            acceleration:   this.acceleration.copy
+            fadeOut:        this.fadeOut,                       // Particle will fade out if its time.
+            fadeOutSpeed:   this.fadeOutSpeed,                  // The speed at which the particle fades out. 
+            acceleration:   this.acceleration.copy,             // Mainly contains outside forces that this is affected by.
+            ticksAlive:     this.ticksAlive,                    // The amount of ticks it will stay alive for.
+            type:           this.type
         });
     }
 }
@@ -749,13 +769,18 @@ class ParticleSystem {
     _tickCount = 0;
     constructor(options) {                     
         this.location = options.location || Vector2d.zero;      // An origin point for where particles are birthed
-        this.maxNoP = options.maxNumberOfParticles || 1;        // the maximum amount of pixels this system can have at the moment of existing.
+        this.maxNoP = options.maxNumberOfParticles || 1;        // The maximum amount of pixels this system can have at the moment of existing.
 
         this.originParticle = options.originParticle;           // The original particle. All spawned particles will be copy's
-        this.spawnSpeed = options.spawnSpeed || 1;              // amount of frames it needs to be eligeble to spawn a new particle.    
+        this.spawnSpeed = options.spawnSpeed || 1;              // Amount of ticks that need to pass before it can spawn a new particle.    
         this.batchSize = options.batchSize || 1;                // The amount of particles that spawn per update.
 
-        // TODO: Add possibility to stop spawning new Particles.
+        this.paused = options.paused || false;                  // If true it will not create any new particles.
+
+        this.init();
+    }
+    init(){
+        this.addOriginParticleByBatch(this.batchSize);
     }
     update() {
         this._tickCount += 1;
@@ -768,21 +793,24 @@ class ParticleSystem {
             }
         }
         
-        // if its time to create a new particle.
-        if(this._tickCount >= this.spawnSpeed){
+        // if allowed and its time to create a new particle.
+        if(this._tickCount >= this.spawnSpeed && !this.paused){
             this._tickCount = 0;
-            // if there is room for new pixels
-            if(this.maxNoP+this.batchSize > this.particles.length){
-                for(let i = 0; i < this.batchSize; i++){
-                    this.addOriginParticle();
-                }
-            }
+            // if there is room for new particles add new particles
+            this.addOriginParticleByBatch(this.batchSize);
         }
     }
     renderChildren(){
         // cylcle backwards so the new particles are displayed behind older particles.
         for (let i = this.particles.length-1; i >= 0; i--) {
             this.particles[i].render();
+        }
+    }
+    addOriginParticleByBatch(batchSize){
+        if(this.maxNoP+batchSize > this.particles.length){
+            for(let i = 0; i < batchSize; i++){
+                this.addOriginParticle();
+            }
         }
     }
     addOriginParticle(){
