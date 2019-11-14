@@ -1,6 +1,8 @@
 <html>
     <head>
+            <script src="../Lib_2D_JS_Biirra_Core.js"></script>
             <script src="../Lib_2D_JS_Biirra_Base.js"></script>
+            <script src="../Lib_2D_JS_Biirra_Experimental.js"></script>
     </head>
     <body>
         <canvas id="field" width="1024" height="1024"></canvas>
@@ -16,26 +18,31 @@
 
         let earths = [];
 
-        for(let i = 0; i < 16; i++){
-            for(let j = 0; j < 16; j++){
+        for(let i = 0; i < 8; i++){
+            for(let j = 0; j < 8; j++){
                 let earth = new Entity({
-                    context:ctx,                        // The context.
-                    texture:earthImage,                 // The image. May be a Image or a string of the source.
-                    sWidth: 64,                         // The height of the selected area on the image.
-                    sHeight: 64,                        // The Widht of the selected area on the image.
-                    ticksPerFrame: 0.2 *(i+1),         // Try to keep it above 0.2 for perfermance reasons. else it will stutter on the while loop.
-                    location: new Vector2d(i*64,j*64),  // The location where to draw the selected area on the canvas.
-                    anchor: new Vector2d(0,0),          // The center of the selected area. Vector.one = bottom right corner.
-                    scale: new Vector2d(1,1),
-
-                    numberOfFrames: 16,                 // The amount of frames horizontaly on the spritesheet. Left to right.
-                    numberOfRows: 16,                   // The amount of frames vertically on the spritesheet. Top to bottom.
-                    loop: true,                         // The animation will start over if its finished.
-                    reverse: false                      // Play the animation in reverse
+                    context:ctx,                                // The context.
+                    texture:earthImage,                         // The image. May be a Image or a string of the source.
+                    ticksPerFrame: 0.2 *(i+1),                  // Try to keep it above 0.2 for perfermance reasons. else it will stutter on the while loop.
+                    sourceFrame: new Rect({                     // The rectangle data of the selection it will take from the texture image.
+                        location: Vector2d.zero,                // Top right location of the selected area on the image.
+                        width: 64,                              // The height of the selected area on the image.
+                        height: 64                              // The widht of the selected area on the image.
+                    }),           
+                    bodyOptions: new Rect({                     // The rectangle that defines the body of the sprite. Contains data on where to write the sprite on the canvas.
+                        location: new Vector2d(i*64,j*64),      // The location where to draw the selected area on the canvas.
+                        width: 64,                              // The width that scales the selected area.
+                        height: 64,                             // The height that scales the selected area.
+                        anchor: new Vector2d(0.5,0.5),          // The center of the sprite's body. Vector.one = bottom right corner.
+                        scale: new Vector2d(1,1)                // The scale of the sprite's body.
+                    }), 
+                    numberOfFrames: 16,                         // The amount of frames horizontaly on the spritesheet. Left to right.
+                    numberOfRows: 16,                           // The amount of frames vertically on the spritesheet. Top to bottom.
+                    loop: true,                                 // The animation will start over if its finished.
+                    reverse: false                              // Play the animation in reverse
                 },{});
                 earth.frameIndex = new Vector2d(i,j);
                 earths.push(earth);
-
             }
         }
 
@@ -49,21 +56,22 @@
                 earths[i].render();                     // render the object so it will be painted to the canvas again.
 
                 earths[i].applyForce(force);            // apply a force to the object so it will move.
-                checkEdges(earths[i]);                  // check if the object redches the end bounds of the screen.
+                checkEdges(earths[i]);                  // check if the object readches the end bounds of the screen.
             }
             window.requestAnimationFrame(loop);
         }        
         function checkEdges(object) {
-            if (object.location.x > canvas.width-object.width) {
-                object.location.x = canvas.width-object.width;
+            let objBody = object.body;
+            if (objBody.location.x > canvas.width - objBody.width) {
+                objBody.location.x = canvas.width - objBody.width;
                 object.velocity.x *= -1;
-            } else if (location.x < 0) {
-                object.location.x = 0;
+            } else if (objBody.location.x < 0 + objBody.width) {
+                objBody.location.x = 0 + objBody.width;
                 object.velocity.x *= -1;
             }
             
-            if (object.location.y > canvas.height-object.height) {
-                object.location.y = canvas.height-object.height;
+            if (objBody.location.y > canvas.height - objBody.height) {
+                objBody.location.y = canvas.height - objBody.height;
                 object.velocity.y *= -1;
             }
         }
