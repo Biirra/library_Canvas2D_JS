@@ -75,7 +75,7 @@ class Animator{
 /**
  * A default particle to be used in a particle system.
  */
-class Particle extends Animated_Sprite{
+class Particle extends GameObject{
     constructor(options){
         super(options);
         this.acceleration = options.acceleration || Vector2d.zero;
