@@ -62,21 +62,30 @@ class Colision_Body{
     }
 }
 
+/*
+contains default animations that can be used on most gameObjects
+*/
+class Animator{
+    constructor(){
+
+    }
+    fadeOut(gameObjects){}
+}
+
 /**
  * A default particle to be used in a particle system.
  */
 class Particle extends Animated_Sprite{
-    _velocity = Vector2d.zero;
-    _acceleration = Vector2d.zero;
-    _ticksAlive = 1;   // amount of time the particle stay's alive. Measured in fps updates. TODO: Should be able to set this.
     constructor(options){
         super(options);
         this.acceleration = options.acceleration || Vector2d.zero;
+        this.velocity = options.velocity || Vector2d.zero;
 
         // TODO: Fadeout animation can probably belong to a Animator class
         this.fadeOut = options.fadeOut || false;
         this.fadeOutSpeed = options.fadeOutSpeed || 0.01;
-        this.ticksAlive = options.ticksAlive || 100;
+
+        this.ticksAlive = options.ticksAlive || 100; // amount of time the particle stay's alive. Measured in fps updates. 
 
         this.type = options.type;  // Some default options that can be chosen.
 
@@ -84,7 +93,7 @@ class Particle extends Animated_Sprite{
     }
     init(){
         switch(this.type){
-            case "example":
+            case "Default":
                 this.velocity = new Vector2d(Math.randomFloatBetween(-4,4), Math.randomFloatBetween(-2,0)); 
                 this.frameIndex = new Vector2d(Math.randomIntBetween(0, this.numberOfFrames - 1), Math.randomIntBetween(0, this.numberOfRows - 1));
                 break;
@@ -168,11 +177,6 @@ class ParticleSystem {
         this.batchSize = options.batchSize || 1;                // The amount of particles that spawn per update.
 
         this.paused = options.paused || false;                  // If true it will not create any new particles.
-
-        this.init();
-    }
-    init(){
-        //this.addOriginParticleByBatch(this.batchSize);
     }
     update() {
         this._tickCount += 1;
@@ -185,10 +189,9 @@ class ParticleSystem {
             }
         }
         
-        // if allowed and its time to create a new particle.
+        // if allowed and its time, create a new particle.
         if(this._tickCount >= this.spawnSpeed && !this.paused){
             this._tickCount = 0;
-            // if there is room for new particles add new particles
             this.addOriginParticleByBatch(this.batchSize);
         }
     }
@@ -199,6 +202,7 @@ class ParticleSystem {
         }
     }
     addOriginParticleByBatch(batchSize){
+        // if there is room for new particles add new particles
         if(this.maxNoP+batchSize > this.particles.length){
             for(let i = 0; i < batchSize; i++){
                 this.addOriginParticle();

@@ -14,6 +14,7 @@ class Sprite {
 
         this.rotation   = options.rotation      || 0;
     }
+    update(){}
     render(){ 
         if(this.visible)
             this.draw();
@@ -118,9 +119,7 @@ class Sprite {
  * creates an animation of a spritesheet. 
  */
 class Animated_Sprite extends Sprite{
-    _frameIndex = Vector2d.zero;                                // The current frame to be displayed
-    _tickCount = 0;                                             // The number updates since the current frame was first displayed
-
+    _tickCount = 0;                                                 // The number updates since the current frame was first displayed
     constructor(options){
         super(options);
         this.numberOfFrames = options.numberOfFrames    || 1;       // The number of frames your spritesheet contains.
@@ -216,18 +215,17 @@ class Animated_Sprite extends Sprite{
 class Entity extends Animated_Sprite{
     constructor(options){
         super(options);
-        this._velocity      = options.velocity      || Vector2d.zero;
-        this._acceleration  = options.acceleration  || Vector2d.zero;
+        this.velocity       = options.velocity      || Vector2d.zero;
+        this.acceleration   = options.acceleration  || Vector2d.zero;
 
-        this._aVelocity     = options.aVelocity     || 0;        // Angular velocity.
-        this._aAcceleration = options.aAcceleration || 0;       // Angular acceleration.
+        this.aVelocity      = options.aVelocity     || 0;               // Angular velocity.
+        this.aAcceleration  = options.aAcceleration || 0;               // Angular acceleration.
 
         this.mass           = options.mass          || 1;
-
     }
     update(){        
         this.velocity.add(this.acceleration);
-        this.body.location.add(this.velocity);
+        this.location.add(this.velocity);
         this.acceleration.mult(0);
 
         this.aVelocity += this.aAcceleration;
@@ -258,6 +256,12 @@ class Entity extends Animated_Sprite{
     }
     set aVelocity(number){
         this._aVelocity = number;
+    }
+    set location(vector2d){
+        this.body.location = vector2d;
+    }
+    get location(){
+        return this.body.location;
     }
     set acceleration(vector2d){
         this._acceleration = vector2d;

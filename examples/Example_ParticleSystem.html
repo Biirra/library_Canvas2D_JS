@@ -8,8 +8,6 @@
         <canvas id="field" width="1024" height="1024"></canvas>
     </body>
     <script>
-
-        // TODO: still happens something weird with the performance where the drawing is inconsistent.
         let canvas = document.getElementById("field");
         let ctx = canvas.getContext("2d");
 
@@ -30,7 +28,7 @@
                 anchor: new Vector2d(0.5,0.5),         // The center of the sprite's body. Vector.one = bottom right corner.
                 scale: new Vector2d(1,1)               // The scale of the sprite's body.
             }),   
-            ticksPerFrame: 1,                     // Try to keep it above 0.2 for perfermance reasons. else it will stutter on the while loop.
+            ticksPerFrame: 0.2,                     // Try to keep it above 0.2 for perfermance reasons. else it will stutter on the while loop.
 
             numberOfFrames: 16,                     // The amount of frames horizontaly on the spritesheet. Left to right.
 	        numberOfRows: 16,                       // The amount of frames vertically on the spritesheet. Top to bottom.
@@ -40,17 +38,17 @@
             fadeOut: true,                          // Particle will fade out if its time to die.
             fadeOutSpeed: 0.05,                     // The speed at which the particle fades out. 
             acceleration: new Vector2d(0, 0.05),  // Outside force it has to take in consideration. Used for gravity for example. Use applyForce to add aditional forces.
-            ticksAlive: 75,                         // The time in ticks it stays alive before dissapearing. 
+            ticksAlive: 100,                         // The time in ticks it stays alive before dissapearing. 
 
 
-            type: "example"                         // Use a pre-programmed behavior
+            type: "Default"                         // Use a pre-programmed behavior
         });
 
         let ps = new ParticleSystem({
             location: new Vector2d(canvas.width/2, canvas.height/4),    // Birth location of the particles
-            maxNumberOfParticles: 750,                                  // Max number of particles the system can spawn at a given moment.
-            spawnSpeed: 10,                                             // How many updates before it will spawn a new batch of particles.
-            batchSize: 50,                                               // The amount of particles it will spawn when it is time to add particles.
+            maxNumberOfParticles: 1000,                                  // Max number of particles the system can spawn at a given moment.
+            spawnSpeed: 1,                                             // How many updates before it will spawn a new batch of particles.
+            batchSize: 3,                                               // The amount of particles it will spawn when it is time to add particles.
             originParticle: particleEarth,                              // The particle it will try to create copy's of
             paused : false                                              // Spawning new particles is halted. Particle system can still die if it has no particles. 
         });
@@ -59,9 +57,7 @@
         function loop () {
             ctx.clearRect(0, 0, 1024, 1024);
             ps.update();
-            ps.renderChildren();
-            
-            
+            ps.renderChildren();            
             window.requestAnimationFrame(loop);
         }        
     </script>
