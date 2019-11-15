@@ -1,6 +1,7 @@
 /**
  * Sprite texture. 
  * Takes a Spritesheet or a Large image and take controll over which section to show on canvas.
+ * 
  */
 class Sprite {   
     constructor(options){
@@ -13,6 +14,10 @@ class Sprite {
         this.body       = options.bodyOptions   || Rect.zero;      // Data containing the location, height and width of self. Texture scales with this.
 
         this.rotation   = options.rotation      || 0;
+        this.init();
+    }
+    init(){
+        //TODO: If sFrame is not given take texture's data. (height, width, location)
     }
     update(){}
     render(){ 
@@ -212,16 +217,16 @@ class Animated_Sprite extends Sprite{
 /**
  * Sprite that uses phisycs
  */
-class Entity extends Animated_Sprite{
+class GameObject{
     constructor(options){
-        super(options);
+        this.sprite         = options.sprite;
         this.velocity       = options.velocity      || Vector2d.zero;
         this.acceleration   = options.acceleration  || Vector2d.zero;
 
         this.aVelocity      = options.aVelocity     || 0;               // Angular velocity.
         this.aAcceleration  = options.aAcceleration || 0;               // Angular acceleration.
 
-        this.mass           = options.mass          || 1;
+        this.mass           = options.mass          || 1;               // TODO: FIX THIS!
     }
     update(){        
         this.velocity.add(this.acceleration);
@@ -232,8 +237,12 @@ class Entity extends Animated_Sprite{
         this.rotation += this.aVelocity; 
         this.aAcceleration = 0;
         
-        super.update();
+        this.sprite.update();
     }
+    render(){
+        this.sprite.render();
+    }
+
     /**
      * Add a force to self that influenses the location of this object.
      * @param {Vector2d} force The force applied to the acceleration of self.
@@ -258,10 +267,10 @@ class Entity extends Animated_Sprite{
         this._aVelocity = number;
     }
     set location(vector2d){
-        this.body.location = vector2d;
+        this.sprite.body.location = vector2d;
     }
     get location(){
-        return this.body.location;
+        return this.sprite.body.location;
     }
     set acceleration(vector2d){
         this._acceleration = vector2d;
