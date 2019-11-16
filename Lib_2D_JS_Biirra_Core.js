@@ -104,7 +104,6 @@ class Color{
 /*
 An object that keeps track of data that has coordinates in 2d.
 For example the location, velocity, acceleration of a sprite.
-TODO: Fix up and down getters.
 */
 class Vector2d{
     constructor(x, y){
@@ -213,10 +212,10 @@ class Vector2d{
         return new Vector2d(1,1);
     }
     static get up(){
-        return new Vector2d(0,1);
+        return new Vector2d(0,-1);
     }
     static get down(){
-        return new Vector2d(0,-1);
+        return new Vector2d(0,1);
     }
     static get right(){
         return new Vector2d(1,0);

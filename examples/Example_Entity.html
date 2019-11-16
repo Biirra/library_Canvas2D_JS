@@ -20,30 +20,30 @@
         for(let i = 0; i < 16; i++){
             for(let j = 0; j < 16; j++){
                 let sprite = new Animated_Sprite({
-                    context:ctx,                                // The context.
-                    texture:earthImage,                         // The image. May be a Image or a string of the source.
-                    sourceFrame: new Rect({                     // The rectangle data of the selection it will take from the texture image.
+                    context:            ctx,                // The context.
+                    texture:            earthImage,         // The image. May be a Image or a string of the source.
+                    sourceFrame:        new Rect({          // The rectangle data of the selection it will take from the texture image.
                         location: Vector2d.zero,                // Top right location of the selected area on the image.
                         width: 64,                              // The height of the selected area on the image.
                         height: 64                              // The widht of the selected area on the image.
                     }),           
-                    bodyOptions: new Rect({                     // The rectangle that defines the body of the sprite. Contains data on where to write the sprite on the canvas.
+                    bodyOptions:        new Rect({          // The rectangle that defines the body of the sprite. Contains data on where to write the sprite on the canvas.
                         location: new Vector2d(i*64,j*64),      // The location where to draw the selected area on the canvas.
                         width: 64,                              // The width that scales the selected area.
                         height: 64,                             // The height that scales the selected area.
                         anchor: new Vector2d(0,0),          // The center of the sprite's body. Vector.one = bottom right corner.
                         scale: new Vector2d(0.5,0.5)                // The scale of the sprite's body.
                     }),
-                    ticksPerFrame: 0.2 *(i+1),                  // Try to keep it above 0.2 for perfermance reasons. else it will stutter on the while loop.
-                    numberOfFrames: 16,                         // The amount of frames horizontaly on the spritesheet. Left to right.
-                    numberOfRows: 16,                           // The amount of frames vertically on the spritesheet. Top to bottom.
-                    frameIndex: new Vector2d(i,j),
-                    loop: true,                                 // The animation will start over if its finished.
-                    reverse: false                              // Play the animation in reverse
+                    ticksPerFrame:      0.2 *(i+1),         // Try to keep it above 0.2 for perfermance reasons. else it will stutter on the while loop.
+                    numberOfFrames:     16,                 // The amount of frames horizontaly on the spritesheet. Left to right.
+                    numberOfRows:       16,                 // The amount of frames vertically on the spritesheet. Top to bottom.
+                    frameIndex:         new Vector2d(i,j),
+                    loop:               true,               // The animation will start over if its finished.
+                    reverse:            false               // Play the animation in reverse
                 });
                 let earth = new GameObject({
-                    sprite: sprite,
-                    mass: 2
+                    sprite:             sprite,
+                    mass:               2
                 },{});
 
                 earths.push(earth);

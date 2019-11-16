@@ -230,7 +230,7 @@ class GameObject{
         this.aVelocity      = options.aVelocity         || 0;               // Angular velocity.
         this.aAcceleration  = options.aAcceleration     || 0;               // Angular acceleration.
 
-        this.mass           = options.mass              || 1;               // TODO: FIX THIS!
+        this.mass           = options.mass              || 1;              
     }
     update(){
         this.velocity.add(this.acceleration);
