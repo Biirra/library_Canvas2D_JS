@@ -32,20 +32,20 @@
                         width: 64,                              // The width that scales the selected area.
                         height: 64,                             // The height that scales the selected area.
                         anchor: new Vector2d(0,0),          // The center of the sprite's body. Vector.one = bottom right corner.
-                        scale: new Vector2d(1,1)                // The scale of the sprite's body.
+                        scale: new Vector2d(0.5,0.5)                // The scale of the sprite's body.
                     }),
                     ticksPerFrame: 0.2 *(i+1),                  // Try to keep it above 0.2 for perfermance reasons. else it will stutter on the while loop.
                     numberOfFrames: 16,                         // The amount of frames horizontaly on the spritesheet. Left to right.
                     numberOfRows: 16,                           // The amount of frames vertically on the spritesheet. Top to bottom.
+                    frameIndex: new Vector2d(i,j),
                     loop: true,                                 // The animation will start over if its finished.
                     reverse: false                              // Play the animation in reverse
                 });
                 let earth = new GameObject({
-                    sprite: sprite
-                    //mass: 12
+                    sprite: sprite,
+                    mass: 2
                 },{});
 
-                earth.sprite.frameIndex = new Vector2d(i,j);
                 earths.push(earth);
             }
         }
@@ -59,7 +59,7 @@
                 earths[i].update();                     // update the object so it can do its math.
                 earths[i].render();                     // render the object so it will be painted to the canvas again.
 
-                earths[i].applyForce(force);            // apply a force to the object so it will move.
+                //earths[i].applyForce(force);            // apply a force to the object so it will move.
                 checkEdges(earths[i]);                  // check if the object readches the end bounds of the screen.
             }
             window.requestAnimationFrame(loop);
