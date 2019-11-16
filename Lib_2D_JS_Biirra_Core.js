@@ -5,7 +5,7 @@
   * @returns {number} Random float between a and b
   */
 Math.randomFloatBetween = function (a, b) {
-    return Math.random() * (b - a + 1) + a;
+    return Math.random() * (b - a ) + a;
 };
 /**
   * Returns a int between a min and max.
@@ -14,7 +14,7 @@ Math.randomFloatBetween = function (a, b) {
   * @returns {number} Random int between a and b
   */
 Math.randomIntBetween = function(a, b) { 
-    return Math.floor(Math.random() * (b - a + 1) + a);
+    return Math.floor(Math.random() * (b - a ) + a);
 };
 
 /*
@@ -104,6 +104,7 @@ class Color{
 /*
 An object that keeps track of data that has coordinates in 2d.
 For example the location, velocity, acceleration of a sprite.
+TODO: Fix up and down getters.
 */
 class Vector2d{
     constructor(x, y){
