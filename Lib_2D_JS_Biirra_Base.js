@@ -14,10 +14,6 @@ class Sprite {
         this.body       = options.bodyOptions   || Rect.zero;      // Data containing the location, height and width of self. Texture scales with this.
 
         this.rotation   = options.rotation      || 0;
-        this.init();
-    }
-    init(){
-        //TODO: If sFrame is not given take texture's data. (height, width, location)
     }
     update(){}
     render(){ 
@@ -75,7 +71,13 @@ class Sprite {
     get body(){
         return this._body;
     }
-
+    set location(vector2d){
+        this.body.location = vector2d;
+    }
+    get location(){
+        return this.body.location;
+    }
+    
     /**
      * Set the rotation of the texture.
      * @param {number} radian
@@ -114,6 +116,7 @@ class Sprite {
             sourceFrame:    this.sFrame.copy,                   // The rectangle data of the selection it will take from the texture image.
             bodyOptions:    this.body.copy,                     // The rectangle that defines the body of the sprite. Contains data on where to write the sprite on the canvas.
             rotation:       this.rotation,                      // The rotation.
+            alpha:          this.alpha
         });
         return result;
     }
@@ -132,6 +135,7 @@ class Animated_Sprite extends Sprite{
         this.ticksPerFrame  = options.ticksPerFrame     || 1;       // The speed it will loop trough it's frames. Will skip frames if below 1 to mimic speedup.
         this.loop           = options.loop              || false;   // The animation will loop or not.
         this.reverse        = options.reverse           || false;   // Determines if the animation will play in reverse.
+        this.frameIndex     = options.frameIndex        || Vector2d.zero;
     }
     update() {
         this._tickCount += 1;
@@ -220,22 +224,22 @@ class Animated_Sprite extends Sprite{
 class GameObject{
     constructor(options){
         this.sprite         = options.sprite;
-        this.velocity       = options.velocity      || Vector2d.zero;
-        this.acceleration   = options.acceleration  || Vector2d.zero;
+        this.velocity       = options.velocity          || Vector2d.zero;
+        this.acceleration   = options.acceleration      || Vector2d.zero;
 
-        this.aVelocity      = options.aVelocity     || 0;               // Angular velocity.
-        this.aAcceleration  = options.aAcceleration || 0;               // Angular acceleration.
+        this.aVelocity      = options.aVelocity         || 0;               // Angular velocity.
+        this.aAcceleration  = options.aAcceleration     || 0;               // Angular acceleration.
 
-        this.mass           = options.mass          || 1;               // TODO: FIX THIS!
+        this.mass           = options.mass              || 1;               // TODO: FIX THIS!
     }
-    update(){        
+    update(){
         this.velocity.add(this.acceleration);
         this.location.add(this.velocity);
-        this.acceleration.mult(0);
+        this.acceleration.mult(0);            // TODO: Think about either this.acceleration.mult(0) commented or (applyforce in update) ? What is and what isnt possible.
 
         this.aVelocity += this.aAcceleration;
         this.rotation += this.aVelocity; 
-        this.aAcceleration = 0;
+        this.aAcceleration = 0;     
         
         this.sprite.update();
     }
@@ -267,10 +271,10 @@ class GameObject{
         this._aVelocity = number;
     }
     set location(vector2d){
-        this.sprite.body.location = vector2d;
+        this.sprite.location = vector2d;
     }
     get location(){
-        return this.sprite.body.location;
+        return this.sprite.location;
     }
     set acceleration(vector2d){
         this._acceleration = vector2d;
@@ -283,6 +287,18 @@ class GameObject{
     }
     get velocity(){
         return this._velocity;
+    }
+    get copy(){
+        return new GameObject({
+            sprite :this.sprite.copy,
+            velocity:  this.velocity.copy,
+            acceleration :this.acceleration.copy,
+
+            aVelocity  :this.aVelocity,
+            aAcceleration :this.aAcceleration,
+
+            mass  :this.mass
+        });
     }
 }
 
