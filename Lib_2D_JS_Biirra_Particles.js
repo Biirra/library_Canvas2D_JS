@@ -1,3 +1,5 @@
+// Created by: Jan Willem Huising
+
 /**
  * A default particle to be used in a particle system.
  */

@@ -1,3 +1,5 @@
+// Created by: Jan Willem Huising
+
 /**
  * Sprite texture. 
  * Takes a Spritesheet or a Large image and take controll over which section to show on canvas.

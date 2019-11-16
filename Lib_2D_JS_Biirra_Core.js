@@ -1,3 +1,5 @@
+ // Created by: Jan Willem Huising
+ 
  /**
   * Returns a float between a min and max.
   * @param {number} a Min value.
