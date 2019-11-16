@@ -62,15 +62,6 @@ class Colision_Body{
     }
 }
 
-/*
-contains default animations that can be used on most gameObjects
-*/
-class Animator{
-    constructor(){
-
-    }
-    fadeOut(gameObjects){}
-}
 
 /**
  * A default particle to be used in a particle system.
@@ -78,48 +69,34 @@ class Animator{
 class Particle extends GameObject{
     constructor(options){
         super(options);
-        this.acceleration = options.acceleration || Vector2d.zero;
-        this.velocity = options.velocity || Vector2d.zero;
+        this.acceleration   = options.acceleration  || Vector2d.zero;
+        this.velocity       = options.velocity      || Vector2d.zero;
 
-        // TODO: Fadeout animation can probably belong to a Animator class
-        this.fadeOut = options.fadeOut || false;
-        this.fadeOutSpeed = options.fadeOutSpeed || 0.01;
+        // TODO: Fadeout animation can probably belong to a Animator class. Maybe not
+        this.fadeOut        = options.fadeOut       || false;
+        this.fadeOutSpeed   = options.fadeOutSpeed  || 0.01;
+        this.ticksAlive     = options.ticksAlive    || 100; // amount of time the particle stay's alive. Measured in fps updates. 
 
-        this.ticksAlive = options.ticksAlive || 100; // amount of time the particle stay's alive. Measured in fps updates. 
-
-        this.type = options.type;  // Some default options that can be chosen.
+        this.type           = options.type;  // Some default options that can be chosen.
 
         this.init();
     }
     init(){
         switch(this.type){
             case "Default":
-                this.velocity = new Vector2d(Math.randomFloatBetween(-4,4), Math.randomFloatBetween(-2,0)); 
-                this.frameIndex = new Vector2d(Math.randomIntBetween(0, this.numberOfFrames - 1), Math.randomIntBetween(0, this.numberOfRows - 1));
+                this.velocity = new Vector2d(Math.randomFloatBetween(-4,4), Math.randomFloatBetween(-4,4));                 
+                this.sprite.frameIndex = new Vector2d(Math.randomIntBetween(0, this.sprite.numberOfFrames - 1), Math.randomIntBetween(0, this.sprite.numberOfRows - 1));
                 break;
             default:
                 break;
         }
     }
     update() {
-        super.update();
         this._ticksAlive -= 1;
-        if(this.fadeOut && this.alpha > 0)
-            this.alpha = this.fadeOutSpeed*this._ticksAlive;
-        this._velocity.add(this._acceleration);
-        this.body.location.add(this._velocity);
-    }
-    set velocity(value){
-        this._velocity = value;
-    }
-    get velocity(){
-        return this._velocity;
-    }
-    set acceleration(value){
-        this._acceleration = value;
-    }
-    get acceleration(){
-        return this._acceleration;
+        if(this.fadeOut && this.sprite.alpha > 0)
+            this.sprite.alpha = this.fadeOutSpeed*this.ticksAlive;            
+
+        super.update();
     }
     set ticksAlive(value){
         this._ticksAlive = value;
@@ -138,27 +115,16 @@ class Particle extends GameObject{
      */
     get copy(){
         return new Particle({
-            // Sprite specific
-            context:        this.context,                       // The context.
-            texture:        this.texture,                       // The image. May be a Image or a string of the source.
-            sourceFrame:    this.sFrame.copy,                   // The rectangle data of the selection it will take from the texture image.
-            bodyOptions:    this.body.copy,                     // The rectangle that defines the body of the sprite. Contains data on where to write the sprite on the canvas.
-            rotation:       this.rotation,                      // The rotation.
+            sprite: this.sprite.copy,
+            mass: this.mass,
+            fadeOut: this.fadeOut,                          // Particle will fade out if its time to die.
+            fadeOutSpeed: this.fadeOutSpeed,                     // The speed at which the particle fades out. 
+            acceleration: this.acceleration.copy,    // Outside force it has to take in consideration. Used for gravity for example. Use applyForce to add aditional forces.
+            ticksAlive: this.ticksAlive,                         // The time in ticks it stays alive before dissapearing. 
 
-            // Animated Sprite specific
-            numberOfFrames: this.numberOfFrames,                // The amount of frames horizontaly on the spritesheet. Left to right.
-	        numberOfRows:   this.numberOfRows,                  // The amount of frames vertically on the spritesheet. Top to bottom.
-	        loop:           this.loop,                          // The animation will start over if its finished.
-            reverse:        this.reverse,                       // Play the animation in reverse
-            ticksPerFrame:  this.ticksPerFrame,                 // The speed it will loop trough it's frames. Will skip frames if below 1 to mimic speedup.
-            
-            // Particle specific
-            fadeOut:        this.fadeOut,                       // Particle will fade out if its time.
-            fadeOutSpeed:   this.fadeOutSpeed,                  // The speed at which the particle fades out. 
-            acceleration:   this.acceleration.copy,             // Mainly contains outside forces that this is affected by.
-            ticksAlive:     this.ticksAlive,                    // The amount of ticks it will stay alive for.
-            type:           this.type
-        });
+            type: this.type                         // Use a pre-programmed behavior
+        },{});
+
     }
 }
 
@@ -211,7 +177,7 @@ class ParticleSystem {
     }
     addOriginParticle(){
         let p = this.originParticle.copy;
-        p.body.location = this.location.copy;
+        p.location = this.location.copy;
         this.particles.push(p);
     }
     addParticleByBatch(particle, batchSize){
@@ -223,7 +189,7 @@ class ParticleSystem {
     }
     addParticle(particle){
         let p = particle.copy;
-        p.body.location = this.location.copy;
+        p.location = this.location.copy;
         this.particles.push(p);
     }
     get alive(){
