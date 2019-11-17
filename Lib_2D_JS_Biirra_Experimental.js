@@ -63,3 +63,33 @@ class Colision_Body{
 }
 
 
+class Entity extends GameObject{
+    constructor(options){
+        super(options);
+        this.collisionBody = options.collisionBody;         // TODO: Think about doing it this way. Makes sence there are diffrent kinds of collision body's. Circle, Rect
+        
+    }
+    get alive(){
+        return this._alive;
+    }
+    set alive(value){
+        this._alive = value;
+    }
+}
+
+class Layer{
+    objects = [];
+    update(){
+        // remove all dead objects.
+        for( let i = this.objects.length-1; i >= 0; i-- ){
+            let object = this.objects[i];
+            object.update();
+            if (!object.alive) {
+                this.objects.splice(i,1);
+            }
+        }
+    }
+    addObject(object){
+        this.objects.push(object);
+    }
+}

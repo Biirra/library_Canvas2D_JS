@@ -1,0 +1,29 @@
+<html>
+    <head>
+            <script src="../Lib_2D_JS_Biirra_Core.js"></script>
+            <script src="../Lib_2D_JS_Biirra_Base.js"></script>
+            <script src="../Lib_2D_JS_Biirra_Experimental.js"></script>
+    </head>
+    <body>
+        <canvas id="field" width="1024" height="1024"></canvas>
+    </body>
+    <script>
+
+        let canvas = document.getElementById("field");
+        let ctx = canvas.getContext("2d");
+
+        let GUI = new Layer({
+            
+        });
+        loop();
+        
+        function loop () {
+            
+
+
+            window.requestAnimationFrame(loop);
+        }        
+        function checkEdges(object) {
+        }
+    </script>
+</html>

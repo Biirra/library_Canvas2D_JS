@@ -106,7 +106,7 @@
         function loop () {
             ctx.clearRect(0, 0, screen.width, screen.height);
             ps.update();
-            ps.renderChildren();            
+            ps.render();            
             for(let i = 0; i < ps.particles.length; i++)
                 ps.particles[i].applyForce(new Vector2d(0,0.1))
             window.requestAnimationFrame(loop);

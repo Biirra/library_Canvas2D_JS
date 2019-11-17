@@ -305,7 +305,4 @@ class GameObject{
 }
 
 
-
-
-
 // TODO: Create reliable error/warning system. Currently most error's and warning's are spammed if in developer mode.
