@@ -350,7 +350,13 @@ class Rect{
         return this._width;
     }
     static get zero(){
-        return new Rect();
+        return new Rect({
+            location:Vector2d.zero,
+            width:0,
+            height:0,
+            scale: Vector2d.one,
+            anchor: Vector2d.zero
+        });
     }
     get copy(){
         return new Rect({
