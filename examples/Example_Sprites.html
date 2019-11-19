@@ -16,42 +16,42 @@
         let earthSprite = new Sprite({
             context:ctx,                               // The context.
             texture:earthImage,                        // The image.
-            sourceFrame: new Rect({                    // The rectangle data of the selection it will take from the texture image.
+            frame: new Rect({                          // The rectangle data of the selection it will take from the texture image.
                 location: Vector2d.zero,               // Top right location of the selected area on the image.
                 width: 64,                             // The height of the selected area on the image.
                 height: 64                             // The widht of the selected area on the image.
             }),           
-            bodyOptions: new Rect({                    // The rectangle that defines the body of the sprite. Contains data on where to write the sprite on the canvas.
-                location: new Vector2d(100,100),       // The location where to draw the selected area on the canvas.
-                width: 64,                             // The width that scales the selected area.
-                height: 64,                            // The height that scales the selected area.
-                anchor: new Vector2d(0.5,0.5),         // The center of the sprite's body. Vector.one = bottom right corner.
-                scale: new Vector2d(1,2)               // The scale of the sprite's body.
+            body: new Rect({                            // The rectangle that defines the body of the sprite. Contains data on where to write the sprite on the canvas.
+                location: new Vector2d(100,100),        // The location where to draw the selected area on the canvas.
+                width: 64,                              // The width that scales the selected area.
+                height: 64,                             // The height that scales the selected area.
+                anchor: new Vector2d(0.5,0.5),          // The center of the sprite's body. Vector.one = bottom right corner.
+                scale: new Vector2d(1,2)              // The scale of the sprite's body.
             }),   
-            rotation: 0                                // The rotation.
+            rotation: 0                                 // The rotation.
         });  
 
         let earthAnimatedSprite = new Animated_Sprite({
-            context:ctx,                               // The context.
-            texture:earthImage,                        // The image.
-            sourceFrame: new Rect({                    // The rectangle data of the selection it will take from the texture image.
-                location: Vector2d.zero,               // Top right location of the selected area on the image.
-                width: 64,                             // The height of the selected area on the image.
-                height: 64                             // The widht of the selected area on the image.
+            context:ctx,                                // The context.
+            texture:earthImage,                         // The image.
+            frame: new Rect({                           // The rectangle data of the selection it will take from the texture image.
+                location: Vector2d.zero,                // Top right location of the selected area on the image.
+                width: 64,                              // The height of the selected area on the image.
+                height: 64                              // The widht of the selected area on the image.
             }),           
-            bodyOptions: new Rect({                    // The rectangle that defines the body of the sprite. Contains data on where to write the sprite on the canvas.
-                location: new Vector2d(300,200),       // The location where to draw the selected area on the canvas.
-                width: 64,                             // The width that scales the selected area.
-                height: 64,                            // The height that scales the selected area.
-                anchor: new Vector2d(0.5,0.5),         // The center of the sprite's body. Vector.one = bottom right corner.
-                scale: new Vector2d(1,1)               // The scale of the sprite's body.
+            body: new Rect({                            // The rectangle that defines the body of the sprite. Contains data on where to write the sprite on the canvas.
+                location: new Vector2d(300,200),        // The location where to draw the selected area on the canvas.
+                width: 64,                              // The width that scales the selected area.
+                height: 64,                             // The height that scales the selected area.
+                anchor: new Vector2d(0.5,0.5),          // The center of the sprite's body. Vector.one = bottom right corner.
+                scale: new Vector2d(1,1)                // The scale of the sprite's body.
             }),   
-            rotation: 0,                               // The rotation.
+            rotation: 0,                                // The rotation.
 
-            numberOfFrames: 16,                 // The amount of frames horizontaly on the spritesheet. Left to right.
-	        numberOfRows: 16,                   // The amount of frames vertically on the spritesheet. Top to bottom.
-	        loop: true,                         // The animation will start over if its finished.
-	        reverse: false                      // Play the animation in reverse
+            numberOfFrames: 16,                         // The amount of frames horizontaly on the spritesheet. Left to right.
+	        numberOfRows: 16,                           // The amount of frames vertically on the spritesheet. Top to bottom.
+	        loop: true,                                 // The animation will start over if its finished.
+	        reverse: false                              // Play the animation in reverse
         });
                 
 
