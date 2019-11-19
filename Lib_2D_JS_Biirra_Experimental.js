@@ -77,7 +77,10 @@ class Entity extends GameObject{
     }
 }
 
-class Layer{
+
+// will render itself and anithing inside itself. 
+// should be used for anything that will take up the whole screen (For example: Game, Options menu, Menu, Loading screen)
+class Scene{
     objects = [];
     update(){
         // remove all dead objects.
@@ -91,5 +94,24 @@ class Layer{
     }
     addObject(object){
         this.objects.push(object);
+    }
+}
+
+class Game{
+    constructor(options){
+        this.canvas = options.canvas || {};
+    }
+}
+
+class Button extends Sprite{
+    constructor(options){
+        super(options);
+        this.disabled = options.disabled || false;
+        this.state = {
+            clicked:false,
+            pressed:false,
+            released:false,
+            hover:false
+        }
     }
 }
