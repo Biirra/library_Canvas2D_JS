@@ -12,21 +12,43 @@ class Sprite {
         this.alpha      = options.alpha         || 1;
         this.visible    = options.visible       || true;            // Object can be drawn on the canvas.
 
-        this.sFrame     = options.sourceFrame   || Rect.zero;      // Data containing the location, height and width of the frame taken from the sprites texture.
-        this.body       = options.bodyOptions   || Rect.zero;      // Data containing the location, height and width of self. Texture scales with this.
+
+        this.sFrame     = options.frame         || Rect.zero;      // Data containing the location, height and width of the frame taken from the sprites texture.
+        this.body       = options.body;      // Data containing the location, height and width of self. Texture scales with this.
 
         this.rotation   = options.rotation      || 0;
+        
+        this.init();
+    }
+    init(){
+        // give sprite equal to size of texture img so its not mandatory to set it.
+        let loadedTexture = this.loadTexture();
+        let self = this;
+        loadedTexture.then(function(result){
+            let sFrame = Rect.zero;
+
+            sFrame.location    = self.sFrame.location      ? self.sFrame.location  : Vector2d.zero;
+            sFrame.width       = self.sFrame.width  !== 0  ? self.sFrame.width     : result.naturalWidth;
+            sFrame.height      = self.sFrame.height !== 0  ? self.sFrame.height    : result.naturalHeight;
+
+            let body = Rect.zero;
+            body.location      = self.body.location        ? self.body.location    : Vector2d.zero;
+            body.width         = self.body.width  !== 0    ? self.body.width       : result.naturalWidth;
+            body.height        = self.body.height !== 0    ? self.body.height      : result.naturalHeight;
+
+            self.sFrame = sFrame;
+            self.body = body;
+        });
     }
     update(){}
     render(){ 
-        if(this.visible)
+        if(this.visible && this.sFrame && this.body)
             this.draw();
     }
     draw(){ 
         this.context.globalAlpha = this.alpha;
         this.context.translate(this.body.location.x, this.body.location.y);
         this.context.rotate(this.rotation);
-        
         this.context.drawImage(
             this.texture,                   //img	Source image 
             this.sFrame.location.x,         //sx	Source x	        
@@ -43,7 +65,14 @@ class Sprite {
         this.context.translate(-this.body.location.x, -this.body.location.y);
         this.context.globalAlpha = 1;        
     }
-    
+    loadTexture() {
+        return new Promise((resolve, reject) => {
+            this.texture.addEventListener('load', e => resolve(this.texture));
+            this.texture.addEventListener('error', () => {
+                reject(new Error(`Failed to load texture.`));
+            });
+        });
+    }
     /**
      * Set a new selection on the sprite sheet whitch will be used as the texture shown on the canvas.
      * @param {Rect} rect 
