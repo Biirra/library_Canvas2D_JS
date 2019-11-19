@@ -14,27 +14,37 @@ class Sprite {
 
 
         this.sFrame     = options.frame         || Rect.zero;      // Data containing the location, height and width of the frame taken from the sprites texture.
-        this.body       = options.body;      // Data containing the location, height and width of self. Texture scales with this.
+        this.body       = options.body          || Rect.zero;      // Data containing the location, height and width of self. Texture scales with this.
 
         this.rotation   = options.rotation      || 0;
+        this.isCopy     = options.isCopy        || false;
         
         this.init();
     }
     init(){
+        if(this.isCopy)
+            return;
         // give sprite equal to size of texture img so its not mandatory to set it.
-        let loadedTexture = this.loadTexture();
         let self = this;
+        let loadedTexture = this.loadTexture();
         loadedTexture.then(function(result){
-            let sFrame = Rect.zero;
 
-            sFrame.location    = self.sFrame.location      ? self.sFrame.location  : Vector2d.zero;
-            sFrame.width       = self.sFrame.width  !== 0  ? self.sFrame.width     : result.naturalWidth;
-            sFrame.height      = self.sFrame.height !== 0  ? self.sFrame.height    : result.naturalHeight;
+            // TODO: Not yet happy with this. figure out how and when to apply scale and anchor. Currently anchor stops working if anchor is not set. 
+            // Also make sure this does not run for copy's there is realy no need to.
+            // Also first few spawns are double scaled. Find out what is going on and fix this. Noticable in particle class.
+            let sFrame = new Rect({
+                location    : self.sFrame.location      ? self.sFrame.location  : Vector2d.zero,
+                width       : self.sFrame.width  !== 0  ? self.sFrame.width     : result.naturalWidth,
+                height      : self.sFrame.height !== 0  ? self.sFrame.height    : result.naturalHeight,
+                anchor      : self.sFrame.anchor        ? self.sFrame.anchor    : Vector2d.zero
+            });
 
-            let body = Rect.zero;
-            body.location      = self.body.location        ? self.body.location    : Vector2d.zero;
-            body.width         = self.body.width  !== 0    ? self.body.width       : result.naturalWidth;
-            body.height        = self.body.height !== 0    ? self.body.height      : result.naturalHeight;
+            let body = new Rect({
+                location    : self.body.location        ? self.body.location    : Vector2d.zero,
+                width       : self.body.width  !== 0    ? self.body.width       : result.naturalWidth,
+                height      : self.body.height !== 0    ? self.body.height      : result.naturalHeight,
+                anchor      : self.body.anchor          ? self.body.anchor      : Vector2d.zero
+            });
 
             self.sFrame = sFrame;
             self.body = body;
@@ -141,13 +151,15 @@ class Sprite {
      * @returns {Sprite} copy of self
      */
     get copy(){
+        // TODO: Check if everything is copied correctly.
         let result = new Sprite({
-            context:        this.context,                       // The context.
-            texture:        this.texture,                       // The image. May be a Image or a string of the source.
-            sourceFrame:    this.sFrame.copy,                   // The rectangle data of the selection it will take from the texture image.
-            bodyOptions:    this.body.copy,                     // The rectangle that defines the body of the sprite. Contains data on where to write the sprite on the canvas.
-            rotation:       this.rotation,                      // The rotation.
-            alpha:          this.alpha
+            context     : this.context,                       // The context.
+            texture     : this.texture,                       // The image. May be a Image or a string of the source.
+            frame       : this.sFrame.copy,                   // The rectangle data of the selection it will take from the texture image.
+            body        : this.body.copy,                     // The rectangle that defines the body of the sprite. Contains data on where to write the sprite on the canvas.
+            rotation    : this.rotation,                      // The rotation.
+            alpha       : this.alpha,
+            isCopy      : true
         });
         return result;
     }
@@ -232,12 +244,14 @@ class Animated_Sprite extends Sprite{
      * @returns {Animated_Sprite} copy of self
      */
     get copy(){
+        // TODO: Check if everything is copied correctly.
         let result = new Animated_Sprite({
             context:        this.context,                       // The context.
             texture:        this.texture,                       // The image. May be a Image or a string of the source.
-            sourceFrame:    this.sFrame.copy,                   // The rectangle data of the selection it will take from the texture image.
-            bodyOptions:    this.body.copy,                     // The rectangle that defines the body of the sprite. Contains data on where to write the sprite on the canvas.
+            frame:          this.sFrame.copy,                   // The rectangle data of the selection it will take from the texture image.
+            body:           this.body.copy,                     // The rectangle that defines the body of the sprite. Contains data on where to write the sprite on the canvas.
             rotation:       this.rotation,                      // The rotation.
+            isCopy:         true,
 
             numberOfFrames: this.numberOfFrames,                // The amount of frames horizontaly on the spritesheet. Left to right.
 	        numberOfRows:   this.numberOfRows,                  // The amount of frames vertically on the spritesheet. Top to bottom.
@@ -320,16 +334,18 @@ class GameObject{
         return this._velocity;
     }
     get copy(){
-        return new GameObject({
-            sprite :this.sprite.copy,
-            velocity:  this.velocity.copy,
-            acceleration :this.acceleration.copy,
+        // TODO: Check if everything is copied correctly.
+        let result = new GameObject({
+            sprite          : this.sprite.copy,
+            velocity        : this.velocity.copy,
+            acceleration    : this.acceleration.copy,
 
-            aVelocity  :this.aVelocity,
-            aAcceleration :this.aAcceleration,
+            aVelocity       : this.aVelocity,
+            aAcceleration   : this.aAcceleration,
 
-            mass  :this.mass
-        });
+            mass            : this.mass
+        });        
+        return result;
     }
 }
 
