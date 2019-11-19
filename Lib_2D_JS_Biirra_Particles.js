@@ -2,13 +2,12 @@
 
 /**
  * A default particle to be used in a particle system.
+ * TODO: Something is not correct. Scaling 64 by 0.5 should result in 32 not 16
+ * TODO: Start over. Dunno whats up and down anymore.
  */
 class Particle extends GameObject{
     constructor(options){
         super(options);
-        this.acceleration   = options.acceleration  || Vector2d.zero;
-        this.velocity       = options.velocity      || Vector2d.zero;
-
         // TODO: Fadeout animation can probably belong to a Animator class. Maybe not
         this.fadeOut        = options.fadeOut       || false;
         this.fadeOutSpeed   = options.fadeOutSpeed  || 0.01;
@@ -51,22 +50,24 @@ class Particle extends GameObject{
      * @returns {Particle} copy of self
      */
     get copy(){
-        return new Particle({
+        let result = new Particle({
             sprite: this.sprite.copy,
             mass: this.mass,
             fadeOut: this.fadeOut,                          // Particle will fade out if its time to die.
             fadeOutSpeed: this.fadeOutSpeed,                     // The speed at which the particle fades out. 
-            acceleration: this.acceleration.copy,    // Outside force it has to take in consideration. Used for gravity for example. Use applyForce to add aditional forces.
+            //acceleration: this.acceleration.copy,    // Outside force it has to take in consideration. Used for gravity for example. Use applyForce to add aditional forces.
             ticksAlive: this.ticksAlive,                         // The time in ticks it stays alive before dissapearing. 
 
             type: this.type                         // Use a pre-programmed behavior
-        },{});
+        });
+        return result;
 
     }
 }
 
 /**
  * A particle system that will create and show set particle.
+ * TODO: First few spawns seem to be smaller than rest. Something strange happens there.
  */
 class ParticleSystem {
     particles = [];    // An array for all the particles
@@ -88,7 +89,7 @@ class ParticleSystem {
             let particle = this.particles[i];
             particle.update();
             if (!particle.alive) {
-                this.particles.splice(i,1);
+                this.particles.splice(i,1); // TODO: See if this can be speed up. Is currently the most time consuming thing.
             }
         }
         
