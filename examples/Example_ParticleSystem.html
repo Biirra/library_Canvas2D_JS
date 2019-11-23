@@ -19,22 +19,22 @@
         coinImage.src = "../assets/coin-sprite-animation.png";
         let spriteCoin = new Animated_Sprite({
             context:        ctx,                    // The context.
-            texture:        coinImage,             // The image. May be a Image or a string of the source.
-            frame:    new Rect({              // The rectangle data of the selection it will take from the texture image.
+            texture:        coinImage,              // The image. May be a Image or a string of the source.
+            frame:    new Rect({                    // The rectangle data of the selection it will take from the texture image.
                 location: Vector2d.zero,                // Top right location of the selected area on the image.
-                width: 100,                              // The height of the selected area on the image.
-                height: 100                              // The widht of the selected area on the image.
+                width: 100,                             // The height of the selected area on the image.
+                height: 100                             // The widht of the selected area on the image.
             }),           
-            body:    new Rect({              // The rectangle that defines the body of the sprite. Contains data on where to write the sprite on the canvas.
+            body:    new Rect({                     // The rectangle that defines the body of the sprite. Contains data on where to write the sprite on the canvas.
                 location: Vector2d.zero,                // The location where to draw the selected area on the canvas.
                 width: 64,                              // The width that scales the selected area.
                 height: 64,                             // The height that scales the selected area.
-                anchor: new Vector2d(0.5,0.5),              // The center of the sprite's body. Vector.one = bottom right corner.
-                scale: new Vector2d(0.5,0.5)                // The scale of the sprite's body.
+                anchor: new Vector2d(0.5,0.5),          // The center of the sprite's body. Vector.one = bottom right corner.
+                scale: new Vector2d(0.5,0.5)            // The scale of the sprite's body.
             }),
-            ticksPerFrame:  2,                    // Try to keep it above 0.2 for perfermance reasons. else it will stutter on the while loop.
+            ticksPerFrame:  2,                      // Try to keep it above 0.2 for perfermance reasons. else it will stutter on the while loop.
             numberOfFrames: 10,                     // The amount of frames horizontaly on the spritesheet. Left to right.
-            numberOfRows:   1,                     // The amount of frames vertically on the spritesheet. Top to bottom.
+            numberOfRows:   1,                      // The amount of frames vertically on the spritesheet. Top to bottom.
             loop:           true,                   // The animation will start over if its finished.
             reverse:        false                   // Play the animation in reverse
         });
@@ -64,7 +64,7 @@
                 width: 64,                              // The width that scales the selected area.
                 height: 64,                             // The height that scales the selected area.
                 anchor: new Vector2d(0.5,0.5),          // The center of the sprite's body. Vector.one = bottom right corner.
-                scale: new Vector2d(0.5,0.5)                // The scale of the sprite's body. 
+                scale: new Vector2d(0.5,0.5)            // The scale of the sprite's body. 
             }),
             ticksPerFrame:  0.2,                    // Try to keep it above 0.2 for perfermance reasons. else it will stutter on the while loop.
             numberOfFrames: 16,                     // The amount of frames horizontaly on the spritesheet. Left to right.
@@ -112,7 +112,6 @@
                 ps.particles[i].applyForce(new Vector2d(0,0.1))
                 //ps.particles[i].applySpin(0.01);
             }
-                
             window.requestAnimationFrame(loop);
         }        
     </script>

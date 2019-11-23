@@ -20,27 +20,28 @@ class Sprite {
         this.init();
     }
     init(){
-        if(this.isCopy)
+        if(this.isCopy)     // think about if this is the right way to do it ? 
             return;
 
         // give sprite equal to size of texture img so its not mandatory to set it.
         let self = this;
         let loadedTexture = this.loadTexture();
+
         loadedTexture.then(function(result){
-            // TODO: Not yet happy with this. figure out how and when to apply scale and anchor. Currently anchor stops working if anchor is not set. 
-            // Re-apply scale
             let sFrame = new Rect({
-                location    : self.sFrame.location      ? self.sFrame.location  : Vector2d.zero,
-                width       : self.sFrame.width  !== 0  ? self.sFrame.width     : result.naturalWidth,
-                height      : self.sFrame.height !== 0  ? self.sFrame.height    : result.naturalHeight,
-                anchor      : self.sFrame.anchor        ? self.sFrame.anchor    : Vector2d.zero,
+                location    : self.sFrame.location          ? self.sFrame.location      : Vector2d.zero,
+                width       : self.sFrame.origWidth  !== 0  ? self.sFrame.origWidth     : result.naturalWidth,
+                height      : self.sFrame.origHeight !== 0  ? self.sFrame.origHeight    : result.naturalHeight,
+                anchor      : self.sFrame.anchor            ? self.sFrame.anchor        : Vector2d.zero,
+                scale       : self.sFrame.scale             ? self.sFrame.scale         : Vector2d.one
             });
 
             let body = new Rect({
-                location    : self.body.location        ? self.body.location    : Vector2d.zero,
-                width       : self.body.width  !== 0    ? self.body.width       : result.naturalWidth,
-                height      : self.body.height !== 0    ? self.body.height      : result.naturalHeight,
-                anchor      : self.body.anchor          ? self.body.anchor      : Vector2d.zero,
+                location    : self.body.location            ? self.body.location        : Vector2d.zero,
+                width       : self.body.origWidth  !== 0    ? self.body.origWidth       : result.naturalWidth,
+                height      : self.body.origHeight !== 0    ? self.body.origHeight      : result.naturalHeight,
+                anchor      : self.body.anchor              ? self.body.anchor          : Vector2d.zero,
+                scale       : self.body.scale               ? self.body.scale           : Vector2d.one
             });
 
             self.sFrame = sFrame;
