@@ -150,7 +150,6 @@ class Sprite {
      * @returns {Sprite} copy of self
      */
     get copy(){
-        // TODO: Check if everything is copied correctly.
         let result = new Sprite({
             context     : this.context,                       // The context.
             texture     : this.texture,                       // The image. May be a Image or a string of the source.
@@ -243,7 +242,6 @@ class Animated_Sprite extends Sprite{
      * @returns {Animated_Sprite} copy of self
      */
     get copy(){
-        // TODO: Check if everything is copied correctly.
         let result = new Animated_Sprite({
             context:        this.context,                       // The context.
             texture:        this.texture,                       // The image. May be a Image or a string of the source.
