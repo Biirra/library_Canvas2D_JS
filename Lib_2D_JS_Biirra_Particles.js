@@ -2,18 +2,14 @@
 
 /**
  * A default particle to be used in a particle system.
- * TODO: Something is not correct. Scaling 64 by 0.5 should result in 32 not 16
- * TODO: Start over. Dunno whats up and down anymore.
  */
 class Particle extends GameObject{
     constructor(options){
         super(options);
-        // TODO: Fadeout animation can probably belong to a Animator class. Maybe not
-        this.fadeOut        = options.fadeOut       || false;
-        this.fadeOutSpeed   = options.fadeOutSpeed  || 0.01;
-        this.ticksAlive     = options.ticksAlive    || 100; // amount of time the particle stay's alive. Measured in fps updates. 
-
-        this.type           = options.type;  // Some default options that can be chosen.
+        this.fadeOut        = options.fadeOut       || false;   // particle will fadeOut when dieing
+        this.fadeOutSpeed   = options.fadeOutSpeed  || 0.01;    // the speed the partcle will fade out with. If fadeout it true.
+        this.ticksAlive     = options.ticksAlive    || 100;     // amount of time the particle stay's alive. Measured in fps updates. 
+        this.type           = options.type;                     // Some default options that can be chosen.
 
         this.init();
     }
@@ -53,12 +49,11 @@ class Particle extends GameObject{
         let result = new Particle({
             sprite: this.sprite.copy,
             mass: this.mass,
-            fadeOut: this.fadeOut,                          // Particle will fade out if its time to die.
-            fadeOutSpeed: this.fadeOutSpeed,                     // The speed at which the particle fades out. 
-            //acceleration: this.acceleration.copy,    // Outside force it has to take in consideration. Used for gravity for example. Use applyForce to add aditional forces.
-            ticksAlive: this.ticksAlive,                         // The time in ticks it stays alive before dissapearing. 
+            fadeOut: this.fadeOut,                              // Particle will fade out if its time to die.
+            fadeOutSpeed: this.fadeOutSpeed,                    // The speed at which the particle fades out. 
+            ticksAlive: this.ticksAlive,                        // The time in ticks it stays alive before dissapearing. 
 
-            type: this.type                         // Use a pre-programmed behavior
+            type: this.type                                     // Use a pre-programmed behavior
         });
         return result;
 
@@ -67,10 +62,9 @@ class Particle extends GameObject{
 
 /**
  * A particle system that will create and show set particle.
- * TODO: First few spawns seem to be smaller than rest. Something strange happens there.
  */
 class ParticleSystem {
-    particles = [];    // An array for all the particles
+    particles = [];     // An array for all the particles
     _tickCount = 0;
     constructor(options) {                     
         this.location       = options.location          || Vector2d.zero;       // An origin point for where particles are birthed

@@ -12,42 +12,40 @@ class Sprite {
         this.alpha      = options.alpha         || 1;
         this.visible    = options.visible       || true;            // Object can be drawn on the canvas.
 
-
         this.sFrame     = options.frame         || Rect.zero;      // Data containing the location, height and width of the frame taken from the sprites texture.
         this.body       = options.body          || Rect.zero;      // Data containing the location, height and width of self. Texture scales with this.
 
         this.rotation   = options.rotation      || 0;
         this.isCopy     = options.isCopy        || false;
-        
         this.init();
     }
     init(){
         if(this.isCopy)
             return;
+
         // give sprite equal to size of texture img so its not mandatory to set it.
         let self = this;
         let loadedTexture = this.loadTexture();
         loadedTexture.then(function(result){
-
             // TODO: Not yet happy with this. figure out how and when to apply scale and anchor. Currently anchor stops working if anchor is not set. 
-            // Also make sure this does not run for copy's there is realy no need to.
-            // Also first few spawns are double scaled. Find out what is going on and fix this. Noticable in particle class.
+            // Re-apply scale
             let sFrame = new Rect({
                 location    : self.sFrame.location      ? self.sFrame.location  : Vector2d.zero,
                 width       : self.sFrame.width  !== 0  ? self.sFrame.width     : result.naturalWidth,
                 height      : self.sFrame.height !== 0  ? self.sFrame.height    : result.naturalHeight,
-                anchor      : self.sFrame.anchor        ? self.sFrame.anchor    : Vector2d.zero
+                anchor      : self.sFrame.anchor        ? self.sFrame.anchor    : Vector2d.zero,
             });
 
             let body = new Rect({
                 location    : self.body.location        ? self.body.location    : Vector2d.zero,
                 width       : self.body.width  !== 0    ? self.body.width       : result.naturalWidth,
                 height      : self.body.height !== 0    ? self.body.height      : result.naturalHeight,
-                anchor      : self.body.anchor          ? self.body.anchor      : Vector2d.zero
+                anchor      : self.body.anchor          ? self.body.anchor      : Vector2d.zero,
             });
 
             self.sFrame = sFrame;
             self.body = body;
+
         });
     }
     update(){}
@@ -280,10 +278,10 @@ class GameObject{
     update(){
         this.velocity.add(this.acceleration);
         this.location.add(this.velocity);
-        this.acceleration.mult(0);            // TODO: Think about either this.acceleration.mult(0) commented or (applyforce in update) ? What is and what isnt possible.
+        this.acceleration.mult(0);
 
         this.aVelocity += this.aAcceleration;
-        this.rotation += this.aVelocity; 
+        this.rotation += this.aVelocity;        // TODO: This.Rotation does not exist anywhere.
         this.aAcceleration = 0;     
         
         this.sprite.update();
@@ -302,6 +300,12 @@ class GameObject{
     }
     applySpin(number){
         this.aAcceleration += number / this.mass;
+    }
+    get rotation(){
+        return this.sprite.rotation;
+    }
+    set rotation(number){
+        this.sprite.rotation = number;
     }
     get aAcceleration(){
         return this._aAcceleration;

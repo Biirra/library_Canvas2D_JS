@@ -306,14 +306,16 @@ class Rect{
         this.init();
     }
     init(){
+        this.origHeight = this.width;       // so the scale wont interfere with copying the rect.
+        this.origWidth = this.height;       // so the scale wont interfere with copying the rect.
         this.applyScale();
-        this.applyOffset();
+        this.createOffset();
     }
     applyScale(){
         this.width  *= this.scale.x;
         this.height *= this.scale.y;
     }
-    applyOffset(){
+    createOffset(){
         this.offset = Vector2d.zero;
         this.offset.x = this.width  * this.anchor.x;
         this.offset.y = this.height * this.anchor.y;
@@ -361,8 +363,8 @@ class Rect{
     get copy(){
         return new Rect({
             location: this.location.copy,
-            width: this.width, 
-            height: this.height,
+            width: this.origWidth, 
+            height: this.origHeight,
             scale: this.scale.copy,
             anchor: this.anchor.copy            
         });
