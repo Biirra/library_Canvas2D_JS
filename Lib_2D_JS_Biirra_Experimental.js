@@ -78,40 +78,87 @@ class Entity extends GameObject{
 }
 
 
-// will render itself and anithing inside itself. 
-// should be used for anything that will take up the whole screen (For example: Game, Options menu, Menu, Loading screen)
-class Scene{
-    objects = [];
-    update(){
-        // remove all dead objects.
-        for( let i = this.objects.length-1; i >= 0; i-- ){
-            let object = this.objects[i];
-            object.update();
-            if (!object.alive) {
-                this.objects.splice(i,1);
+
+// TODO: Implement choose to repaint. in case of backgrounds that dont need repaint.
+class Layer {
+    constructor(canvas, FPS){
+        this.FPS = 1000 / FPS;
+        this.canvas = canvas;
+        this.context2D = canvas.getContext("2d");
+        this.inputListener = new InputListener(canvas); // TODO: Should be atleast 1 more level higher.
+        this.gameObjects = [];
+    }
+    run() {
+        let desiredTime = Date.now() + this.FPS;
+        this.update();
+        this.render();
+        let interval = Math.max(0, desiredTime-Date.now());
+        setTimeout(this.run.bind(this), interval);
+    }
+    update() {
+        for(let i = 0; i < this.gameObjects.length; i++){
+            let obj = this.gameObjects[i];
+            obj.update(this.inputListener);
+        }
+    }     
+    render() {
+        this.context2D.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        for(let i = 0; i < this.gameObjects.length; i++){
+            let obj = this.gameObjects[i];
+            obj.render(this.context2D);
+        }
+    }
+}
+
+class UIObject{
+    constructor(){
+        this.clicked    = false;
+        this.hovered    = false;
+    }
+    intersects(obj, mouse) {
+        let xIntersect = mouse.location.x  > obj.location.x && mouse.location.x  < obj.location.x + obj.width;
+        let yIntersect = mouse.location.y  > obj.location.y && mouse.location.y  < obj.location.y + obj.height;
+        return  xIntersect && yIntersect;
+    }
+    update(input){
+        if (this.intersects(this.sprite.body, input.mouse)) {
+            this.hovered = true;
+            if (input.mouse.clicked) {
+                this.clicked = true;
             }
+        } else {
+            this.hovered = false;
+        }
+ 
+        if (!input.mouse.down) {
+            this.clicked = false;
+        }               
+    }
+};
+
+class Button extends UIObject{
+    constructor(options) {
+        super();
+        this.sprite     = options.sprite;
+    }
+    update(input) {
+        var wasNotClicked = !this.clicked;
+        super.update(input);
+
+        if (this.clicked && wasNotClicked) {
+            this.onClick();
+        }
+        if(this.hovered){
+            this.onHover();
         }
     }
-    addObject(object){
-        this.objects.push(object);
+    onHover(){
+        //console.log("This function can be overwritten with onHover().");
     }
-}
-
-class Game{
-    constructor(options){
-        this.canvas = options.canvas || {};
+    onClick(){
+        console.log("This function can be overwritten with onClick().")
     }
-}
-
-class Button extends Sprite{
-    constructor(options){
-        super(options);
-        this.disabled = options.disabled || false;
-        this.state = {
-            clicked:false,
-            pressed:false,
-            released:false,
-            hover:false
-        }
+    render(ctx) {
+        this.sprite.render(ctx);
     }
 }
