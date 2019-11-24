@@ -13,12 +13,109 @@
         canvas.height = screen.height;
         let ctx = canvas.getContext("2d");
 
+        // deathball 
+        let deathballImage = new Image();
+        deathballImage.src = "../assets/Deathball.png";  //src:https://pic002.cnblogs.com/images/2012/230080/2012041509324289.png
+        let spriteDeathball = new Animated_Sprite({
+            texture:        deathballImage,              // The image. May be a Image or a string of the source.
+            frame:          new Rect({                    // The rectangle data of the selection it will take from the texture image.
+                location: Vector2d.zero,                // Top right location of the selected area on the image.
+                width: 75,                             // The height of the selected area on the image.
+                height: 75                             // The widht of the selected area on the image.
+            }),           
+            body:    new Rect({                     // The rectangle that defines the body of the sprite. Contains data on where to write the sprite on the canvas.
+                location: Vector2d.zero,                // The location where to draw the selected area on the canvas.
+                width: 75,                              // The width that scales the selected area.
+                height: 75,                             // The height that scales the selected area.
+                anchor: new Vector2d(0.5,0.5),          // The center of the sprite's body. Vector.one = bottom right corner.
+                scale: new Vector2d(0.5,0.5)            // The scale of the sprite's body.
+            }),
+            ticksPerFrame:  1,                      // Try to keep it above 0.2 for perfermance reasons. else it will stutter on the while loop.
+            numberOfFrames: 6,                     // The amount of frames horizontaly on the spritesheet. Left to right.
+            numberOfRows:   8,                      // The amount of frames vertically on the spritesheet. Top to bottom.
+            loop:           true,                   // The animation will start over if its finished.
+            reverse:        false                   // Play the animation in reverse
+        });
+        let particleDeathball = new Particle({
+            sprite:         spriteDeathball,            // the sprite it will spawn. Can be sprite or animated sprite.
+            mass:           1,                      // The mass of the object. Influences any forces applied to the object.
+            fadeOut:        true,                   // Particle will fade out if its time to die.
+            fadeOutSpeed:   0.05,                   // The speed at which the particle fades out. 
+            ticksAlive:     100,                    // The time in ticks it stays alive before dissapearing. 
+            type:           "Default"               // Use a pre-programmed behavior
+        },{});
+        // end deathball
+
+        // ring Sonic 
+        let ringsonicImage = new Image();
+        ringsonicImage.src = "../assets/Ring_Sonic.png";  // src: https://www.deviantart.com/facundogomez/art/Big-Ring-Sprites-sonic-4-epi1-486367536
+        let spriteRingsonic = new Animated_Sprite({
+            texture:        ringsonicImage,              // The image. May be a Image or a string of the source.
+            frame:          new Rect({                    // The rectangle data of the selection it will take from the texture image.
+                location: Vector2d.zero,                // Top right location of the selected area on the image.
+                width: 134,                             // The height of the selected area on the image.
+                height: 134                             // The widht of the selected area on the image.
+            }),           
+            body:    new Rect({                     // The rectangle that defines the body of the sprite. Contains data on where to write the sprite on the canvas.
+                location: Vector2d.zero,                // The location where to draw the selected area on the canvas.
+                width: 64,                              // The width that scales the selected area.
+                height: 64,                             // The height that scales the selected area.
+                anchor: new Vector2d(0.5,0.5),          // The center of the sprite's body. Vector.one = bottom right corner.
+                scale: new Vector2d(0.5,0.5)            // The scale of the sprite's body.
+            }),
+            ticksPerFrame:  2,                      // Try to keep it above 0.2 for perfermance reasons. else it will stutter on the while loop.
+            numberOfFrames: 10,                     // The amount of frames horizontaly on the spritesheet. Left to right.
+            numberOfRows:   1,                      // The amount of frames vertically on the spritesheet. Top to bottom.
+            loop:           true,                   // The animation will start over if its finished.
+            reverse:        false                   // Play the animation in reverse
+        });
+        let particleRingsonic = new Particle({
+            sprite:         spriteRingsonic,            // the sprite it will spawn. Can be sprite or animated sprite.
+            mass:           1,                      // The mass of the object. Influences any forces applied to the object.
+            fadeOut:        true,                   // Particle will fade out if its time to die.
+            fadeOutSpeed:   0.05,                   // The speed at which the particle fades out. 
+            ticksAlive:     100,                    // The time in ticks it stays alive before dissapearing. 
+            type:           "Default"               // Use a pre-programmed behavior
+        },{});
+        // end ring Sonic
+
+        // fireball
+        let fireImage = new Image();
+        fireImage.src = "../assets/fireball.png";   //  src:http://gushh.net/blog/wp-content/uploads/2011/06/explosion_4_39_128.png
+        let spriteFireball = new Animated_Sprite({
+            texture:        fireImage,              // The image. May be a Image or a string of the source.
+            frame:          new Rect({                    // The rectangle data of the selection it will take from the texture image.
+                location: Vector2d.zero,                // Top right location of the selected area on the image.
+                width: 128,                             // The height of the selected area on the image.
+                height: 128                             // The widht of the selected area on the image.
+            }),           
+            body:    new Rect({                     // The rectangle that defines the body of the sprite. Contains data on where to write the sprite on the canvas.
+                location: Vector2d.zero,                // The location where to draw the selected area on the canvas.
+                width: 64,                              // The width that scales the selected area.
+                height: 64,                             // The height that scales the selected area.
+                anchor: new Vector2d(0.5,0.5),          // The center of the sprite's body. Vector.one = bottom right corner.
+                scale: new Vector2d(1,1)            // The scale of the sprite's body.
+            }),
+            ticksPerFrame:  2,                      // Try to keep it above 0.2 for perfermance reasons. else it will stutter on the while loop.
+            numberOfFrames: 8,                     // The amount of frames horizontaly on the spritesheet. Left to right.
+            numberOfRows:   5,                      // The amount of frames vertically on the spritesheet. Top to bottom.
+            loop:           false,                   // The animation will start over if its finished.
+            reverse:        false                   // Play the animation in reverse
+        });
+        let particleFireball = new Particle({
+            sprite:         spriteFireball,            // the sprite it will spawn. Can be sprite or animated sprite.
+            mass:           1,                      // The mass of the object. Influences any forces applied to the object.
+            fadeOut:        true,                   // Particle will fade out if its time to die.
+            fadeOutSpeed:   0.05,                   // The speed at which the particle fades out. 
+            ticksAlive:     100,                    // The time in ticks it stays alive before dissapearing. 
+            type:           "Default"               // Use a pre-programmed behavior
+        },{});
+        // end fireball
 
         // coin
         let coinImage = new Image();
         coinImage.src = "../assets/coin-sprite-animation.png";
         let spriteCoin = new Animated_Sprite({
-            context:        ctx,                    // The context.
             texture:        coinImage,              // The image. May be a Image or a string of the source.
             frame:    new Rect({                    // The rectangle data of the selection it will take from the texture image.
                 location: Vector2d.zero,                // Top right location of the selected area on the image.
@@ -52,7 +149,6 @@
         let earthImage = new Image();
         earthImage.src = "../assets/Earth1024x1024_256Frames.png"; // source: https://s3.us-east-2.amazonaws.com/singular-assets/Global/Earth1024x1024_256Frames.png
         let spriteEarth = new Animated_Sprite({
-            context:        ctx,                    // The context.
             texture:        earthImage,             // The image. May be a Image or a string of the source.
             frame:          new Rect({              // The rectangle data of the selection it will take from the texture image.
                 location: Vector2d.zero,                // Top right location of the selected area on the image.
@@ -96,18 +192,34 @@
             ps.location = new Vector2d(event.clientX, event.clientY);
         });
 
+        let spritecounter = 0;
         canvas.addEventListener('click', function(){
-            if(ps.originParticle != particleCoin)
-                ps.originParticle = particleCoin;
-            else
-                ps.originParticle = particleEarth;
+            spritecounter++;
+            switch(spritecounter){
+                case 1:
+                    ps.originParticle = particleCoin;
+                    break;
+                case 2:
+                    ps.originParticle = particleFireball;
+                    break;
+                case 3:
+                    ps.originParticle = particleRingsonic;
+                    break;
+                case 4:
+                    ps.originParticle = particleDeathball;
+                    break;
+                default:
+                    ps.originParticle = particleEarth;
+                    spritecounter = 0;
+                    return;
+            }                
         });
 
         loop();
         function loop () {
             ctx.clearRect(0, 0, screen.width, screen.height);
             ps.update();
-            ps.render();            
+            ps.render(ctx);            
             for(let i = 0; i < ps.particles.length; i++){
                 ps.particles[i].applyForce(new Vector2d(0,0.1))
                 //ps.particles[i].applySpin(0.01);
