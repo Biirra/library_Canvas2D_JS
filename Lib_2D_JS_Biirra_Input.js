@@ -1,14 +1,11 @@
 class InputListener{
     constructor(canvas){
         this.canvas = canvas;
-        this._mousePosition = Vector2d.zero;
-        this._mouseState = {
-            clicked:false,
-            pressed:false,
-            released:false,
-            drag:false
+        this.mouse = {
+            location: Vector2d.zero,
+            clicked: false,
+            down: false
         }
-        this._keyState = {};
         this.init();
     }
     init(){
@@ -16,31 +13,33 @@ class InputListener{
         this.enable();
     }
     setupHandlers(){
-        this.updateMousePositionHadler  = this.updateMousePosition.bind(this);
-        this.updateKeyDownHandler = this.updateKeyDown.bind(this);
-        this.updateKeyUpHandler = this.updateKeyUp.bind(this);
+        this.mouseLocationHadler  = this.updateMouseLocation.bind(this);
+        this.mouseDownHandler = this.updateMouseDown.bind(this);
+        this.mouseUpHandler = this.updateMouseUp.bind(this);
+
 		return this;
     }
     enable(){
-        this.canvas.addEventListener('mousemove', this.updateMousePositionHadler);
-        document.addEventListener('keypress', this.updateKeyDownHandler);
-        document.addEventListener('keyup', this.updateKeyUpHandler);
+        this.canvas.addEventListener('mousemove',   this.mouseLocationHadler);
+        this.canvas.addEventListener("mousedown",   this.mouseDownHandler);
+        this.canvas.addEventListener("mouseup",     this.mouseUpHandler);
 		return this;
     }
-    updateKeyDown(event){
-        this._keyState[event.code] = event;
-        this._keyState[event.code].isDown = true;
+    // Do Mouse Stuff
+    updateMouseUp(){
+        this.mouse.down         = false;
+        this.mouse.clicked      = false;
     }
-    updateKeyUp(event){
-        this._keyState[event.code] = event;
-        this._keyState[event.code].isDown = false;        
+    updateMouseDown(){
+        this.mouse.clicked      = !this.mouse.down;
+        this.mouse.down         = true;
     }
-    updateMousePosition(){
-        let x = event.clientX || this._mousePosition.x;
-        let y = event.clientY || this._mousePosition.y;
-        this._mousePosition =  new Vector2d(x,y);
-    }
-    get mousePos(){
-        return this._mousePosition;
+    updateMouseLocation(){
+        let x = event.offsetX;
+        let y = event.offsetY;
+
+        this.mouse.location     = new Vector2d(x,y);
+        this.mouse.clicked      = (event.which == 1 && !this.mouse.down);
+        this.mouse.down         = (event.which == 1);
     }
 }
