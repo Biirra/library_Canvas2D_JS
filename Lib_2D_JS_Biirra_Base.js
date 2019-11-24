@@ -7,7 +7,6 @@
  */
 class Sprite {   
     constructor(options){
-        this.context    = options.context;
         this.texture    = options.texture;
         this.alpha      = options.alpha         || 1;
         this.visible    = options.visible       || true;            // Object can be drawn on the canvas.
@@ -50,15 +49,15 @@ class Sprite {
         });
     }
     update(){}
-    render(){ 
+    render(ctx){ 
         if(this.visible && this.sFrame && this.body)
-            this.draw();
+            this.draw(ctx);
     }
-    draw(){ 
-        this.context.globalAlpha = this.alpha;
-        this.context.translate(this.body.location.x, this.body.location.y);
-        this.context.rotate(this.rotation);
-        this.context.drawImage(
+    draw(ctx){ 
+        ctx.globalAlpha = this.alpha;
+        ctx.translate(this.body.location.x, this.body.location.y);
+        ctx.rotate(this.rotation);
+        ctx.drawImage(
             this.texture,                   //img	Source image 
             this.sFrame.location.x,         //sx	Source x	        
             this.sFrame.location.y,         //sy	Source y	        
@@ -70,9 +69,9 @@ class Sprite {
             this.body.height                //dh	Destination height	
             );
 
-        this.context.rotate(-this.rotation);
-        this.context.translate(-this.body.location.x, -this.body.location.y);
-        this.context.globalAlpha = 1;        
+        ctx.rotate(-this.rotation);
+        ctx.translate(-this.body.location.x, -this.body.location.y);
+        ctx.globalAlpha = 1;        
     }
     loadTexture() {
         return new Promise((resolve, reject) => {
@@ -137,12 +136,6 @@ class Sprite {
         this._visible = boolean;
     }
     get visible(){
-        if(!this.context){
-            // TODO: Fix this so it will not print forever than reactivate warnings if in developer mode.
-            //console.warn("Context not found. Visibility is set to false by force.");
-            //console.warn(this);
-            return false;
-        }
         return this._visible;
     }
     /**
@@ -151,7 +144,6 @@ class Sprite {
      */
     get copy(){
         let result = new Sprite({
-            context     : this.context,                       // The context.
             texture     : this.texture,                       // The image. May be a Image or a string of the source.
             frame       : this.sFrame.copy,                   // The rectangle data of the selection it will take from the texture image.
             body        : this.body.copy,                     // The rectangle that defines the body of the sprite. Contains data on where to write the sprite on the canvas.
@@ -243,7 +235,6 @@ class Animated_Sprite extends Sprite{
      */
     get copy(){
         let result = new Animated_Sprite({
-            context:        this.context,                       // The context.
             texture:        this.texture,                       // The image. May be a Image or a string of the source.
             frame:          this.sFrame.copy,                   // The rectangle data of the selection it will take from the texture image.
             body:           this.body.copy,                     // The rectangle that defines the body of the sprite. Contains data on where to write the sprite on the canvas.
@@ -285,8 +276,8 @@ class GameObject{
         
         this.sprite.update();
     }
-    render(){
-        this.sprite.render();
+    render(ctx){
+        this.sprite.render(ctx);
     }
 
     /**

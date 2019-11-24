@@ -57,7 +57,7 @@
             ctx.clearRect(0, 0, 1024, 1024);
             for(let i = 0; i < earths.length; i++){
                 earths[i].update();                     // update the object so it can do its math.
-                earths[i].render();                     // render the object so it will be painted to the canvas again.
+                earths[i].render(ctx);                     // render the object so it will be painted to the canvas again.
 
                 //earths[i].applyForce(force);            // apply a force to the object so it will move.
                 checkEdges(earths[i]);                  // check if the object readches the end bounds of the screen.

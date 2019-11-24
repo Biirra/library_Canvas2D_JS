@@ -93,10 +93,10 @@ class ParticleSystem {
             this.addOriginParticleByBatch(this.batchSize);
         }
     }
-    render(){
+    render(ctx){
         // cylcle backwards so the new particles are displayed behind older particles.
         for (let i = this.particles.length-1; i >= 0; i--) {
-            this.particles[i].render();
+            this.particles[i].render(ctx);
         }
     }
     addOriginParticleByBatch(batchSize){
