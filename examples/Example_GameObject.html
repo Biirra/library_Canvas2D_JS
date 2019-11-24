@@ -1,0 +1,84 @@
+<html>
+    <head>
+            <script src="../Lib_2D_JS_Biirra_Core.js"></script>
+            <script src="../Lib_2D_JS_Biirra_Base.js"></script>
+            <script src="../Lib_2D_JS_Biirra_Experimental.js"></script>
+    </head>
+    <body>
+        <canvas id="field" width="1024" height="1024"></canvas>
+    </body>
+    <script>
+
+        let canvas = document.getElementById("field");
+        let ctx = canvas.getContext("2d");
+
+        let earthImage = new Image();
+        earthImage.src = "../assets/Earth1024x1024_256Frames.png"; // source: https://s3.us-east-2.amazonaws.com/singular-assets/Global/Earth1024x1024_256Frames.png
+
+        let earths = [];
+
+        for(let i = 0; i < 16; i++){
+            for(let j = 0; j < 16; j++){
+                let sprite = new Animated_Sprite({
+                    context:            ctx,                    // The context.
+                    texture:            earthImage,             // The image. May be a Image or a string of the source.
+                    frame:        new Rect({                    // The rectangle data of the selection it will take from the texture image.
+                        location: Vector2d.zero,                // Top right location of the selected area on the image.
+                        width: 64,                              // The height of the selected area on the image.
+                        height: 64                              // The widht of the selected area on the image.
+                    }),           
+                    body:        new Rect({                     // The rectangle that defines the body of the sprite. Contains data on where to write the sprite on the canvas.
+                        location: new Vector2d(i*64,j*64),      // The location where to draw the selected area on the canvas.
+                        width: 64,                              // The width that scales the selected area.
+                        height: 64,                             // The height that scales the selected area.
+                        anchor: new Vector2d(0,0),              // The center of the sprite's body. Vector.one = bottom right corner.
+                        scale: new Vector2d(0.5,0.5)            // The scale of the sprite's body.
+                    }),
+                    ticksPerFrame:      0.2 *(i+1),             // Try to keep it above 0.2 for perfermance reasons. else it will stutter on the while loop.
+                    numberOfFrames:     16,                     // The amount of frames horizontaly on the spritesheet. Left to right.
+                    numberOfRows:       16,                     // The amount of frames vertically on the spritesheet. Top to bottom.
+                    frameIndex:         new Vector2d(i,j),      // The starting frame on which it will start displaying.
+                    loop:               true,                   // The animation will start over if its finished.
+                    reverse:            false                   // Play the animation in reverse
+                });
+                let earth = new GameObject({
+                    sprite:             sprite,
+                    mass:               2
+                },{});
+
+                earths.push(earth);
+            }
+        }
+
+        loop();
+        
+        function loop () {
+            let force = new Vector2d(0.1,0.1);
+            ctx.clearRect(0, 0, 1024, 1024);
+            for(let i = 0; i < earths.length; i++){
+                earths[i].update();                     // update the object so it can do its math.
+                earths[i].render();                     // render the object so it will be painted to the canvas again.
+
+                //earths[i].applyForce(force);            // apply a force to the object so it will move.
+                checkEdges(earths[i]);                  // check if the object readches the end bounds of the screen.
+            }
+            window.requestAnimationFrame(loop);
+        }        
+        function checkEdges(object) {
+            let objBody = object.sprite.body;
+            
+            if (objBody.location.x > canvas.width - objBody.width) {
+                objBody.location.x = canvas.width - objBody.width;
+                object.velocity.x *= -1;
+            } else if (objBody.location.x < 0 + objBody.width) {
+                objBody.location.x = 0 + objBody.width;
+                object.velocity.x *= -1;
+            }
+            
+            if (objBody.location.y > canvas.height - objBody.height) {
+                objBody.location.y = canvas.height - objBody.height;
+                object.velocity.y *= -1;
+            }
+        }
+    </script>
+</html>

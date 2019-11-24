@@ -1,0 +1,67 @@
+<html>
+    <head>
+            <script src="Lib_2D_JS_Biirra_Core.js"></script>
+            <script src="Lib_2D_JS_Biirra_Base.js"></script>
+            <script src="Lib_2D_JS_Biirra_Input.js"></script>
+            <script src="Lib_2D_JS_Biirra_Experimental.js"></script>
+            <style>
+                canvas{
+                    position: absolute;
+                }
+            </style>
+    </head>
+    <body>
+        <canvas id="background-layer" ></canvas>
+        <canvas id="foreground-layer" ></canvas>
+        <canvas id="GUI-layer" ></canvas>
+    </body>
+    <script>
+
+        
+
+        let background = document.getElementById("background-layer");
+        background.width = window.screen.width;
+        background.height = window.screen.height;
+        let foreground = document.getElementById("foreground-layer");
+        foreground.width = window.screen.width;
+        foreground.height = window.screen.height;
+        let GUI = document.getElementById("GUI-layer");
+        GUI.width = window.screen.width;
+        GUI.height = window.screen.height;
+
+        let ctxBackground = background.getContext("2d");
+        let ctxForeground = foreground.getContext("2d");
+        let ctxGUI = GUI.getContext("2d");
+
+        let game = new Game({
+            canvas: {
+                background:ctxBackground,
+                foreground:ctxForeground,
+                gui:ctxGUI
+            }
+        });
+
+        let input = new InputListener(GUI);
+
+        let imgButton = new Image();
+        imgButton.src = `assets/playnow_cta.png`;
+
+        let button = new Sprite({
+            context: ctxGUI,
+            texture: imgButton,
+            body: new Rect({
+                location: new Vector2d(100, 50)
+            })
+        });
+
+        loop();
+        
+        function loop () {
+            button.render();
+
+            window.requestAnimationFrame(loop);
+        }        
+        function checkEdges(object) {
+        }
+    </script>
+</html>

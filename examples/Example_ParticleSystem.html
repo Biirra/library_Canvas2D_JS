@@ -1,57 +1,117 @@
 <html>
     <head>
+            <script src="../Lib_2D_JS_Biirra_Core.js"></script>
             <script src="../Lib_2D_JS_Biirra_Base.js"></script>
+            <script src="../Lib_2D_JS_Biirra_Particles.js"></script>
     </head>
-    <body>
-        <canvas id="field" width="1024" height="1024"></canvas>
+    <body style="overflow: hidden;">
+        <canvas id="field" width="960" height="960" ></canvas>
     </body>
     <script>
-
-        // TODO: still happens something weird with the performance where the drawing is inconsistent.
         let canvas = document.getElementById("field");
+        canvas.width = screen.width;
+        canvas.height = screen.height;
         let ctx = canvas.getContext("2d");
 
+
+        // coin
+        let coinImage = new Image();
+        coinImage.src = "../assets/coin-sprite-animation.png";
+        let spriteCoin = new Animated_Sprite({
+            context:        ctx,                    // The context.
+            texture:        coinImage,              // The image. May be a Image or a string of the source.
+            frame:    new Rect({                    // The rectangle data of the selection it will take from the texture image.
+                location: Vector2d.zero,                // Top right location of the selected area on the image.
+                width: 100,                             // The height of the selected area on the image.
+                height: 100                             // The widht of the selected area on the image.
+            }),           
+            body:    new Rect({                     // The rectangle that defines the body of the sprite. Contains data on where to write the sprite on the canvas.
+                location: Vector2d.zero,                // The location where to draw the selected area on the canvas.
+                width: 64,                              // The width that scales the selected area.
+                height: 64,                             // The height that scales the selected area.
+                anchor: new Vector2d(0.5,0.5),          // The center of the sprite's body. Vector.one = bottom right corner.
+                scale: new Vector2d(0.5,0.5)            // The scale of the sprite's body.
+            }),
+            ticksPerFrame:  2,                      // Try to keep it above 0.2 for perfermance reasons. else it will stutter on the while loop.
+            numberOfFrames: 10,                     // The amount of frames horizontaly on the spritesheet. Left to right.
+            numberOfRows:   1,                      // The amount of frames vertically on the spritesheet. Top to bottom.
+            loop:           true,                   // The animation will start over if its finished.
+            reverse:        false                   // Play the animation in reverse
+        });
+        let particleCoin = new Particle({
+            sprite:         spriteCoin,            // the sprite it will spawn. Can be sprite or animated sprite.
+            mass:           1,                      // The mass of the object. Influences any forces applied to the object.
+            fadeOut:        true,                   // Particle will fade out if its time to die.
+            fadeOutSpeed:   0.05,                   // The speed at which the particle fades out. 
+            ticksAlive:     100,                    // The time in ticks it stays alive before dissapearing. 
+            type:           "Default"               // Use a pre-programmed behavior
+        },{});
+        // end coin
+
+        // earth
         let earthImage = new Image();
         earthImage.src = "../assets/Earth1024x1024_256Frames.png"; // source: https://s3.us-east-2.amazonaws.com/singular-assets/Global/Earth1024x1024_256Frames.png
-
-        let particleEarth = new Particle({
-            context:ctx,                            // The context.
-            texture:earthImage,                     // The image. May be a Image or a string of the source. Image recommended.
-            sLocation: Vector2d.zero,               // Top right location of the selected area on the sprite sheet image.
-            sWidth: 64,                             // The height of the selected area on the sprite sheet image.
-            sHeight: 64,                            // The Widht of the selected area on the sprite sheet image.
-            width: 64,                              // The width that scales the selected area.
-            height: 64,                             // The height that scales the selected area.
-            ticksPerFrame: 0.2,                     // Try to keep it above 0.2 for perfermance reasons. else it will stutter on the while loop.
-
+        let spriteEarth = new Animated_Sprite({
+            context:        ctx,                    // The context.
+            texture:        earthImage,             // The image. May be a Image or a string of the source.
+            frame:          new Rect({              // The rectangle data of the selection it will take from the texture image.
+                location: Vector2d.zero,                // Top right location of the selected area on the image.
+                width: 64,                              // The height of the selected area on the image.
+                height: 64                              // The widht of the selected area on the image.
+            }),           
+            body:           new Rect({              // The rectangle that defines the body of the sprite. Contains data on where to write the sprite on the canvas.
+                location: Vector2d.zero,                // The location where to draw the selected area on the canvas.
+                width: 64,                              // The width that scales the selected area.
+                height: 64,                             // The height that scales the selected area.
+                anchor: new Vector2d(0.5,0.5),          // The center of the sprite's body. Vector.one = bottom right corner.
+                scale: new Vector2d(0.5,0.5)            // The scale of the sprite's body. 
+            }),
+            ticksPerFrame:  0.2,                    // Try to keep it above 0.2 for perfermance reasons. else it will stutter on the while loop.
             numberOfFrames: 16,                     // The amount of frames horizontaly on the spritesheet. Left to right.
-	        numberOfRows: 16,                       // The amount of frames vertically on the spritesheet. Top to bottom.
-	        loop: true,                             // The animation will start over if its finished.
-            reverse: false,                         // Play the animation in reverse
+            numberOfRows:   16,                     // The amount of frames vertically on the spritesheet. Top to bottom.
+            loop:           true,                   // The animation will start over if its finished.
+            reverse:        false                   // Play the animation in reverse
+        });
+        let particleEarth = new Particle({
+            sprite:         spriteEarth,            // the sprite it will spawn. Can be sprite or animated sprite.
+            mass:           1,                      // The mass of the object. Influences any forces applied to the object.
+            fadeOut:        true,                   // Particle will fade out if its time to die.
+            fadeOutSpeed:   0.05,                   // The speed at which the particle fades out. 
+            ticksAlive:     100,                    // The time in ticks it stays alive before dissapearing. 
+            type:           "Default"               // Use a pre-programmed behavior
+        });
+        // end earth
 
-            fadeOut: true,                          // Particle will fade out if its time to die.
-            fadeOutSpeed: 0.05,                     // The speed at which the particle fades out. 
-            acceleration: new Vector2d(0.1, 0.05),  // Outside force it has to take in consideration. Used for gravity for example. Use applyForce to add aditional forces.
-            ticksAlive: 70,                         // The time in ticks it stays alive before dissapearing. 
-
-            type: "example"                         // Use a pre-programmed behavior
+        let centerCanvas = new Vector2d(canvas.width/2, canvas.height/2);
+        let ps = new ParticleSystem({
+            location:       centerCanvas,           // Birth location of the particles
+            maxNoP:         600,                    // Max number of particles the system can spawn at a given moment. after 600 objects performance becomes noticable.
+            spawnSpeed:     1,                      // How many updates before it will spawn a new batch of particles. Keep it above 4 so it has time to set the height and width.
+            batchSize:      6,                      // The amount of particles that will spawn when it is time to add particles.
+            originParticle: particleEarth,          // The particle it will try to create copy's of
+            paused :        false                   // Spawning new particles is halted. Particle system can still die if it has no particles. 
         });
 
-        let ps = new ParticleSystem({
-            location: new Vector2d(canvas.width/2, canvas.height/4),    // Birth location of the particles
-            maxNumberOfParticles: 100,                                  // Max number of particles the system can spawn at a given moment.
-            spawnSpeed: 10,                                             // How many updates before it will spawn a new batch of particles.
-            batchSize: 5,                                               // The amount of particles it will spawn when it is time to add particles.
-            originParticle: particleEarth,                              // The particle it will try to create copy's of
-            paused : false                                              // Spawning new particles is halted. Particle system can still die if it has no particles. 
+        canvas.addEventListener('mousemove', function(){
+            ps.location = new Vector2d(event.clientX, event.clientY);
+        });
+
+        canvas.addEventListener('click', function(){
+            if(ps.originParticle != particleCoin)
+                ps.originParticle = particleCoin;
+            else
+                ps.originParticle = particleEarth;
         });
 
         loop();
         function loop () {
-            ctx.clearRect(0, 0, 1024, 1024);
+            ctx.clearRect(0, 0, screen.width, screen.height);
             ps.update();
-            ps.renderChildren();
-            
+            ps.render();            
+            for(let i = 0; i < ps.particles.length; i++){
+                ps.particles[i].applyForce(new Vector2d(0,0.1))
+                //ps.particles[i].applySpin(0.01);
+            }
             window.requestAnimationFrame(loop);
         }        
     </script>

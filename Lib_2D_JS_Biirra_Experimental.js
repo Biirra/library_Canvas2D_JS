@@ -62,53 +62,56 @@ class Colision_Body{
     }
 }
 
-class Ball extends Entity{
+
+class Entity extends GameObject{
     constructor(options){
         super(options);
-        this.impactScale = new Vector2d(0.75,0.75);
-        this.blounceSpeed = 0.01;
+        this.collisionBody = options.collisionBody;         // TODO: Think about doing it this way. Makes sence there are diffrent kinds of collision body's. Circle, Rect
+        
     }
-    bounce(){
-        let maxSizeX = this.original.scale.x + this.impactScale.x;
-        let maxSizeY = this.original.scale.y + this.impactScale.y;
-        let minSizeX = this.original.scale.x - this.impactScale.x;
-        let minSizeY = this.original.scale.y - this.impactScale.y;
+    get alive(){
+        return this._alive;
+    }
+    set alive(value){
+        this._alive = value;
+    }
+}
 
-        // go bigger if
-        //  its not above max
-        //  its not going smaller.
-        let max = this.scale.x > maxSizeX && this.scale.y > maxSizeY;
-        let min = this.scale.x < minSizeX && this.scale.y < minSizeY;
-        if(max){
-            this._animatingEnlarge = false;
-            this.scale.x = maxSizeX;
-            this.scale.y = maxSizeY;
-        }
-        else if(!max && !this._animatingDiminish){
-            this.scale.x += this.blounceSpeed;
-            this.scale.y += this.blounceSpeed;
-            if(!this._animatingEnlarge){
-                this._animatingEnlarge = true;
-                this._animatingDiminish = false;
+
+// will render itself and anithing inside itself. 
+// should be used for anything that will take up the whole screen (For example: Game, Options menu, Menu, Loading screen)
+class Scene{
+    objects = [];
+    update(){
+        // remove all dead objects.
+        for( let i = this.objects.length-1; i >= 0; i-- ){
+            let object = this.objects[i];
+            object.update();
+            if (!object.alive) {
+                this.objects.splice(i,1);
             }
         }
+    }
+    addObject(object){
+        this.objects.push(object);
+    }
+}
 
-        // go smaller if
-        //  its not below min
-        //  its not going bigger.
-        if (min){
-            this._animatingDiminish = false;
-            this.scale.x = minSizeX;
-            this.scale.y = minSizeY;
-            //this._jumping = false;
-        }
-        else if(!min && !this._animatingEnlarge){
-            this.scale.x -= this.blounceSpeed;
-            this.scale.y -= this.blounceSpeed;
-            if(!this._animatingDiminish){
-                this._animatingDiminish = true;
-                this._animatingEnlarge = false;
-            }
+class Game{
+    constructor(options){
+        this.canvas = options.canvas || {};
+    }
+}
+
+class Button extends Sprite{
+    constructor(options){
+        super(options);
+        this.disabled = options.disabled || false;
+        this.state = {
+            clicked:false,
+            pressed:false,
+            released:false,
+            hover:false
         }
     }
 }
