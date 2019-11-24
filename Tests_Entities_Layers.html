@@ -11,57 +11,35 @@
             </style>
     </head>
     <body>
-        <canvas id="background-layer" ></canvas>
-        <canvas id="foreground-layer" ></canvas>
         <canvas id="GUI-layer" ></canvas>
     </body>
     <script>
 
-        
-
-        let background = document.getElementById("background-layer");
-        background.width = window.screen.width;
-        background.height = window.screen.height;
-        let foreground = document.getElementById("foreground-layer");
-        foreground.width = window.screen.width;
-        foreground.height = window.screen.height;
         let GUI = document.getElementById("GUI-layer");
         GUI.width = window.screen.width;
         GUI.height = window.screen.height;
 
-        let ctxBackground = background.getContext("2d");
-        let ctxForeground = foreground.getContext("2d");
-        let ctxGUI = GUI.getContext("2d");
+        let guiLayer = new Layer(GUI, 20);
 
-        let game = new Game({
-            canvas: {
-                background:ctxBackground,
-                foreground:ctxForeground,
-                gui:ctxGUI
-            }
-        });
-
-        let input = new InputListener(GUI);
-
-        let imgButton = new Image();
-        imgButton.src = `assets/playnow_cta.png`;
-
-        let button = new Sprite({
-            context: ctxGUI,
-            texture: imgButton,
-            body: new Rect({
-                location: new Vector2d(100, 50)
+        let playnowImage = new Image();
+        playnowImage.src = "assets/playnow_cta.png";
+        let playnowSprite = new Sprite({
+            texture:playnowImage,                        // The image.        
+            body: new Rect({                            // The rectangle that defines the body of the sprite. Contains data on where to write the sprite on the canvas.
+                location: new Vector2d(100,100),        // The location where to draw the selected area on the canvas.
             })
+        });  
+        let playnowButton = new Button({
+            sprite: playnowSprite
         });
+        playnowButton.timesClicked = 0;
+        playnowButton.onClick = function(){
+            this.timesClicked++;
+            console.log("This button has been clicked " + this.timesClicked + " time(s)!");
+        }; 
 
-        loop();
-        
-        function loop () {
-            button.render();
+        guiLayer.gameObjects.push(playnowButton);
+        guiLayer.run();
 
-            window.requestAnimationFrame(loop);
-        }        
-        function checkEdges(object) {
-        }
     </script>
 </html>
