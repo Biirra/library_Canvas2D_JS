@@ -175,7 +175,7 @@ class Vector2d{
      * @returns {Vector2d}      Contains a new Vector2d with combined values.
      */
     static add(v1, v2){
-        return new Vector2d(v1.getX() + v2.getX(), v1.getY() + v2.getY());
+        return new Vector2d(v1.x + v2.x, v1.y + v2.y);
     }
     /**
      * Subtract two Vector2d's from eachother.
@@ -184,7 +184,7 @@ class Vector2d{
      * @returns {Vector2d}      Contains a new Vector2d with combined values.
      */
     static sub(v1, v2){
-        return new Vector2d(v1.getX() - v2.getX(), v1.getY() - v2.getY());
+        return new Vector2d(v1.x - v2.x, v1.y - v2.y);
     }
     /**
      * Multiply a given Vector2d with a value.
@@ -193,7 +193,7 @@ class Vector2d{
      * @returns {Vector2d}          Contains a new Vector2d with Multiplied values.
      */
     static mult(v1, mult){
-        return new Vector2d(v1.getX() * mult, v1.getY() * mult);
+        return new Vector2d(v1.x * mult, v1.y * mult);
     }
     /**
      * Divide a given Vector2d with a value.
@@ -306,8 +306,8 @@ class Rect{
         this.init();
     }
     init(){
-        this.origHeight = this.width;       // so the scale wont interfere with copying the rect.
-        this.origWidth = this.height;       // so the scale wont interfere with copying the rect.
+        this.origHeight = this.height;       // so the scale wont interfere with copying the rect.
+        this.origWidth = this.width;       // so the scale wont interfere with copying the rect.
         this.applyScale();
         this.createOffset();
     }
@@ -319,7 +319,7 @@ class Rect{
         this.offset = Vector2d.zero;
         this.offset.x = this.width  * this.anchor.x;
         this.offset.y = this.height * this.anchor.y;
-        this.offset.mult(-1);
+        this.offset.mult(-1);   // TODO: This is obviously a bug right ?
     }
     set scale(vector2d){
         this._scale = vector2d;
@@ -362,12 +362,47 @@ class Rect{
     }
     get copy(){
         return new Rect({
-            location: this.location.copy,
-            width: this.origWidth, 
-            height: this.origHeight,
-            scale: this.scale.copy,
-            anchor: this.anchor.copy            
+            location:   this.location.copy,
+            width:      this.origWidth, 
+            height:     this.origHeight,
+            scale:      this.scale.copy,
+            anchor:     this.anchor.copy            
         });
     }
 }
 
+// TODO: Implement choose to repaint. in case of backgrounds that dont need repaint. Not sure bout this. Depends how much performance a repaint takes.
+// TODO: Documentation
+class Layer {
+    constructor(canvas, FPS, inputListener){
+        this.FPS = 1000 / FPS;
+        this.canvas = canvas;
+        this.context2D = canvas.getContext("2d");
+        this.inputListener = inputListener; 
+        this.gameObjects = [];
+        
+    }
+    run() {
+        let desiredTime = Date.now() + this.FPS;
+        this.update();
+        this.render();
+        let interval = Math.max(0, desiredTime-Date.now());
+        setTimeout(this.run.bind(this), interval);
+    }
+    update() {
+        for(let i = 0; i < this.gameObjects.length; i++){
+            let obj = this.gameObjects[i];
+            obj.update(this.inputListener);
+        }
+    }     
+    render() {
+        this.context2D.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        for(let i = 0; i < this.gameObjects.length; i++){
+            let obj = this.gameObjects[i];
+            obj.render(this.context2D);
+        }
+    }
+    add(obj){
+        this.gameObjects.push(obj);
+    }
+}
