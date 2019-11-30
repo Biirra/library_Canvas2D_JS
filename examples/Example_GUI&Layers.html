@@ -19,6 +19,116 @@
     </body>
     <script>
 
+        class Particle_Default extends Particle{
+            constructor(options){
+                super(options);
+                this.init();
+                
+            }
+            init(){
+                this.velocity           = new Vector2d(Math.randomFloatBetween(-4,4), Math.randomFloatBetween(-4,4));                 
+                this.sprite.frameIndex  = new Vector2d(Math.randomIntBetween(0, this.sprite.numberOfFrames - 1), Math.randomIntBetween(0, this.sprite.numberOfRows - 1));
+            }
+            /**
+             * Generates a copy of itself and returns it.
+             * @returns {Particle} copy of self
+             */
+            get copy(){
+                let result = new Particle_Default({
+                    sprite: this.sprite.copy,
+                    mass: this.mass,
+                    fadeOut: this.fadeOut,                              // Particle will fade out if its time to die.
+                    fadeOutSpeed: this.fadeOutSpeed,                    // The speed at which the particle fades out. 
+                    ticksAlive: this.ticksAlive,                        // The time in ticks it stays alive before dissapearing. 
+
+                    type: this.type                                     // Use a pre-programmed behavior
+                });
+                return result;
+
+            }
+            
+        }
+        class Particle_Fire extends Particle{
+            constructor(options){
+                super(options);
+                this.init();
+                
+            }
+            init(){
+                this.velocity           = new Vector2d(Math.randomFloatBetween(-2,2), Math.randomFloatBetween(-0.5,0.5));
+            }
+            /**
+             * Generates a copy of itself and returns it.
+             * @returns {Particle} copy of self
+             */
+            get copy(){
+                let result = new Particle_Fire({
+                    sprite: this.sprite.copy,
+                    mass: this.mass,
+                    fadeOut: this.fadeOut,                              // Particle will fade out if its time to die.
+                    fadeOutSpeed: this.fadeOutSpeed,                    // The speed at which the particle fades out. 
+                    ticksAlive: this.ticksAlive,                        // The time in ticks it stays alive before dissapearing. 
+
+                    type: this.type                                     // Use a pre-programmed behavior
+                });
+                return result;
+
+            }
+        }
+        class Particle_Coin extends Particle{
+            constructor(options){
+                super(options);
+                this.init();
+            }
+            init(){              
+                this.sprite.frameIndex  = new Vector2d(Math.randomIntBetween(0, this.sprite.numberOfFrames - 1), Math.randomIntBetween(0, this.sprite.numberOfRows - 1));
+            }
+            /**
+             * Generates a copy of itself and returns it.
+             * @returns {Particle} copy of self
+             */
+            get copy(){
+                let result = new Particle_Coin({
+                    sprite: this.sprite.copy,
+                    mass: this.mass,
+                    fadeOut: this.fadeOut,                              // Particle will fade out if its time to die.
+                    fadeOutSpeed: this.fadeOutSpeed,                    // The speed at which the particle fades out. 
+                    ticksAlive: this.ticksAlive,                        // The time in ticks it stays alive before dissapearing. 
+
+                    type: this.type                                     // Use a pre-programmed behavior
+                });
+                return result;
+
+            }
+        }
+        class Particle_SonicRing extends Particle{
+            constructor(options){
+                super(options);
+                this.init();
+            }
+            init(){
+                this.velocity           = new Vector2d(Math.randomFloatBetween(-4,4), Math.randomFloatBetween(-1,-5));                 
+                this.sprite.frameIndex  = new Vector2d(Math.randomIntBetween(0, this.sprite.numberOfFrames - 1), Math.randomIntBetween(0, this.sprite.numberOfRows - 1));
+            }
+            /**
+             * Generates a copy of itself and returns it.
+             * @returns {Particle} copy of self
+             */
+            get copy(){
+                let result = new Particle_SonicRing({
+                    sprite: this.sprite.copy,
+                    mass: this.mass,
+                    fadeOut: this.fadeOut,                              // Particle will fade out if its time to die.
+                    fadeOutSpeed: this.fadeOutSpeed,                    // The speed at which the particle fades out. 
+                    ticksAlive: this.ticksAlive,                        // The time in ticks it stays alive before dissapearing. 
+
+                    type: this.type                                     // Use a pre-programmed behavior
+                });
+                return result;
+
+            }
+        }
+
         let inputListener           = new InputListener();
         //------------------------
         // Field layer setup
