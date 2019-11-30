@@ -46,55 +46,13 @@ class InputListener{
 
 // registers if object is hovered upon or clicked. Use for objects that do something on mouse input (e.i. Button)
 // TODO: Documentation
-class UIObject{
-    constructor(){
+class Button {
+    constructor(options) {
         this.clicked    = false;
         this.hovered    = false;
         this.entered    = false;    // checks if the ui object is entered the object. Should run once.
+        this.released   = true;
 
-    }
-    intersects(obj, mouse) {
-        let xIntersect = mouse.location.x  > obj.location.x && mouse.location.x  < obj.location.x + obj.width;
-        let yIntersect = mouse.location.y  > obj.location.y && mouse.location.y  < obj.location.y + obj.height;
-        return  xIntersect && yIntersect;
-    }
-    update(input){  // TODO: Redo this so we can also execute something on button released. cause onSomething functions can only be overridden or extended
-        let wasNotClicked = !this.clicked;  // reminder so it wont keep clicking if mouse button is hold.
-        
-        if (this.intersects(this.backgroundSprite.body, input.mouse)) {
-            // mouse has entered the object.
-            if(!this.hovered && this.onEnter){
-                this.onEnter();
-            }
-            this.hovered = true;
-            // check if user has clicked while mouse is on opject.
-            if (input.mouse.clicked) {
-                this.clicked = true;
-            }
-        } else {
-            // mouse has left the object.
-            if(this.hovered && this.onLeave)
-                this.onLeave();
-            this.hovered = false;
-        }
-        // user is no longer clicking.
-        if (!input.mouse.down) {
-            this.clicked = false;
-        }
-        // do stuff if user clicks the object.
-        if (this.clicked && wasNotClicked) {
-            this.onClick();
-        }
-        // do stuff if user hovers on object.
-        if(this.hovered){
-            this.onHover();
-        }
-    }
-}
-
-class Button extends UIObject{
-    constructor(options) {
-        super();
         // possible states of the button.
         this.sprite_default     = options.sprite_default;
         this.sprite_onHover     = options.sprite_onHover;
@@ -126,16 +84,83 @@ class Button extends UIObject{
         }
     }
     update(input) {
-        super.update(input);
+        let wasNotClicked = !this.clicked;  // reminder so it wont keep clicking if mouse button is hold.
+        let wasNotReleased = !this.released;
 
+        if (this.intersects(this.backgroundSprite.body, input.mouse)) {
+            // mouse has entered the object.
+            if(!this.hovered){
+                this.sprite.location.y += 5;                    // TODO: this could probably be set automaticly.
+                if(this.sprite_onHover)
+                    this.backgroundSprite = this.sprite_onHover;
+                if(this.onEnter)
+                    this.onEnter();
+            }
+            this.hovered = true;
+            // check if user has clicked while mouse is on opject.
+            if (input.mouse.clicked) {
+                this.clicked = true;
+                this.released = false;
+            }
+        } else {
+            // mouse has left the object.
+            if(this.hovered){
+                this.sprite.location.y -= 5;                    // TODO: this could probably be set automaticly.
+                if(this.sprite_default)
+                    this.backgroundSprite = this.sprite_default;
+                if(this.onLeave)
+                    this.onLeave();
+            }
+            this.hovered = false;
+        }
+        // user is no longer clicking.
+        if (!input.mouse.down) {
+            this.clicked = false;
+            this.released = true;
+            if(wasNotReleased){
+                if(!this.hovered && this.sprite_default)
+                    this.backgroundSprite = this.sprite_default;
+                else if(this.sprite_onHover)
+                    this.backgroundSprite = this.sprite_onHover; 
+                
+                if(this.onReleased)
+                    this.onReleased();
+            }
+        }
+
+        // do stuff if user clicks or holds the object.
+        if (this.clicked ) {
+            if(wasNotClicked){
+                if(this.sprite_onClick)
+                    this.backgroundSprite = this.sprite_onClick;
+                if(this.onClick)
+                    this.onClick();
+            }
+            if(this.onPressed)
+                this.onPressed();
+        }
+        // do stuff if user hovers on object.
+        if(this.hovered && this.onHover){
+            this.onHover();
+        }
 
         if(this.sprite)
             this.sprite.update();
     }
-    onClick(){
+    intersects(obj, mouse) {
+        let xIntersect = mouse.location.x  > obj.location.x && mouse.location.x  < obj.location.x + obj.width;
+        let yIntersect = mouse.location.y  > obj.location.y && mouse.location.y  < obj.location.y + obj.height;
+        return  xIntersect && yIntersect;
     }
-    onRelease(){
-        // TODO: Give this functionalitie
+    /*
+    onClick(){
+        
+    }
+    onReleased(){
+        // Runs once when the object is no longer clicked.
+    }
+    onPressed(){
+        // Will execute while the user is holding the right mouse button clicked on the object.
     }
     onHover(){
     }
@@ -143,6 +168,7 @@ class Button extends UIObject{
     }
     onLeave(){
     }
+    */
     render(ctx) {
         this.backgroundSprite.render(ctx);
         if(this.sprite){
