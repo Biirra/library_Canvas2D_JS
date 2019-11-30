@@ -14,7 +14,6 @@
         earthImage.src = "../assets/Earth1024x1024_256Frames.png"; // source: https://s3.us-east-2.amazonaws.com/singular-assets/Global/Earth1024x1024_256Frames.png
 
         let earthSprite = new Sprite({
-            context:ctx,                               // The context.
             texture:earthImage,                        // The image.
             frame: new Rect({                          // The rectangle data of the selection it will take from the texture image.
                 location: Vector2d.zero,               // Top right location of the selected area on the image.
@@ -32,7 +31,6 @@
         });  
 
         let earthAnimatedSprite = new Animated_Sprite({
-            context:ctx,                                // The context.
             texture:earthImage,                         // The image.
             frame: new Rect({                           // The rectangle data of the selection it will take from the texture image.
                 location: Vector2d.zero,                // Top right location of the selected area on the image.
@@ -59,10 +57,10 @@
 
         function loop () {
             ctx.clearRect(0, 0, 500, 500);
-            earthSprite.render();
+            earthSprite.render(ctx);
             earthSprite.rotation += 0.01;
 
-            earthAnimatedSprite.render();
+            earthAnimatedSprite.render(ctx);
             earthAnimatedSprite.update();
 
             window.requestAnimationFrame(loop);
