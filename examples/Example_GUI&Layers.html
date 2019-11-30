@@ -1,0 +1,368 @@
+<html>
+    <head>
+            <script src="../Lib_2D_JS_Biirra_Core.js"></script>
+            <script src="../Lib_2D_JS_Biirra_Base.js"></script>
+            <script src="../Lib_2D_JS_Biirra_Particles.js"></script>
+            <script src="../Lib_2D_JS_Biirra_Input.js"></script>
+            <style>
+                body{
+                    overflow: hidden;
+                }
+                canvas{
+                    position: absolute;
+                }
+            </style>
+    </head>
+    <body>
+        <canvas id="field-layer"></canvas>
+        <canvas id="GUI-layer" ></canvas>
+    </body>
+    <script>
+
+        let inputListener           = new InputListener();
+        //------------------------
+        // Field layer setup
+        //------------------------
+        let fieldCanvas             = document.getElementById("field-layer");
+        fieldCanvas.width           = window.screen.width;
+        fieldCanvas.height          = window.screen.height;
+        let fieldLayer              = new Layer(fieldCanvas, 60);
+
+        //#region Particles
+
+        // deathball 
+        let deathballImage          = new Image();
+        deathballImage.src          = "../assets/Deathball.png";  //src:https://pic002.cnblogs.com/images/2012/230080/2012041509324289.png
+        let spriteDeathball         = new Animated_Sprite({
+            texture:        deathballImage,              // The image. May be a Image or a string of the source.
+            frame:          new Rect({                    // The rectangle data of the selection it will take from the texture image.
+                location: Vector2d.zero,                // Top right location of the selected area on the image.
+                width: 75,                             // The height of the selected area on the image.
+                height: 75                             // The widht of the selected area on the image.
+            }),           
+            body:    new Rect({                     // The rectangle that defines the body of the sprite. Contains data on where to write the sprite on the canvas.
+                location: Vector2d.zero,                // The location where to draw the selected area on the canvas.
+                width: 75,                              // The width that scales the selected area.
+                height: 75,                             // The height that scales the selected area.
+                anchor: new Vector2d(0.5,0.5),          // The center of the sprite's body. Vector.one = bottom right corner.
+                scale: new Vector2d(0.5,0.5)            // The scale of the sprite's body.
+            }),
+            ticksPerFrame:  1,                      // Try to keep it above 0.2 for perfermance reasons. else it will stutter on the while loop.
+            numberOfFrames: 6,                     // The amount of frames horizontaly on the spritesheet. Left to right.
+            numberOfRows:   8,                      // The amount of frames vertically on the spritesheet. Top to bottom.
+            loop:           true,                   // The animation will start over if its finished.
+            reverse:        false                   // Play the animation in reverse
+        });
+        let particleDeathball       = new Particle_Default({
+            sprite:         spriteDeathball,            // the sprite it will spawn. Can be sprite or animated sprite.
+            mass:           1,                      // The mass of the object. Influences any forces applied to the object.
+            fadeOut:        true,                   // Particle will fade out if its time to die.
+            fadeOutSpeed:   0.05,                   // The speed at which the particle fades out. 
+            ticksAlive:     100,                    // The time in ticks it stays alive before dissapearing. 
+            type:           "Default"               // Use a pre-programmed behavior
+        },{});
+        // end deathball
+
+        // ring Sonic 
+        let ringsonicImage          = new Image();
+        ringsonicImage.src          = "../assets/Ring_Sonic.png";  // src: https://www.deviantart.com/facundogomez/art/Big-Ring-Sprites-sonic-4-epi1-486367536
+        let spriteRingsonic         = new Animated_Sprite({
+            texture:        ringsonicImage,              // The image. May be a Image or a string of the source.
+            frame:          new Rect({                    // The rectangle data of the selection it will take from the texture image.
+                location: Vector2d.zero,                // Top right location of the selected area on the image.
+                width: 134,                             // The height of the selected area on the image.
+                height: 134                             // The widht of the selected area on the image.
+            }),           
+            body:    new Rect({                     // The rectangle that defines the body of the sprite. Contains data on where to write the sprite on the canvas.
+                location: Vector2d.zero,                // The location where to draw the selected area on the canvas.
+                width: 64,                              // The width that scales the selected area.
+                height: 64,                             // The height that scales the selected area.
+                anchor: new Vector2d(0.5,0.5),          // The center of the sprite's body. Vector.one = bottom right corner.
+                scale: new Vector2d(0.5,0.5)            // The scale of the sprite's body.
+            }),
+            ticksPerFrame:  2,                      // Try to keep it above 0.2 for perfermance reasons. else it will stutter on the while loop.
+            numberOfFrames: 10,                     // The amount of frames horizontaly on the spritesheet. Left to right.
+            numberOfRows:   1,                      // The amount of frames vertically on the spritesheet. Top to bottom.
+            loop:           true,                   // The animation will start over if its finished.
+            reverse:        false                   // Play the animation in reverse
+        });
+        let particleRingsonic       = new Particle_SonicRing({
+            sprite:         spriteRingsonic,            // the sprite it will spawn. Can be sprite or animated sprite.
+            mass:           1,                      // The mass of the object. Influences any forces applied to the object.
+            fadeOut:        true,                   // Particle will fade out if its time to die.
+            fadeOutSpeed:   0.05,                   // The speed at which the particle fades out. 
+            ticksAlive:     100,                    // The time in ticks it stays alive before dissapearing. 
+            type:           "Default"               // Use a pre-programmed behavior
+        },{});
+        // end ring Sonic
+
+        // fireball
+        let fireImage               = new Image();
+        fireImage.src               = "../assets/fireball.png";   //  src:http://gushh.net/blog/wp-content/uploads/2011/06/explosion_4_39_128.png
+        let spriteFireball          = new Animated_Sprite({
+            texture:        fireImage,              // The image. May be a Image or a string of the source.
+            frame:          new Rect({                    // The rectangle data of the selection it will take from the texture image.
+                location: Vector2d.zero,                // Top right location of the selected area on the image.
+                width: 128,                             // The height of the selected area on the image.
+                height: 128                             // The widht of the selected area on the image.
+            }),           
+            body:    new Rect({                     // The rectangle that defines the body of the sprite. Contains data on where to write the sprite on the canvas.
+                location: Vector2d.zero,                // The location where to draw the selected area on the canvas.
+                width: 64,                              // The width that scales the selected area.
+                height: 64,                             // The height that scales the selected area.
+                anchor: new Vector2d(0.5,0.5),          // The center of the sprite's body. Vector.one = bottom right corner.
+                scale: new Vector2d(1,1)            // The scale of the sprite's body.
+            }),
+            ticksPerFrame:  1.5,                      // Try to keep it above 0.2 for perfermance reasons. else it will stutter on the while loop.
+            numberOfFrames: 8,                     // The amount of frames horizontaly on the spritesheet. Left to right.
+            numberOfRows:   5,                      // The amount of frames vertically on the spritesheet. Top to bottom.
+            loop:           false,                   // The animation will start over if its finished.
+            reverse:        false                   // Play the animation in reverse
+        });
+        let particleFireball        = new Particle_Fire({
+            sprite:         spriteFireball,         // the sprite it will spawn. Can be sprite or animated sprite.
+            mass:           1,                      // The mass of the object. Influences any forces applied to the object.
+            fadeOut:        true,                   // Particle will fade out if its time to die.
+            fadeOutSpeed:   0.05,                   // The speed at which the particle fades out. 
+            ticksAlive:     100                     // The time in ticks it stays alive before dissapearing. 
+            
+        });
+        // end fireball
+
+        // coin
+        let coinImage               = new Image();
+        coinImage.src               = "../assets/coin-sprite-animation.png";
+        let spriteCoin              = new Animated_Sprite({
+            texture:        coinImage,              // The image. May be a Image or a string of the source.
+            frame:    new Rect({                    // The rectangle data of the selection it will take from the texture image.
+                location: Vector2d.zero,                // Top right location of the selected area on the image.
+                width: 100,                             // The height of the selected area on the image.
+                height: 100                             // The widht of the selected area on the image.
+            }),           
+            body:    new Rect({                     // The rectangle that defines the body of the sprite. Contains data on where to write the sprite on the canvas.
+                location: Vector2d.zero,                // The location where to draw the selected area on the canvas.
+                width: 64,                              // The width that scales the selected area.
+                height: 64,                             // The height that scales the selected area.
+                anchor: new Vector2d(0.5,0.5),          // The center of the sprite's body. Vector.one = bottom right corner.
+                scale: new Vector2d(0.5,0.5)            // The scale of the sprite's body.
+            }),
+            ticksPerFrame:  2,                      // Try to keep it above 0.2 for perfermance reasons. else it will stutter on the while loop.
+            numberOfFrames: 10,                     // The amount of frames horizontaly on the spritesheet. Left to right.
+            numberOfRows:   1,                      // The amount of frames vertically on the spritesheet. Top to bottom.
+            loop:           true,                   // The animation will start over if its finished.
+            reverse:        false                   // Play the animation in reverse
+        });
+        let particleCoin            = new Particle_Coin ({
+            sprite:         spriteCoin,            // the sprite it will spawn. Can be sprite or animated sprite.
+            mass:           1,                      // The mass of the object. Influences any forces applied to the object.
+            fadeOut:        true,                   // Particle will fade out if its time to die.
+            fadeOutSpeed:   0.05,                   // The speed at which the particle fades out. 
+            ticksAlive:     100,                    // The time in ticks it stays alive before dissapearing. 
+            type:           "Default"               // Use a pre-programmed behavior
+        },{});
+        // end coin
+
+        // earth    DEFAULT
+        let earthImage              = new Image();
+        earthImage.src              = "../assets/Earth1024x1024_256Frames.png"; // source: https://s3.us-east-2.amazonaws.com/singular-assets/Global/Earth1024x1024_256Frames.png
+        let spriteEarth             = new Animated_Sprite({
+            texture:        earthImage,             // The image. May be a Image or a string of the source.
+            frame:          new Rect({              // The rectangle data of the selection it will take from the texture image.
+                location: Vector2d.zero,                // Top right location of the selected area on the image.
+                width: 64,                              // The height of the selected area on the image.
+                height: 64                              // The widht of the selected area on the image.
+            }),           
+            body:           new Rect({              // The rectangle that defines the body of the sprite. Contains data on where to write the sprite on the canvas.
+                location: Vector2d.zero,                // The location where to draw the selected area on the canvas.
+                width: 64,                              // The width that scales the selected area.
+                height: 64,                             // The height that scales the selected area.
+                anchor: new Vector2d(0.5,0.5),          // The center of the sprite's body. Vector.one = bottom right corner.
+                scale: new Vector2d(0.5,0.5)            // The scale of the sprite's body. 
+            }),
+            ticksPerFrame:  0.2,                    // Try to keep it above 0.2 for perfermance reasons. else it will stutter on the while loop.
+            numberOfFrames: 16,                     // The amount of frames horizontaly on the spritesheet. Left to right.
+            numberOfRows:   16,                     // The amount of frames vertically on the spritesheet. Top to bottom.
+            loop:           true,                   // The animation will start over if its finished.
+            reverse:        false                   // Play the animation in reverse
+        });
+        let particleEarth           = new Particle_Default({
+            sprite:         spriteEarth,            // the sprite it will spawn. Can be sprite or animated sprite.
+            mass:           1,                      // The mass of the object. Influences any forces applied to the object.
+            fadeOut:        true,                   // Particle will fade out if its time to die.
+            fadeOutSpeed:   0.05,                   // The speed at which the particle fades out. 
+            ticksAlive:     100,                    // The time in ticks it stays alive before dissapearing. 
+            //type:           "Default"               // Use a pre-programmed behavior
+        });
+        // end earth
+
+        //#endregion
+
+        //#region Particle System
+        let ps                      = new ParticleSystem({
+            maxNoP:         600,                    // Max number of particles the system can spawn at a given moment. after 600 objects performance becomes noticable.
+            spawnSpeed:     1,                      // How many updates before it will spawn a new batch of particles. Keep it above 4 so it has time to set the height and width.
+            batchSize:      6,                      // The amount of particles that will spawn when it is time to add particles.
+            originParticle: particleEarth,          // The particle it will try to create copy's of
+            paused :        false                   // Spawning new particles is halted. Particle system can still die if it has no particles. 
+        });
+        let force                   = new Vector2d(0, 0);
+        ps.onUpdate                 = function(){
+            this.location = inputListener.mouse.location.copy;
+            for(let i = 0; i < this.particles.length; i++){
+                this.particles[i].applyForce(force);
+            }
+        };
+        //#endregion
+
+        // adding ParticleSystem to layer
+        fieldLayer.add(ps);    
+        fieldLayer.run();                 
+
+        //------------------------
+        // GUI layer setup
+        //------------------------
+        let GUICanvas               = document.getElementById("GUI-layer");
+        GUICanvas.width             = window.screen.width;
+        GUICanvas.height            = window.screen.height;
+        let guiLayer                = new Layer(GUICanvas, 60, inputListener);
+
+        //#region Buttons
+        
+        // blue button unpressed.
+        let blueButtonImage0        = new Image();
+        blueButtonImage0.src        = "../assets/gui/blue_button09.png";
+        let blueButtonSprite0       = new Sprite({
+            texture:blueButtonImage0,                               // The image. TODO: Would rather use a Texture class that loads the image. 
+            frame:          new Rect({              // The rectangle data of the selection it will take from the texture image.
+                location: Vector2d.zero,                // Top right location of the selected area on the image.
+                width: 49,                              // The height of the selected area on the image.
+                height: 49                              // The widht of the selected area on the image.
+            }),           
+            body:           new Rect({              // The rectangle that defines the body of the sprite. Contains data on where to write the sprite on the canvas.
+                location: Vector2d.zero,                // The location where to draw the selected area on the canvas.
+                width: 64,                              // The width that scales the selected area.
+                height: 64                             // The height that scales the selected area.
+            })  
+        });  
+        // blue button pressed.
+        let blueButtonImage1        = new Image();
+        blueButtonImage1.src        = "../assets/gui/blue_button10.png";
+        let blueButtonSprite1       = new Sprite({
+            texture:blueButtonImage1,                               // The image. TODO: Would rather use a Texture class that loads the image. 
+            frame:          new Rect({              // The rectangle data of the selection it will take from the texture image.
+                location: Vector2d.zero,                // Top right location of the selected area on the image.
+                width: 49,                              // The height of the selected area on the image.
+                height: 49                              // The widht of the selected area on the image.
+            }),           
+            body:           new Rect({              // The rectangle that defines the body of the sprite. Contains data on where to write the sprite on the canvas.
+                location: Vector2d.zero,                // The location where to draw the selected area on the canvas.
+                width: 64,                              // The width that scales the selected area.
+                height: 64                             // The height that scales the selected area.
+            }) 
+        }); 
+
+        // green button unpressed.
+        let greenButtonImage0       = new Image();
+        greenButtonImage0.src       = "../assets/gui/green_button09.png";
+        let greenButtonSprite0      = new Sprite({
+            texture:greenButtonImage0,                               // The image. TODO: Would rather use a Texture class that loads the image. 
+            frame:          new Rect({              // The rectangle data of the selection it will take from the texture image.
+                location: Vector2d.zero,                // Top right location of the selected area on the image.
+                width: 49,                              // The height of the selected area on the image.
+                height: 49                              // The widht of the selected area on the image.
+            }),           
+            body:           new Rect({              // The rectangle that defines the body of the sprite. Contains data on where to write the sprite on the canvas.
+                location: Vector2d.zero,                // The location where to draw the selected area on the canvas.
+                width: 64,                              // The width that scales the selected area.
+                height: 64                             // The height that scales the selected area.
+            })  
+        });  
+        // green button pressed.
+        let greenButtonImage1       = new Image();
+        greenButtonImage1.src       = "../assets/gui/green_button10.png";
+        let greenButtonSprite1      = new Sprite({
+            texture:        greenButtonImage1,                               // The image. TODO: Would rather use a Texture class that loads the image. 
+            frame:          new Rect({              // The rectangle data of the selection it will take from the texture image.
+                location: Vector2d.zero,                // Top right location of the selected area on the image.
+                width: 49,                              // The height of the selected area on the image.
+                height: 49                              // The widht of the selected area on the image.
+            }),           
+            body:           new Rect({              // The rectangle that defines the body of the sprite. Contains data on where to write the sprite on the canvas.
+                location: Vector2d.zero,                // The location where to draw the selected area on the canvas.
+                width: 64,                              // The width that scales the selected area.
+                height: 64                             // The height that scales the selected area.
+            }) 
+        }); 
+
+
+        let earthBtnPosition        = new Vector2d(100,200);
+        let earthButton             = createButton(earthBtnPosition, spriteEarth);
+        earthButton.onClick         = function(){
+            ps.originParticle   = particleEarth;
+            ps.spawnSpeed       = 1;                     // How many updates before it will spawn a new batch of particles. Keep it above 4 so it has time to set the height and width.
+            ps.batchSize        = 6;                      // The amount of particles that will spawn when it is time to add particles.
+            force               = new Vector2d(0,0);
+        };
+        
+        let coinBtnPosition         = new Vector2d(100,300);
+        let coinButton              = createButton(coinBtnPosition, spriteCoin);
+        coinButton.onClick          = function(){
+            ps.originParticle   = particleCoin;
+            ps.spawnSpeed       = 4;                      // How many updates before it will spawn a new batch of particles. Keep it above 4 so it has time to set the height and width.
+            ps.batchSize        = 1;                      // The amount of particles that will spawn when it is time to add particles.
+            force               = new Vector2d(0,-0.03);
+        };
+        
+        let fireballBtnPosition     = new Vector2d(100,400);
+        let fbShowModel             = spriteFireball.copy;
+        fbShowModel.loop            = true;
+        let fireballButton          = createButton(fireballBtnPosition, fbShowModel);
+        fireballButton.onClick      = function(){
+            ps.originParticle   = particleFireball;
+            ps.spawnSpeed       = 5;                      // How many updates before it will spawn a new batch of particles. Keep it above 4 so it has time to set the height and width.
+            ps.batchSize        = 3;                      // The amount of particles that will spawn when it is time to add particles.
+            force               = new Vector2d(0,-0.2);
+        };
+        
+        let ringsonicBtnPosition    = new Vector2d(100,500);
+        let ringsonicButton         = createButton(ringsonicBtnPosition, spriteRingsonic);
+        ringsonicButton.onClick     = function(){
+            ps.originParticle   = particleRingsonic;
+            ps.spawnSpeed       = 70;                      // How many updates before it will spawn a new batch of particles. Keep it above 4 so it has time to set the height and width.
+            ps.batchSize        = 25;                      // The amount of particles that will spawn when it is time to add particles.
+            force               = new Vector2d(0,0.1);
+        };
+    
+        let deathballBtnPosition    = new Vector2d(100,600);
+        let deathballButton         = createButton(deathballBtnPosition, spriteDeathball);
+        deathballButton.onClick     = function(){
+            ps.originParticle   = particleDeathball;
+            ps.spawnSpeed       = 1;                      // How many updates before it will spawn a new batch of particles. Keep it above 4 so it has time to set the height and width.
+            ps.batchSize        = 6;                      // The amount of particles that will spawn when it is time to add particles.
+            force               = new Vector2d(0,0.1);
+        };
+        
+        function createButton(location, showmodel){
+            let button              = new Button({
+                sprite_default     : blueButtonSprite0.copy,
+                sprite_onHover     : blueButtonSprite1.copy,
+                sprite_onClick     : greenButtonSprite1.copy,
+
+                sprite             : showmodel.copy,
+        
+                location           : location
+            });
+            return button;
+        }
+        //#endregion
+
+        // adding GUIObjects to layer
+        guiLayer.add(earthButton);   
+        guiLayer.add(coinButton); 
+        guiLayer.add(fireballButton); 
+        guiLayer.add(ringsonicButton); 
+        guiLayer.add(deathballButton);  
+
+        guiLayer.run();                             
+    </script>
+</html>
