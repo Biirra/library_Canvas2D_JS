@@ -1,0 +1,526 @@
+<html>
+<head>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <style>
+    #background-canvas {
+        position: fixed;
+        width: 100%;
+        height: 100%;
+        background-color:black;
+        top:0;
+        left:0;
+    }
+  </style>
+</head>
+<body>
+<canvas id="background-canvas" />
+
+<script>
+
+    
+$(document).ready(function () {
+
+const DATA = {
+    ASTROIDS: {
+        charlie: {
+            id: 'charlie',
+            name: "Charlie",
+            line: {
+                color: "#00FF00",
+                width: 1,
+                maxLength: 220
+            },
+            color: '#FFFFFF',
+            location: {
+                x: 650,
+                y: 50
+            },
+            height: 80,
+            width: 100,
+            content: "COO",
+            childids: ['jeroen', 'janwillem', 'tamara']
+        },
+        jeroen: {
+            id: 'jeroen',
+            name: 'Jeroen',
+            line: {
+                color: "#FFC0CB",
+                width: 1,
+                maxLength: 220
+            },
+            color: '#FFFFFF',
+            location: {
+                x: 50,
+                y: 650
+            },
+            height: 80,
+            width: 100,
+            content: "Software Developer",
+            childids: ['janwillem']
+        },
+        janwillem: {
+            id: 'janwillem',
+            name: 'Jan Willem',
+            line: {
+                color: "#191919",
+                width: 1,
+                maxLength: 220
+            },
+            color: '#FFFFFF',
+            location: {
+                x: 150,
+                y: 50
+            },
+            height: 80,
+            width: 150,
+            content: "Software Developer",
+            childids: []
+        },
+        tim: {
+            id: 'tim',
+            name: "Tim",
+            line: {
+                color: "#FF0000",
+                width: 1,
+                maxLength: 220
+            },
+            color: '#FFFFFF',
+            location: {
+                x: 50,
+                y: 150
+            },
+            height: 80,
+            width: 100,
+            content: "CEO",
+            childids: ['jeroen', 'janwillem', 'tamara']
+        },
+        tamara: {
+            id: 'tamara',
+            name: "Tamara",
+            line: {
+                color: "#191919",
+                width: 1,
+                maxLength: 220
+            },
+            color: '#FFFFFF',
+            location: {
+                x: 450,
+                y: 50
+            },
+            height: 80,
+            width: 100,
+            content: "Data Analist",
+            childids: []
+        },
+        else: {
+            id: 'else',
+            name: "Else",
+            line: {
+                color: "#FFFF00",
+                width: 1,
+                maxLength: 220
+            },
+            color: '#FFFFFF',
+            location: {
+                x: 50,
+                y: 450
+            },
+            height: 80,
+            width: 100,
+            content: "Manager",
+            childids: ['jeroen', 'janwillem', 'tamara']
+        }
+    }
+}
+
+
+// canvas
+let canvas = document.getElementById("background-canvas");
+canvas.width = $(window).width();
+canvas.height = $(window).height();
+canvas.style.zIndex = -1;
+let ctx = canvas.getContext("2d");
+
+// create background
+window.backGroundColor =  "#FFFFFF";
+let background = window.backGround =  new Background($(window).width(), $(window).height(), Vector2d.zero(), window.backGroundColor);
+
+
+//-------------------------------
+// Loop
+//-------------------------------
+function updateBackground() {
+
+    // redraw background
+    ctx.fillStyle = background.color.getColorString();
+    ctx.fillRect(0, 0, background.width, background.height);
+
+    for (let i = 0; i < background.allPixels.length; i++){
+        const currPixel = background.allPixels[i];
+
+        // draw the pixel background
+        ctx.fillStyle = currPixel.color.getColorString();
+        ctx.save();
+        ctx.translate(currPixel.location.x, currPixel.location.y);
+        ctx.fillRect(-currPixel.width / 2, -currPixel.height / 2, currPixel.width, currPixel.height);
+
+        // draw the pixel name
+        ctx.fillStyle = "#191919";
+        ctx.font = "20px Arial";
+        ctx.fillText(currPixel.name, -currPixel.width/2, 0);
+
+        // draw the pixel content
+        ctx.font = "20px Arial";
+        ctx.fillText(currPixel.content, -currPixel.width/2, 35);
+
+        ctx.restore();
+
+    }
+
+
+    // create a list with all Astroids that have chrildren.
+    const astroidsWithChildren = [];
+    for(let i = 0; i < background.allPixels.length; i++){
+        const currPixel = background.allPixels[i];
+
+        if(currPixel.chrildren && currPixel.chrildren.length > 0){
+            astroidsWithChildren.push(currPixel);
+        }
+    }
+
+
+    // draw a line from each parent to its children.
+    for(let i = 0; i < background.allPixels.length; i++){
+        const currPixel = background.allPixels[i];
+        const currPixelChildren = currPixel.children;
+
+        if(currPixelChildren){
+
+            for(let j = 0; j < currPixelChildren.length; j++){
+                const currChild = currPixelChildren[j];
+                // teken een lijn tussen zichzelf en de child
+                ctx.strokeStyle = currPixel.line.color.getColorString();
+                ctx.lineWidth = window.lineWidth;
+                ctx.beginPath();
+                ctx.moveTo(currPixel.location.x, currPixel.location.y);
+                ctx.lineTo(currChild.location.x, currChild.location.y);
+                ctx.stroke();
+            }
+        }
+    
+    }
+
+    for (let i = 0; i < background.allPixels.length; i++){
+        const currPixel = background.allPixels[i];
+        currPixel.update();
+        currPixel.checkEdges(background);
+
+    }
+
+}
+
+
+function initializeBackground(){
+    
+    // line settings
+    window.lineWidth =  1;
+    window.lineColor =  "#00FF00";
+    window.lineLengthBetweenPixels = 220;
+
+    //setting pixel
+    const pixelDataKeys = Object.keys(DATA.ASTROIDS);
+    const pixelData = DATA.ASTROIDS;
+    
+    for (let i = 0; i < pixelDataKeys.length; i++){
+        const currPixel = pixelData[pixelDataKeys[i]];
+        const currAstroid = new Astroid(currPixel);
+        
+        currAstroid.acceleration = Vector2d.zero();
+        currAstroid.velocity = Vector2d.random(); // makes them move randomly around the screen.
+        background.allPixels.push(currAstroid);
+    }
+
+    
+    for (let i = 0; i < pixelDataKeys.length; i++){
+        const currPixel = pixelData[pixelDataKeys[i]];
+        const parentAstroid = background.findPixelById(currPixel.id)
+        // set children for each astroid
+        for(let j = 0; j < currPixel.childids.length; j++){
+            const currPixelChildId = currPixel.childids[j];
+            const currPixelChild = background.findPixelById(currPixelChildId)
+            parentAstroid.children.push(currPixelChild);
+        }
+    }
+
+    // setting canvas on rezise
+    window.onresize = function (event) {
+        if (event) {
+            ctx.canvas.width = $(window).width(); //window.innerWidth;
+            ctx.canvas.height = $(window).height(); //window.innerHeight;
+            background.refreshCanvas();
+        }
+    };
+    
+    setInterval(updateBackground, 20);
+}
+initializeBackground();
+
+});
+
+
+
+// Basic objects
+class Sprite{
+    constructor(width, height){
+        this.width = width;
+        this.height = height;
+    }
+    setHexAsColor(hex){
+        let color = Color.hexToRgb(hex);
+        this.color = new Color(color.r, color.g, color.b, 1);
+    }
+    getColor(){
+        return this.color;
+    }
+    // TODO Take this out.
+    static hexToRgb(hex) {
+        // Expand shorthand form (e.g. "03F") to full form (e.g. "0033FF")
+        let shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
+        hex = hex.replace(shorthandRegex, function(m, r, g, b) {
+            return r + r + g + g + b + b;
+        });
+
+        let result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+        return result ? {
+            r: parseInt(result[1], 16),
+            g: parseInt(result[2], 16),
+            b: parseInt(result[3], 16)
+        } : null;
+    }
+}
+
+class Pixel extends Sprite{
+    constructor(data){
+        super(data.width, data.height);
+        this.location = new Vector2d(data.location.x, data.location.y);
+        this.velocity = data.velocity;
+        this.acceleration = data.acceleration;
+        this.alive = true;
+        this.setHexAsColor(data.color);
+    }
+    update(){
+        this.velocity.add(this.acceleration);
+        //this.velocity.limit(topspeed);
+        this.location.add(this.velocity);
+    };
+    setHeight(height){
+        this.height = height;
+    };
+    setWidth(width){
+        this.width = width;
+    };
+}
+
+class Spawner extends Sprite{
+    constructor(width, height, location){
+        super(width, height);
+        this.allPixels = [];
+        this.location = location;
+    }
+    addPixel(pixel){
+        this.allPixels.push(pixel);
+    }
+    removePixels(deadPixelContainer){
+        for(let i = 0; i < deadPixelContainer.length; i++){
+            try{
+                let pixelContainer = this.allPixels.slice();
+                pixelContainer.splice(this.allPixels.findIndex(v => v === deadPixelContainer[i]), 1).slice();
+                this.allPixels = pixelContainer.slice();
+                //console.log("Cleaning...");
+            }catch(e){
+                console.log(e);
+            }
+        }
+    }
+    hover(mousePosition){
+        return mousePosition.x > this.location.x
+            && mousePosition.x < this.location.x + this.width
+            && mousePosition.y > this.location.y
+            && mousePosition.y < this.location.y + this.height;
+        
+    }
+}
+
+// Custom objects
+class Astroid extends Pixel{
+    constructor(astroidData){
+        super(astroidData);
+        this.name = astroidData.name;
+        this.content = astroidData.content;
+        this.children = [];
+        this.id = astroidData.id;
+
+        const lineColor = new Color();
+        lineColor.setColorHex(astroidData.line.color)
+        this.line = {
+            color: lineColor
+        }
+        
+    }
+    getChildById(id){
+        const result = this.children.find(x => x.id === id);
+        return result;
+    }
+    checkEdges(background) {
+        if (this.location.x > background.width) {
+            this.location.x = 0;
+        } else if (this.location.x < 0) {
+            this.location.x = background.width;
+        }
+        if (this.location.y > background.height) {
+            this.location.y = 0;
+        } else if (this.location.y < 0) {
+            this.location.y = background.height;
+        }
+    }
+}
+
+class Background extends Spawner{
+    constructor(width, height, location, color){
+        super(width, height, location);
+        this.allPixels = [];
+        this.pixelCount = 160;
+        this.setHexAsColor(color);
+        this.isPaused = false;
+    }
+    clearPixels(ctx){
+        this.allPixels.length = 0;
+        this.pixelCount = 0;
+        ctx.fillStyle = this.color.getColorString();
+        ctx.fillRect(0, 0, this.width, this.height);
+    };
+    getRandomLocation(){
+        let minWidth = this.location.x;
+        let maxWidth = this.location.x + this.width;
+        let minHeight = this.location.y;
+        let maxHeight = this.location.y + this.height;
+        let randomWidthLocation = Math.random() * (maxWidth - minWidth + 1)+minWidth;
+        let randomHeightLocation = Math.random() * (maxHeight - minHeight + 1) + minHeight;
+        return new Vector2d(randomWidthLocation, randomHeightLocation);
+    }
+    restart(){
+        this.allPixels.length = 0;
+        this.pixelCount = 160;
+        // empty background of Pixels
+        if(this.allPixels.length > 0){
+            this.allPixels.length = 0;
+        }
+        this.start();
+    };
+    refreshCanvas(){
+        this.width = $(window).width();
+        this.height = $(window).height();
+    };
+    pause(){
+        this.isPaused = true;
+    };
+    start(){
+        this.isPaused = false;
+    }
+    findPixelById(id){
+        const result = this.allPixels.find(x => x.id === id);
+        return result;
+    }
+}
+
+// Standard objects
+class Color{
+    constructor(r,g,b,o = 1){
+        this.red = r;
+        this.green = g;
+        this.blue = b;
+        this.opacity = o;
+    }
+    getColorString(){
+        return "rgba("+this.red+","+this.green+","+this.blue+","+this.opacity+")";
+    }
+    setColorHex(hex){
+        let rgb = Color.hexToRgb(hex);
+        this.red = rgb.r;
+        this.green = rgb.g;
+        this.blue = rgb.b;
+    }
+    getColorHex(){
+        return Color.rgbToHex(this.red, this.green, this.blue);
+    }
+    static rgbToHex(r, g, b) {
+        return "#" + Color.componentToHex(r) + Color.componentToHex(g) + Color.componentToHex(b);
+    }
+    static componentToHex(c) {
+        let hex = c.toString(16);
+        return hex.length === 1 ? "0" + hex : hex;
+    }
+    static hexToRgb(hex) {
+        let result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+        return result ? {
+            r: parseInt(result[1], 16),
+            g: parseInt(result[2], 16),
+            b: parseInt(result[3], 16)
+        } : null;
+    }
+}
+
+class Vector2d{
+    constructor(x, y){
+        this.x = x;
+        this.y = y;
+    }
+    add(vector2d) {
+        this.x += vector2d.x;
+        this.y += vector2d.y;
+    };
+    sub(vector2d) {
+        this.x -= vector2d.x;
+        this.y -= vector2d.y;
+    };
+    mult(mult) {
+        this.x *= mult;
+        this.y *= mult;
+    };
+    div(div) {
+        this.x /= div;
+        this.y /= div;
+    };
+    mag() {
+        return Math.sqrt(this.x * this.x, this.y * this.y);
+    };
+    norm() {
+        let m = mag();
+        if (m !== 0) {
+            div(m);
+        }
+    };
+    static zero(){
+        return new Vector2d(0,0);
+    };
+    static random(multiplier = 1){
+        // return a random Vector2d
+        let vector;
+        let random = Math.random();
+        if (random <= 0.25) {
+            vector = new Vector2d(-Math.random() * multiplier, -Math.random() * multiplier);
+        } else if (random > 0.25 && random <= 0.5) {
+            vector = new Vector2d(-Math.random() * multiplier, Math.random() * multiplier);
+        } else if (random > 0.5 && random <= 0.75) {
+            vector = new Vector2d(Math.random() * multiplier, -Math.random() * multiplier);
+        } else {
+            vector = new Vector2d(Math.random() * multiplier, Math.random() * multiplier);
+        }
+        return vector;
+    }
+}
+
+
+</script>
+</body>
+</html>
