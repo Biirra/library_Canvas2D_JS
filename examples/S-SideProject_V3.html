@@ -14,7 +14,10 @@
 </head>
 <body>
 <canvas id="background-canvas" />
-
+<div style="display:none;">
+    <img id="watermark" src="img/AP_beeldmerk_kleur.png" width="300" height="227" />
+    <img id="trademark" src="img/AP_trademark.png" width="300" height="227" />
+</div>
 <script>
 
     
@@ -24,29 +27,54 @@ const DATA = {
     ASTROIDS: {
         workorder: {
             id: 'workorder',
-            name: "Workorder",
-            line: {
+            name: "APIS-iWorkOrder",
+            line: { // gone
                 color: "#00FF00",
                 width: 1,
                 maxLength: 220
             },
             text: {
-                color: "#0000FF",
-                size: '30px',
+                color: "#095076",
+                size: 40,
                 font: 'Arial'
             },
-            color: '#FFFFFF',
+            color: '#FFFFFF', // gone
             location: {
                 x: 450,
                 y: 250
             },
-            height: 80,
-            width: 100,
-            content: "",
-            childids: [
+            height: 80, // gone
+            width: 100, // gone
+            content: "", // gone
+            
+            childids: [ // gone
                 'fmeca', 'asset', 'gis',
-                'eisen', 'risicos', 'registers'
-            ]
+                'eisen', 'risicos'
+            ],
+            children: {
+                ids: ['fmeca', 'asset', 'gis', 'eisen', 'risicos'],
+                line: {
+                    color: "#00FF00",
+                    width: 1,
+                    maxLength: 220,
+                    dashed: {
+                        active: true,
+                        data: []
+                    }
+                },
+            },
+            associates: {
+                ids: ['registers'],
+                line: {
+                    color: "#0000FF",
+                    width: 1,
+                    maxLength: 220,
+                    dashed: {
+                        active: true,
+                        data: []
+                    }
+                },
+            }
         },
         // operations
         fmeca: {
@@ -59,7 +87,7 @@ const DATA = {
             },
             text: {
                 color: "#000000",
-                size: '30px',
+                size: 30,
                 font: 'Arial'
             },
             color: '#FFFFFF',
@@ -82,7 +110,7 @@ const DATA = {
             },
             text: {
                 color: "#000000",
-                size: '30px',
+                size: 30,
                 font: 'Arial'
             },
             color: '#FFFFFF',
@@ -105,7 +133,7 @@ const DATA = {
             },
             text: {
                 color: "#000000",
-                size: '30px',
+                size: 30,
                 font: 'Arial'
             },
             color: '#FFFFFF',
@@ -129,7 +157,7 @@ const DATA = {
             },
             text: {
                 color: "#000000",
-                size: '30px',
+                size: 30,
                 font: 'Arial'
             },
             color: '#FFFFFF',
@@ -152,7 +180,7 @@ const DATA = {
             },
             text: {
                 color: "#000000",
-                size: '30px',
+                size: 30,
                 font: 'Arial'
             },
             color: '#FFFFFF',
@@ -175,7 +203,7 @@ const DATA = {
             },
             text: {
                 color: "#000000",
-                size: '30px',
+                size: 30,
                 font: 'Arial'
             },
             color: '#FFFFFF',
@@ -199,7 +227,7 @@ const DATA = {
             },
             text: {
                 color: "#000000",
-                size: '30px',
+                size: 30,
                 font: 'Arial'
             },
             color: '#FFFFFF',
@@ -222,7 +250,7 @@ const DATA = {
             },
             text: {
                 color: "#000000",
-                size: '30px',
+                size: 30,
                 font: 'Arial'
             },
             color: '#FFFFFF',
@@ -245,7 +273,7 @@ const DATA = {
             },
             text: {
                 color: "#000000",
-                size: '30px',
+                size: 30,
                 font: 'Arial'
             },
             color: '#FFFFFF',
@@ -273,6 +301,8 @@ let ctx = canvas.getContext("2d");
 window.backGroundColor =  "#FFFFFF";
 let background = window.backGround =  new Background($(window).width(), $(window).height(), Vector2d.zero(), window.backGroundColor);
 
+const watermark = document.getElementById("watermark");
+const trademark = document.getElementById("trademark");
 
 //-------------------------------
 // Loop
@@ -282,30 +312,11 @@ function updateBackground() {
     // redraw background
     ctx.fillStyle = background.color.getColorString();
     ctx.fillRect(0, 0, background.width, background.height);
-
-    for (let i = 0; i < background.allPixels.length; i++){
-        const currPixel = background.allPixels[i];
-
-        // draw the pixel background
-        ctx.fillStyle = currPixel.color.getColorString();
-        ctx.save();
-        ctx.translate(currPixel.location.x, currPixel.location.y);
-        //ctx.fillRect(-currPixel.width / 2, -currPixel.height / 2, currPixel.width, currPixel.height);
-
-        console.log(currPixel);
-        // draw the pixel name
-        ctx.fillStyle = currPixel.text.color.getColorString();
-        ctx.font = `${currPixel.text.size} ${currPixel.text.font}`;
-        ctx.fillText(currPixel.name, -currPixel.width/2, 0);
-
-        // draw the pixel content
-        ctx.font = "50px Arial";
-        ctx.fillText(currPixel.content, -currPixel.width/2, 35);
-
-        ctx.restore();
-
-    }
-
+    ctx.globalAlpha = 0.1;
+    ctx.drawImage(watermark, 0, 0, 605, 605, (canvas.width/2)-(605/2), (canvas.height/2)-(605/2), 605, 605);
+    ctx.globalAlpha = 1;
+    ctx.restore();
+    
 
     // create a list with all Astroids that have chrildren.
     const astroidsWithChildren = [];
@@ -331,18 +342,45 @@ function updateBackground() {
                 ctx.strokeStyle = currPixel.line.color.getColorString();
                 ctx.lineWidth = window.lineWidth;
                 ctx.beginPath();
-                ctx.moveTo(currPixel.location.x, currPixel.location.y);
-                ctx.lineTo(currChild.location.x, currChild.location.y);
+                ctx.moveTo(currPixel.location.x + (currPixel.width/2), currPixel.location.y - (currPixel.height/4));
+                ctx.lineTo(currChild.location.x + (currChild.width/2), currChild.location.y - (currChild.height/4));
                 ctx.stroke();
+                ctx.restore();
             }
         }
     
     }
-
+    // update the pixels so they contain movement if velocity and/or acceleration is set.
     for (let i = 0; i < background.allPixels.length; i++){
         const currPixel = background.allPixels[i];
         currPixel.update();
-        currPixel.checkEdges(background);
+        currPixel.bounceEdges(background);
+
+    }
+
+    for (let i = 0; i < background.allPixels.length; i++){
+        const currPixel = background.allPixels[i];
+
+        // draw the pixel background
+        ctx.fillStyle = currPixel.color.getColorString();
+        ctx.save();
+        ctx.translate(currPixel.location.x, currPixel.location.y);
+        //ctx.fillRect(-currPixel.width / 2, -currPixel.height / 2, currPixel.width, currPixel.height);
+
+        // draw the pixel name
+        ctx.fillStyle = currPixel.text.color.getColorString();
+        ctx.font = `${currPixel.text.size}px ${currPixel.text.font}`;
+        
+        ctx.fillText(currPixel.name, 0, 0);
+
+        if(currPixel.id === 'workorder')
+            ctx.drawImage(trademark, 0, 0, 30, 30, 260, -40, 30, 30);
+
+        // draw the pixel content
+        //ctx.font = "50px Arial";
+        //ctx.fillText(currPixel.content, -currPixel.width/2, 35);
+
+        ctx.restore();
 
     }
 
@@ -364,6 +402,17 @@ function initializeBackground(){
         const currPixel = pixelData[pixelDataKeys[i]];
         const currAstroid = new Astroid(currPixel);
         
+        ctx.font = `${currPixel.text.size}px ${currPixel.text.font}`;
+        // set the width based on the text.
+        const textWidth = ctx.measureText(currAstroid.name).width;
+        currAstroid.width = textWidth;
+
+        // set the heigth based on text size.
+        const textHeight = ctx.measureText('M').width; // a very close estimate 
+        currAstroid.height = textHeight;
+        
+        ctx.restore();
+
         currAstroid.acceleration = Vector2d.zero();
         currAstroid.velocity = Vector2d.random(); // makes them move randomly around the screen.
         background.allPixels.push(currAstroid);
@@ -487,6 +536,7 @@ class Astroid extends Pixel{
         this.name = astroidData.name;
         this.content = astroidData.content;
         this.children = [];
+        this.associates = [];
         this.id = astroidData.id;
 
         const lineColor = new Color();
@@ -508,7 +558,44 @@ class Astroid extends Pixel{
         const result = this.children.find(x => x.id === id);
         return result;
     }
-    checkEdges(background) {
+    /*
+    the pixel bounces of the border and gos at the same speed and acceleration.
+    */
+    bounceEdges(background){
+
+        // include the pixels width in the equation
+
+        // mirror on the x axis
+        if (this.location.x + this.width > background.width) {
+            // Mirror the acceleration
+            this.acceleration.x = -this.acceleration.x;
+            // Mirror the velocity
+            this.velocity.x = -this.velocity.x;
+        } else if (this.location.x < 0) {
+            // Mirror the acceleration
+            this.acceleration.x = -this.acceleration.x;
+            // Mirror the velocity
+            this.velocity.x = -this.velocity.x;
+        }
+
+        
+        // mirror on the y axis
+        if (this.location.y  > background.height) { // bounce from bottom of screen
+            // Mirror the acceleration
+            this.acceleration.y = -this.acceleration.y;
+            // Mirror the velocity
+            this.velocity.y = -this.velocity.y;
+        } else if (this.location.y - this.height < 0) { // bounce from top of screen
+            // Mirror the acceleration
+            this.acceleration.y = -this.acceleration.y;
+            // Mirror the velocity
+            this.velocity.y = -this.velocity.y;
+        }
+    }
+    /*
+    The pixel enters to the oposite of the screen after going over the edge of the screen.
+    */
+    jumpEdges(background) {
         if (this.location.x > background.width) {
             this.location.x = 0;
         } else if (this.location.x < 0) {

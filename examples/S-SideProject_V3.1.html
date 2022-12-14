@@ -1,0 +1,933 @@
+<html>
+<head>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <style>
+    #background-canvas {
+        position: fixed;
+        width: 100%;
+        height: 100%;
+        background-color:black;
+        top:0;
+        left:0;
+    }
+  </style>
+</head>
+<body>
+<canvas id="background-canvas" />
+<div style="display:none;">
+    <img id="watermark" src="img/AP_beeldmerk_kleur.png" width="300" height="227" />
+    <img id="trademark" src="img/AP_trademark.png" width="300" height="227" />
+</div>
+<script>
+
+    
+$(document).ready(function () {
+
+const DATA = {
+    ASTROIDS: {
+        workorder: {
+            id: 'workorder',
+            name: "APIS-iWorkOrder",
+            text: {
+                color: "#095076",
+                size: 40,
+                font: 'Arial'
+            },
+            location: {
+                x: 450,
+                y: 250
+            },
+            height: 0, 
+            width: 0, 
+            children: {
+                ids: ['fmeca', 'asset', 'gis', 'eisen', 'risicos'],
+                line: {
+                    color: "#00FF00",
+                    width: 1,
+                    maxLength: 220,
+                    dashed: {
+                        active: false,
+                        data: []
+                    }
+                },
+            },
+            associates: {
+                ids: ['registers'],
+                line: {
+                    color: "#0000FF",
+                    width: 1,
+                    maxLength: 220,
+                    dashed: {
+                        active: true,
+                        data: [20, 20]
+                    }
+                },
+            }
+        },
+        // operations
+        fmeca: {
+            id: 'fmeca',
+            name: 'FMECA',
+            text: {
+                color: "#000000",
+                size: 30,
+                font: 'Arial'
+            },
+            location: {
+                x: 100,
+                y: 50
+            },
+            height: 0,
+            width: 0,
+            children: {
+                ids: [],
+                line: {
+                    color: "#00FF00",
+                    width: 1,
+                    maxLength: 220,
+                    dashed: {
+                        active: false,
+                        data: []
+                    }
+                },
+            },
+            associates: {
+                ids: [],
+                line: {
+                    color: "#0000FF",
+                    width: 1,
+                    maxLength: 220,
+                    dashed: {
+                        active: false,
+                        data: []
+                    }
+                },
+            }
+        },
+        asset: {
+            id: 'asset',
+            name: 'Asset',
+            text: {
+                color: "#000000",
+                size: 30,
+                font: 'Arial'
+            },
+            location: {
+                x: 100,
+                y: 250
+            },
+            height: 0,
+            width: 0,
+            children: {
+                ids: [],
+                line: {
+                    color: "#00FF00",
+                    width: 1,
+                    maxLength: 220,
+                    dashed: {
+                        active: false,
+                        data: []
+                    }
+                },
+            },
+            associates: {
+                ids: [],
+                line: {
+                    color: "#0000FF",
+                    width: 1,
+                    maxLength: 220,
+                    dashed: {
+                        active: false,
+                        data: []
+                    }
+                },
+            }
+        },
+        gis: {
+            id: 'gis',
+            name: 'GIS',
+            text: {
+                color: "#000000",
+                size: 30,
+                font: 'Arial'
+            },
+            location: {
+                x: 100,
+                y: 450
+            },
+            height: 0,
+            width: 0,
+            children: {
+                ids: [],
+                line: {
+                    color: "#00FF00",
+                    width: 1,
+                    maxLength: 220,
+                    dashed: {
+                        active: false,
+                        data: []
+                    }
+                },
+            },
+            associates: {
+                ids: [],
+                line: {
+                    color: "#0000FF",
+                    width: 1,
+                    maxLength: 220,
+                    dashed: {
+                        active: false,
+                        data: []
+                    }
+                },
+            }
+        },
+        // bedrijfsvoering
+        eisen: {
+            id: 'eisen',
+            name: 'Eisen',
+            text: {
+                color: "#000000",
+                size: 30,
+                font: 'Arial'
+            },
+            location: {
+                x: 750,
+                y: 50
+            },
+            height: 0,
+            width: 0,
+            children: {
+                ids: [],
+                line: {
+                    color: "#00FF00",
+                    width: 1,
+                    maxLength: 220,
+                    dashed: {
+                        active: false,
+                        data: []
+                    }
+                },
+            },
+            associates: {
+                ids: [],
+                line: {
+                    color: "#0000FF",
+                    width: 1,
+                    maxLength: 220,
+                    dashed: {
+                        active: false,
+                        data: []
+                    }
+                },
+            }
+        },
+        risicos: {
+            id: 'risicos',
+            name: "Risico's",
+            text: {
+                color: "#000000",
+                size: 30,
+                font: 'Arial'
+            },
+            location: {
+                x: 750,
+                y: 250
+            },
+            height: 0,
+            width: 0,
+            content: "",
+            children: {
+                ids: [],
+                line: {
+                    color: "#00FF00",
+                    width: 1,
+                    maxLength: 220,
+                    dashed: {
+                        active: false,
+                        data: []
+                    }
+                },
+            },
+            associates: {
+                ids: [],
+                line: {
+                    color: "#0000FF",
+                    width: 1,
+                    maxLength: 220,
+                    dashed: {
+                        active: false,
+                        data: []
+                    }
+                },
+            }
+        },
+        registers: {
+            id: 'registers',
+            name: "Registers",
+            text: {
+                color: "#000000",
+                size: 30,
+                font: 'Arial'
+            },
+            location: {
+                x: 750,
+                y: 450
+            },
+            height: 0,
+            width: 0,
+            children: {
+                ids: ['vgm', 'vtw', 'afwijkingen'],
+                line: {
+                    color: "#FF0000",
+                    width: 1,
+                    maxLength: 220,
+                    dashed: {
+                        active: false,
+                        data: []
+                    }
+                },
+            },
+            associates: {
+                ids: [],
+                line: {
+                    color: "#0000FF",
+                    width: 1,
+                    maxLength: 220,
+                    dashed: {
+                        active: false,
+                        data: []
+                    }
+                },
+            }
+        },
+        // registers
+        vgm: {
+            id: 'vgm',
+            name: "VGM",
+            text: {
+                color: "#000000",
+                size: 30,
+                font: 'Arial'
+            },
+            location: {
+                x: 950,
+                y: 400
+            },
+            height: 0,
+            width: 0,
+            children: {
+                ids: [],
+                line: {
+                    color: "#00FF00",
+                    width: 1,
+                    maxLength: 220,
+                    dashed: {
+                        active: false,
+                        data: []
+                    }
+                },
+            },
+            associates: {
+                ids: [],
+                line: {
+                    color: "#0000FF",
+                    width: 1,
+                    maxLength: 220,
+                    dashed: {
+                        active: false,
+                        data: []
+                    }
+                },
+            }
+        },
+        vtw: {
+            id: 'vtw',
+            name: "VTW",
+            text: {
+                color: "#000000",
+                size: 30,
+                font: 'Arial'
+            },
+            location: {
+                x: 900,
+                y: 550
+            },
+            height: 0,
+            width: 0,
+            children: {
+                ids: [],
+                line: {
+                    color: "#00FF00",
+                    width: 1,
+                    maxLength: 220,
+                    dashed: {
+                        active: false,
+                        data: []
+                    }
+                },
+            },
+            associates: {
+                ids: [],
+                line: {
+                    color: "#0000FF",
+                    width: 1,
+                    maxLength: 220,
+                    dashed: {
+                        active: false,
+                        data: []
+                    }
+                },
+            }
+        },
+        afwijkingen: {
+            id: 'afwijkingen',
+            name: "Afwijkingen",
+            text: {
+                color: "#000000",
+                size: 30,
+                font: 'Arial'
+            },
+            location: {
+                x: 650,
+                y: 550
+            },
+            height: 0,
+            width: 0,
+            children: {
+                ids: [],
+                line: {
+                    color: "#00FF00",
+                    width: 1,
+                    maxLength: 220,
+                    dashed: {
+                        active: false,
+                        data: []
+                    }
+                },
+            },
+            associates: {
+                ids: [],
+                line: {
+                    color: "#0000FF",
+                    width: 1,
+                    maxLength: 220,
+                    dashed: {
+                        active: false,
+                        data: []
+                    }
+                },
+            }
+        }
+    }
+}
+
+
+// canvas
+let canvas = document.getElementById("background-canvas");
+canvas.width = $(window).width();
+canvas.height = $(window).height();
+canvas.style.zIndex = -1;
+let ctx = canvas.getContext("2d");
+
+// create background
+window.backGroundColor =  "#FFFFFF";
+let background = window.backGround =  new Background($(window).width(), $(window).height(), Vector2d.zero(), window.backGroundColor);
+
+const watermark = document.getElementById("watermark");
+const trademark = document.getElementById("trademark");
+
+//-------------------------------
+// Loop
+//-------------------------------
+function updateBackground() {
+
+    // redraw background
+    ctx.fillStyle = background.color.getColorString();
+    ctx.fillRect(0, 0, background.width, background.height);
+    ctx.globalAlpha = 0.1;
+    ctx.drawImage(watermark, 0, 0, 605, 605, (canvas.width/2)-(605/2), (canvas.height/2)-(605/2), 605, 605);
+    ctx.globalAlpha = 1;
+
+   
+    
+
+    // create a list with all Astroids that have chrildren.
+    const astroidsWithChildren = [];
+    for(let i = 0; i < background.allPixels.length; i++){
+        const currPixel = background.allPixels[i];
+
+        if(currPixel.chrildren && currPixel.chrildren.length > 0){
+            astroidsWithChildren.push(currPixel);
+        }
+    }
+
+
+    // draw a line from each parent to its children and associates.
+    for(let i = 0; i < background.allPixels.length; i++){
+        const currPixel = background.allPixels[i];
+        const currPixelChildren = currPixel.children.objs;
+        const currPixelAssociates = currPixel.associates.objs;
+
+        if(currPixelChildren){
+            for(let j = 0; j < currPixelChildren.length; j++){
+                const currChild = currPixelChildren[j];
+                // teken een lijn tussen zichzelf en de child
+                ctx.save();
+                ctx.strokeStyle = currPixel.children.line.color.getColorString();
+                ctx.lineWidth = window.lineWidth;
+                ctx.beginPath();
+                ctx.moveTo(currPixel.location.x + (currPixel.width/2), currPixel.location.y - (currPixel.height/4));
+                ctx.lineTo(currChild.location.x + (currChild.width/2), currChild.location.y - (currChild.height/4));
+                ctx.stroke();
+                ctx.restore();
+            }
+        }
+
+        if(currPixelAssociates){
+            for(let j = 0; j < currPixelAssociates.length; j++){
+                const currAssociate = currPixelAssociates[j];
+                // teken een lijn tussen zichzelf en de child
+                ctx.save();
+                ctx.strokeStyle = currPixel.associates.line.color.getColorString();
+                if(currPixel.associates.line.dashed.active){
+                    ctx.setLineDash(currPixel.associates.line.dashed.data);
+                }
+                ctx.lineWidth = window.lineWidth;
+                ctx.beginPath();
+                ctx.moveTo(currPixel.location.x + (currPixel.width/2), currPixel.location.y - (currPixel.height/4));
+                ctx.lineTo(currAssociate.location.x + (currAssociate.width/2), currAssociate.location.y - (currAssociate.height/4));
+                ctx.stroke();
+                ctx.setLineDash([]);
+                ctx.restore();
+            }
+        }
+
+
+    }
+
+    // update the pixels so they contain movement if velocity and/or acceleration is set.
+    for (let i = 0; i < background.allPixels.length; i++){
+        const currPixel = background.allPixels[i];
+        currPixel.update();
+        currPixel.bounceEdges(background);
+
+    }
+
+    for (let i = 0; i < background.allPixels.length; i++){
+        const currPixel = background.allPixels[i];
+
+        // draw the pixel background
+        ctx.save();
+        ctx.translate(currPixel.location.x, currPixel.location.y);
+
+        // draw the pixel name
+        ctx.fillStyle = currPixel.text.color.getColorString();
+        ctx.font = `${currPixel.text.size}px ${currPixel.text.font}`;
+        
+        ctx.fillText(currPixel.name, 0, 0);
+
+        if(currPixel.id === 'workorder')
+            ctx.drawImage(trademark, 0, 0, 30, 30, 260, -40, 30, 30);
+
+        ctx.restore();
+
+    }
+
+}
+
+
+function initializeBackground(){
+    
+    // line settings
+    window.lineWidth =  1;
+    window.lineColor =  "#00FF00";
+    window.lineLengthBetweenPixels = 220;
+
+    //setting pixel
+    const pixelDataKeys = Object.keys(DATA.ASTROIDS);
+    const pixelData = DATA.ASTROIDS;
+    
+    for (let i = 0; i < pixelDataKeys.length; i++){
+        const currPixel = pixelData[pixelDataKeys[i]];
+        const currAstroid = new Astroid(currPixel);
+        
+        ctx.font = `${currPixel.text.size}px ${currPixel.text.font}`;
+        // set the width based on the text.
+        const textWidth = ctx.measureText(currAstroid.name).width;
+        currAstroid.width = textWidth;
+
+        // set the heigth based on text size.
+        const textHeight = ctx.measureText('M').width; // a very close estimate 
+        currAstroid.height = textHeight;
+        
+        ctx.restore();
+
+        currAstroid.acceleration = Vector2d.zero();
+        currAstroid.velocity = Vector2d.random(); // makes them move randomly around the screen.
+        background.allPixels.push(currAstroid);
+    }
+
+
+    
+    for (let i = 0; i < pixelDataKeys.length; i++){
+        const currPixel = pixelData[pixelDataKeys[i]];
+        const parentAstroid = background.findPixelById(currPixel.id)
+
+        // set children for each astroid
+        for(let j = 0; j < currPixel.children.ids.length; j++){
+            const currPixelChildId = currPixel.children.ids[j];
+            const currPixelChild = background.findPixelById(currPixelChildId)
+            parentAstroid.children.objs.push(currPixelChild);
+        }
+
+        // set associates for each astroid
+        for(let j = 0; j < currPixel.associates.ids.length; j++){
+            const currPixelAssociateId = currPixel.associates.ids[j];
+            const currPixelAssociate = background.findPixelById(currPixelAssociateId)
+            parentAstroid.associates.objs.push(currPixelAssociate);
+        }
+    }
+
+    // setting canvas on rezise
+    window.onresize = function (event) {
+        if (event) {
+            ctx.canvas.width = $(window).width(); //window.innerWidth;
+            ctx.canvas.height = $(window).height(); //window.innerHeight;
+            background.refreshCanvas();
+        }
+    };
+    
+
+    console.log(background.allPixels)
+    
+    setInterval(updateBackground, 20);
+}
+initializeBackground();
+
+});
+
+
+
+// Basic objects
+class Sprite{
+    constructor(width, height){
+        this.width = width;
+        this.height = height;
+    }
+    setHexAsColor(hex){
+        let color = Color.hexToRgb(hex);
+        this.color = new Color(color.r, color.g, color.b, 1);
+    }
+    getColor(){
+        return this.color;
+    }
+    // TODO Take this out.
+    static hexToRgb(hex) {
+        // Expand shorthand form (e.g. "03F") to full form (e.g. "0033FF")
+        let shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
+        hex = hex.replace(shorthandRegex, function(m, r, g, b) {
+            return r + r + g + g + b + b;
+        });
+
+        let result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+        return result ? {
+            r: parseInt(result[1], 16),
+            g: parseInt(result[2], 16),
+            b: parseInt(result[3], 16)
+        } : null;
+    }
+}
+
+class Pixel extends Sprite{
+    constructor(data){
+        super(data.width, data.height);
+        this.location = new Vector2d(data.location.x, data.location.y);
+        this.velocity = data.velocity;
+        this.acceleration = data.acceleration;
+        this.alive = true;
+    }
+    update(){
+        this.velocity.add(this.acceleration);
+        //this.velocity.limit(topspeed);
+        this.location.add(this.velocity);
+    };
+    setHeight(height){
+        this.height = height;
+    };
+    setWidth(width){
+        this.width = width;
+    };
+}
+
+class Spawner extends Sprite{
+    constructor(width, height, location){
+        super(width, height);
+        this.allPixels = [];
+        this.location = location;
+    }
+    addPixel(pixel){
+        this.allPixels.push(pixel);
+    }
+    removePixels(deadPixelContainer){
+        for(let i = 0; i < deadPixelContainer.length; i++){
+            try{
+                let pixelContainer = this.allPixels.slice();
+                pixelContainer.splice(this.allPixels.findIndex(v => v === deadPixelContainer[i]), 1).slice();
+                this.allPixels = pixelContainer.slice();
+                //console.log("Cleaning...");
+            }catch(e){
+                console.log(e);
+            }
+        }
+    }
+    hover(mousePosition){
+        return mousePosition.x > this.location.x
+            && mousePosition.x < this.location.x + this.width
+            && mousePosition.y > this.location.y
+            && mousePosition.y < this.location.y + this.height;
+        
+    }
+}
+
+// Custom objects
+class Astroid extends Pixel{
+    constructor(astroidData){
+        super(astroidData);
+        this.id = astroidData.id;
+        this.name = astroidData.name;
+
+        console.log(astroidData);
+        const childrenLineColor = new Color();
+        childrenLineColor.setColorHex(astroidData.children.line.color)
+        this.children = {
+            objs: [],
+            line: {
+                color: childrenLineColor,
+                width: astroidData.children.line.width,
+                maxLength: astroidData.children.line.maxLength,
+                dashed: {
+                    active: astroidData.children.line.dashed.active,
+                    data: astroidData.children.line.dashed.data
+                }
+            }
+        };
+        
+        const associateLineColor = new Color();
+        associateLineColor.setColorHex(astroidData.associates.line.color)
+        this.associates = {
+            objs: [],
+            line: {
+                color: associateLineColor,
+                width: astroidData.associates.line.width,
+                maxLength: astroidData.associates.line.maxLength,
+                dashed: {
+                    active: astroidData.associates.line.dashed.active,
+                    data: astroidData.associates.line.dashed.data
+                }
+            }
+        };
+        
+        const textColor = new Color();
+        textColor.setColorHex(astroidData.text.color)
+        this.text = {
+            color: textColor,
+            size: astroidData.text.size,
+            font: astroidData.text.font
+        }
+        
+    }
+    getChildById(id){
+        const result = this.children.find(x => x.id === id);
+        return result;
+    }
+    /*
+    the pixel bounces of the border and gos at the same speed and acceleration.
+    */
+    bounceEdges(background){
+
+        // include the pixels width in the equation
+
+        // mirror on the x axis
+        if (this.location.x + this.width > background.width) {
+            // Mirror the acceleration
+            this.acceleration.x = -this.acceleration.x;
+            // Mirror the velocity
+            this.velocity.x = -this.velocity.x;
+        } else if (this.location.x < 0) {
+            // Mirror the acceleration
+            this.acceleration.x = -this.acceleration.x;
+            // Mirror the velocity
+            this.velocity.x = -this.velocity.x;
+        }
+
+        
+        // mirror on the y axis
+        if (this.location.y  > background.height) { // bounce from bottom of screen
+            // Mirror the acceleration
+            this.acceleration.y = -this.acceleration.y;
+            // Mirror the velocity
+            this.velocity.y = -this.velocity.y;
+        } else if (this.location.y - this.height < 0) { // bounce from top of screen
+            // Mirror the acceleration
+            this.acceleration.y = -this.acceleration.y;
+            // Mirror the velocity
+            this.velocity.y = -this.velocity.y;
+        }
+    }
+    /*
+    The pixel enters to the oposite of the screen after going over the edge of the screen.
+    */
+    jumpEdges(background) {
+        if (this.location.x > background.width) {
+            this.location.x = 0;
+        } else if (this.location.x < 0) {
+            this.location.x = background.width;
+        }
+        if (this.location.y > background.height) {
+            this.location.y = 0;
+        } else if (this.location.y < 0) {
+            this.location.y = background.height;
+        }
+    }
+}
+
+class Background extends Spawner{
+    constructor(width, height, location, color){
+        super(width, height, location);
+        this.allPixels = [];
+        this.pixelCount = 160;
+        this.setHexAsColor(color);
+        this.isPaused = false;
+    }
+    clearPixels(ctx){
+        this.allPixels.length = 0;
+        this.pixelCount = 0;
+        ctx.fillStyle = this.color.getColorString();
+        ctx.fillRect(0, 0, this.width, this.height);
+    };
+    getRandomLocation(){
+        let minWidth = this.location.x;
+        let maxWidth = this.location.x + this.width;
+        let minHeight = this.location.y;
+        let maxHeight = this.location.y + this.height;
+        let randomWidthLocation = Math.random() * (maxWidth - minWidth + 1)+minWidth;
+        let randomHeightLocation = Math.random() * (maxHeight - minHeight + 1) + minHeight;
+        return new Vector2d(randomWidthLocation, randomHeightLocation);
+    }
+    restart(){
+        this.allPixels.length = 0;
+        this.pixelCount = 160;
+        // empty background of Pixels
+        if(this.allPixels.length > 0){
+            this.allPixels.length = 0;
+        }
+        this.start();
+    };
+    refreshCanvas(){
+        this.width = $(window).width();
+        this.height = $(window).height();
+    };
+    pause(){
+        this.isPaused = true;
+    };
+    start(){
+        this.isPaused = false;
+    }
+    findPixelById(id){
+        const result = this.allPixels.find(x => x.id === id);
+        return result;
+    }
+}
+
+// Standard objects
+class Color{
+    constructor(r,g,b,o = 1){
+        this.red = r;
+        this.green = g;
+        this.blue = b;
+        this.opacity = o;
+    }
+    getColorString(){
+        return "rgba("+this.red+","+this.green+","+this.blue+","+this.opacity+")";
+    }
+    setColorHex(hex){
+        let rgb = Color.hexToRgb(hex);
+        this.red = rgb.r;
+        this.green = rgb.g;
+        this.blue = rgb.b;
+    }
+    getColorHex(){
+        return Color.rgbToHex(this.red, this.green, this.blue);
+    }
+    static rgbToHex(r, g, b) {
+        return "#" + Color.componentToHex(r) + Color.componentToHex(g) + Color.componentToHex(b);
+    }
+    static componentToHex(c) {
+        let hex = c.toString(16);
+        return hex.length === 1 ? "0" + hex : hex;
+    }
+    static hexToRgb(hex) {
+        let result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+        return result ? {
+            r: parseInt(result[1], 16),
+            g: parseInt(result[2], 16),
+            b: parseInt(result[3], 16)
+        } : null;
+    }
+}
+
+class Vector2d{
+    constructor(x, y){
+        this.x = x;
+        this.y = y;
+    }
+    add(vector2d) {
+        this.x += vector2d.x;
+        this.y += vector2d.y;
+    };
+    sub(vector2d) {
+        this.x -= vector2d.x;
+        this.y -= vector2d.y;
+    };
+    mult(mult) {
+        this.x *= mult;
+        this.y *= mult;
+    };
+    div(div) {
+        this.x /= div;
+        this.y /= div;
+    };
+    mag() {
+        return Math.sqrt(this.x * this.x, this.y * this.y);
+    };
+    norm() {
+        let m = mag();
+        if (m !== 0) {
+            div(m);
+        }
+    };
+    static zero(){
+        return new Vector2d(0,0);
+    };
+    static random(multiplier = 1){
+        // return a random Vector2d
+        let vector;
+        let random = Math.random();
+        if (random <= 0.25) {
+            vector = new Vector2d(-Math.random() * multiplier, -Math.random() * multiplier);
+        } else if (random > 0.25 && random <= 0.5) {
+            vector = new Vector2d(-Math.random() * multiplier, Math.random() * multiplier);
+        } else if (random > 0.5 && random <= 0.75) {
+            vector = new Vector2d(Math.random() * multiplier, -Math.random() * multiplier);
+        } else {
+            vector = new Vector2d(Math.random() * multiplier, Math.random() * multiplier);
+        }
+        return vector;
+    }
+}
+
+
+</script>
+</body>
+</html>

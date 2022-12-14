@@ -365,7 +365,7 @@ function initializeBackground(){
         const currAstroid = new Astroid(currPixel);
         
         currAstroid.acceleration = Vector2d.zero();
-        currAstroid.velocity = Vector2d.random(); // makes them move randomly around the screen.
+        currAstroid.velocity = Vector2d.zero(); // makes them move randomly around the screen.
         background.allPixels.push(currAstroid);
     }
 

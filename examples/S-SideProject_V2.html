@@ -14,7 +14,10 @@
 </head>
 <body>
 <canvas id="background-canvas" />
-
+<div style="display:none;">
+    <img id="watermark" src="img/AP_beeldmerk_kleur.png" width="300" height="227" />
+    <img id="trademark" src="img/AP_trademark.png" width="300" height="227" />
+</div>
 <script>
 
     
@@ -24,15 +27,15 @@ const DATA = {
     ASTROIDS: {
         workorder: {
             id: 'workorder',
-            name: "Workorder",
+            name: "APIS-iWorkOrder",
             line: {
                 color: "#00FF00",
                 width: 1,
                 maxLength: 220
             },
             text: {
-                color: "#0000FF",
-                size: '30px',
+                color: "#095076",
+                size: '40px',
                 font: 'Arial'
             },
             color: '#FFFFFF',
@@ -273,6 +276,8 @@ let ctx = canvas.getContext("2d");
 window.backGroundColor =  "#FFFFFF";
 let background = window.backGround =  new Background($(window).width(), $(window).height(), Vector2d.zero(), window.backGroundColor);
 
+const watermark = document.getElementById("watermark");
+const trademark = document.getElementById("trademark");
 
 //-------------------------------
 // Loop
@@ -282,6 +287,10 @@ function updateBackground() {
     // redraw background
     ctx.fillStyle = background.color.getColorString();
     ctx.fillRect(0, 0, background.width, background.height);
+    ctx.globalAlpha = 0.1;
+    ctx.drawImage(watermark, 0, 0, 605, 605, (canvas.width/2)-(605/2), (canvas.height/2)-(605/2), 605, 605);
+    ctx.globalAlpha = 1;
+    
 
     for (let i = 0; i < background.allPixels.length; i++){
         const currPixel = background.allPixels[i];
@@ -297,6 +306,8 @@ function updateBackground() {
         ctx.fillStyle = currPixel.text.color.getColorString();
         ctx.font = `${currPixel.text.size} ${currPixel.text.font}`;
         ctx.fillText(currPixel.name, -currPixel.width/2, 0);
+        if(currPixel.id === 'workorder')
+            ctx.drawImage(trademark, 0, 0, 30, 30, 260, -40, 30, 30);
 
         // draw the pixel content
         ctx.font = "50px Arial";
