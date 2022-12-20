@@ -25,24 +25,24 @@ $(document).ready(function () {
 
 const DATA = {
     ASTROIDS: {
-        workorder: {
-            id: 'workorder',
-            name: "APIS-iWorkOrder",
+        apis: {
+            id: 'apis',
+            name: "APIS!",
             text: {
-                color: "#095076",
-                size: 40,
+                color: "#FF0000",
+                size: 50,
                 font: 'Arial'
             },
             location: {
-                x: 450,
-                y: 250
+                x: 900,
+                y: 500
             },
-            height: 0, 
-            width: 0, 
+            height: 0,
+            width: 0,
             children: {
-                ids: ['fmeca', 'asset', 'gis', 'eisen', 'risicos'],
+                ids: [],
                 line: {
-                    color: "#00FF00",
+                    color: "#FF0000",
                     width: 1,
                     maxLength: 220,
                     dashed: {
@@ -52,7 +52,7 @@ const DATA = {
                 },
             },
             associates: {
-                ids: ['registers'],
+                ids: ['oms', 'ams', 'rms'],
                 line: {
                     color: "#0000FF",
                     width: 1,
@@ -67,26 +67,80 @@ const DATA = {
                 gravity: 8.7,
                 inner: {
                     color: '#00FF00',
-                    radius: 160
+                    radius: 160,
+                    bbox: [300, 300]
+                },
+                outer: {
+                    color: '#00FF00',
+                    radius: 720,
+                    bbox: [300, 300]
+                }
+            }
+        },
+        // OMS
+        oms: {
+            id: 'oms',
+            name: "OMS",
+            text: {
+                color: "#095076",
+                size: 30,
+                font: 'Arial'
+            },
+            location: {
+                x: 300,
+                y: 450
+            },
+            height: 0, 
+            width: 0, 
+            children: {
+                ids: ['meldkamer', 'neninsp', 'maxigis', 'timesheet', 'vgm'],
+                line: {
+                    color: "#FF00FF",
+                    width: 1,
+                    maxLength: 220,
+                    dashed: {
+                        active: false,
+                        data: []
+                    }
+                },
+            },
+            associates: {
+                ids: [], // NOTE: This is only set on one of the associates. notice how in the register object, 'workorder' is not set. setting in both objects will severly impact performance.
+                line: {
+                    color: "#0000FF",
+                    width: 1,
+                    maxLength: 220,
+                    dashed: {
+                        active: true,
+                        data: []
+                    }
+                },
+            },
+            orbit: {
+                gravity: 8.7,
+                inner: {
+                    color: '#00FF00',
+                    radius: 160,
+                    bbox: [250, 60]
                 },
                 outer: {
                     color: '#FF0000',
-                    radius: 320
+                    radius: 320,
+                    bbox: [700, 700]
                 }
             }
         },
-        // operations
-        fmeca: {
-            id: 'fmeca',
-            name: 'FMECA',
+        meldkamer: {
+            id: 'meldkamer',
+            name: 'Meldkamer',
             text: {
                 color: "#000000",
                 size: 30,
                 font: 'Arial'
             },
             location: {
-                x: 100,
-                y: 50
+                x: 150,
+                y: 150
             },
             height: 0,
             width: 0,
@@ -118,24 +172,130 @@ const DATA = {
                 gravity: 8.7,
                 inner: {
                     color: '#00FF00',
-                    radius: 160
+                    radius: 160,
+                    bbox: [300, 300]
                 },
                 outer: {
                     color: '#00FF00',
-                    radius: 720
+                    radius: 720,
+                    bbox: [300, 300]
                 }
             }
         },
-        asset: {
-            id: 'asset',
-            name: 'Asset',
+        neninsp: {
+            id: 'neninsp',
+            name: 'NEN-Inspections',
             text: {
                 color: "#000000",
                 size: 30,
                 font: 'Arial'
             },
             location: {
-                x: 100,
+                x: 200,
+                y: 350
+            },
+            height: 0,
+            width: 0,
+            children: {
+                ids: [],
+                line: {
+                    color: "#00FF00",
+                    width: 1,
+                    maxLength: 220,
+                    dashed: {
+                        active: false,
+                        data: []
+                    }
+                },
+            },
+            associates: {
+                ids: [],
+                line: {
+                    color: "#0000FF",
+                    width: 1,
+                    maxLength: 220,
+                    dashed: {
+                        active: false,
+                        data: []
+                    }
+                },
+            },
+            orbit: {
+                gravity: 8.7,
+                inner: {
+                    color: '#00FF00',
+                    radius: 160,
+                    bbox: [300, 300]
+                },
+                outer: {
+                    color: '#00FF00',
+                    radius: 720,
+                    bbox: [300, 300]
+                }
+            }
+        },
+        maxigis: {
+            id: 'maxigis',
+            name: 'MaxiGIS',
+            text: {
+                color: "#000000",
+                size: 30,
+                font: 'Arial'
+            },
+            location: {
+                x: 150,
+                y: 650
+            },
+            height: 0,
+            width: 0,
+            children: {
+                ids: [],
+                line: {
+                    color: "#00FF00",
+                    width: 1,
+                    maxLength: 220,
+                    dashed: {
+                        active: false,
+                        data: []
+                    }
+                },
+            },
+            associates: {
+                ids: [],
+                line: {
+                    color: "#0000FF",
+                    width: 1,
+                    maxLength: 220,
+                    dashed: {
+                        active: false,
+                        data: []
+                    }
+                },
+            },
+            orbit: {
+                gravity: 8.7,
+                inner: {
+                    color: '#00FF00',
+                    radius: 160,
+                    bbox: [300, 300]
+                },
+                outer: {
+                    color: '#00FF00',
+                    radius: 720,
+                    bbox: [300, 300]
+                }
+            }
+        },
+        timesheet: {
+            id: 'timesheet',
+            name: 'Timesheet',
+            text: {
+                color: "#000000",
+                size: 30,
+                font: 'Arial'
+            },
+            location: {
+                x: 650,
                 y: 250
             },
             height: 0,
@@ -168,126 +328,27 @@ const DATA = {
                 gravity: 8.7,
                 inner: {
                     color: '#00FF00',
-                    radius: 160
+                    radius: 160,
+                    bbox: [300, 300]
                 },
                 outer: {
                     color: '#00FF00',
-                    radius: 720
+                    radius: 720,
+                    bbox: [300, 300]
                 }
             }
         },
-        gis: {
-            id: 'gis',
-            name: 'GIS',
+        vgm: {
+            id: 'vgm',
+            name: "VGM",
             text: {
                 color: "#000000",
                 size: 30,
                 font: 'Arial'
             },
             location: {
-                x: 100,
-                y: 450
-            },
-            height: 0,
-            width: 0,
-            children: {
-                ids: [],
-                line: {
-                    color: "#00FF00",
-                    width: 1,
-                    maxLength: 220,
-                    dashed: {
-                        active: false,
-                        data: []
-                    }
-                },
-            },
-            associates: {
-                ids: [],
-                line: {
-                    color: "#0000FF",
-                    width: 1,
-                    maxLength: 220,
-                    dashed: {
-                        active: false,
-                        data: []
-                    }
-                },
-            },
-            orbit: {
-                gravity: 8.7,
-                inner: {
-                    color: '#00FF00',
-                    radius: 160
-                },
-                outer: {
-                    color: '#00FF00',
-                    radius: 720
-                }
-            }
-        },
-        // bedrijfsvoering
-        eisen: {
-            id: 'eisen',
-            name: 'Eisen',
-            text: {
-                color: "#000000",
-                size: 30,
-                font: 'Arial'
-            },
-            location: {
-                x: 750,
-                y: 50
-            },
-            height: 0,
-            width: 0,
-            children: {
-                ids: [],
-                line: {
-                    color: "#00FF00",
-                    width: 1,
-                    maxLength: 220,
-                    dashed: {
-                        active: false,
-                        data: []
-                    }
-                },
-            },
-            associates: {
-                ids: [],
-                line: {
-                    color: "#0000FF",
-                    width: 1,
-                    maxLength: 220,
-                    dashed: {
-                        active: false,
-                        data: []
-                    }
-                },
-            },
-            orbit: {
-                gravity: 8.7,
-                inner: {
-                    color: '#00FF00',
-                    radius: 160
-                },
-                outer: {
-                    color: '#00FF00',
-                    radius: 720
-                }
-            }
-        },
-        risicos: {
-            id: 'risicos',
-            name: "Risico's",
-            text: {
-                color: "#000000",
-                size: 30,
-                font: 'Arial'
-            },
-            location: {
-                x: 750,
-                y: 250
+                x: 550,
+                y: 750
             },
             height: 0,
             width: 0,
@@ -320,30 +381,34 @@ const DATA = {
                 gravity: 8.7,
                 inner: {
                     color: '#00FF00',
-                    radius: 160
+                    radius: 160,
+                    bbox: [300, 300]
                 },
                 outer: {
                     color: '#00FF00',
-                    radius: 720
+                    radius: 720,
+                    bbox: [300, 300]
                 }
             }
         },
-        registers: {
-            id: 'registers',
-            name: "Registers",
+        
+        // AMS
+        ams: {
+            id: 'ams',
+            name: "AMS",
             text: {
                 color: "#000000",
                 size: 30,
                 font: 'Arial'
             },
             location: {
-                x: 750,
-                y: 450
+                x: 1050,
+                y: 200
             },
             height: 0,
             width: 0,
             children: {
-                ids: ['vgm', 'vtw', 'afwijkingen'],
+                ids: ['poschema', 'fmeca', 'expertsys'], 
                 line: {
                     color: "#FF0000",
                     width: 1,
@@ -370,26 +435,27 @@ const DATA = {
                 gravity: 8.7,
                 inner: {
                     color: '#00FF00',
-                    radius: 160
+                    radius: 80,
+                    bbox: [150, 50]
                 },
                 outer: {
-                    color: '#00FF00',
-                    radius: 720
+                    color: '#FF0000',
+                    radius: 270,
+                    bbox: [500, 500]
                 }
             }
         },
-        // registers
-        vgm: {
-            id: 'vgm',
-            name: "VGM",
+        poschema: {
+            id: 'poschema',
+            name: "PO+ Schema",
             text: {
                 color: "#000000",
                 size: 30,
                 font: 'Arial'
             },
             location: {
-                x: 950,
-                y: 400
+                x: 1000,
+                y: 50
             },
             height: 0,
             width: 0,
@@ -421,24 +487,184 @@ const DATA = {
                 gravity: 8.7,
                 inner: {
                     color: '#00FF00',
-                    radius: 160
+                    radius: 160,
+                    bbox: [300, 300]
                 },
                 outer: {
                     color: '#00FF00',
-                    radius: 720
+                    radius: 720,
+                    bbox: [300, 300]
                 }
             }
         },
-        vtw: {
-            id: 'vtw',
-            name: "VTW",
+        fmeca: {
+            id: 'fmeca',
+            name: "FMECA 2.0",
             text: {
                 color: "#000000",
                 size: 30,
                 font: 'Arial'
             },
             location: {
-                x: 900,
+                x: 1250,
+                y: 150
+            },
+            height: 0,
+            width: 0,
+            children: {
+                ids: [],
+                line: {
+                    color: "#00FF00",
+                    width: 1,
+                    maxLength: 220,
+                    dashed: {
+                        active: false,
+                        data: []
+                    }
+                },
+            },
+            associates: {
+                ids: [],
+                line: {
+                    color: "#0000FF",
+                    width: 1,
+                    maxLength: 220,
+                    dashed: {
+                        active: false,
+                        data: []
+                    }
+                },
+            },
+            orbit: {
+                gravity: 8.7,
+                inner: {
+                    color: '#00FF00',
+                    radius: 160,
+                    bbox: [300, 300]
+                },
+                outer: {
+                    color: '#00FF00',
+                    radius: 720,
+                    bbox: [300, 300]
+                }
+            }
+        },
+        expertsys: {
+            id: 'expertsys',
+            name: "Expert Systems",
+            text: {
+                color: "#000000",
+                size: 30,
+                font: 'Arial'
+            },
+            location: {
+                x: 1050,
+                y: 400
+            },
+            height: 0,
+            width: 0,
+            children: {
+                ids: [], //'vsn', 'maxigis', 'timesheet', 'nenelapd', 'helohamer'
+                line: {
+                    color: "#FF00FF",
+                    width: 1,
+                    maxLength: 220,
+                    dashed: {
+                        active: false,
+                        data: []
+                    }
+                },
+            },
+            associates: {
+                ids: [],
+                line: {
+                    color: "#0000FF",
+                    width: 1,
+                    maxLength: 220,
+                    dashed: {
+                        active: false,
+                        data: []
+                    }
+                },
+            },
+            orbit: {
+                gravity: 8.7,
+                inner: {
+                    color: '#00FF00',
+                    radius: 160,
+                    bbox: [80, 50]
+                },
+                outer: {
+                    color: '#FF0000',
+                    radius: 720,
+                    bbox: [600, 600]
+                }
+            }
+        },
+        
+        // RMS
+        rms: {
+            id: 'rms',
+            name: "RMS",
+            text: {
+                color: "#000000",
+                size: 30,
+                font: 'Arial'
+            },
+            location: {
+                x: 1250,
+                y: 750
+            },
+            height: 0,
+            width: 0,
+            children: {
+                ids: ['risicomatrix', 'afwijkingen', 'eisen', 'vtw'],
+                line: {
+                    color: "#00FF00",
+                    width: 1,
+                    maxLength: 220,
+                    dashed: {
+                        active: false,
+                        data: []
+                    }
+                },
+            },
+            associates: {
+                ids: [],
+                line: {
+                    color: "#0000FF",
+                    width: 1,
+                    maxLength: 220,
+                    dashed: {
+                        active: false,
+                        data: []
+                    }
+                },
+            },
+            orbit: {
+                gravity: 8.7,
+                inner: {
+                    color: '#00FF00',
+                    radius: 160,
+                    bbox: [300, 300]
+                },
+                outer: {
+                    color: '#FF0000',
+                    radius: 720,
+                    bbox: [600, 600]
+                }
+            }
+        },
+        risicomatrix: {
+            id: 'risicomatrix',
+            name: "Risico Matrix",
+            text: {
+                color: "#000000",
+                size: 30,
+                font: 'Arial'
+            },
+            location: {
+                x: 1450,
                 y: 550
             },
             height: 0,
@@ -471,11 +697,13 @@ const DATA = {
                 gravity: 8.7,
                 inner: {
                     color: '#00FF00',
-                    radius: 160
+                    radius: 160,
+                    bbox: [300, 300]
                 },
                 outer: {
                     color: '#00FF00',
-                    radius: 720
+                    radius: 720,
+                    bbox: [300, 300]
                 }
             }
         },
@@ -488,7 +716,7 @@ const DATA = {
                 font: 'Arial'
             },
             location: {
-                x: 650,
+                x: 1150,
                 y: 550
             },
             height: 0,
@@ -521,18 +749,126 @@ const DATA = {
                 gravity: 8.7,
                 inner: {
                     color: '#00FF00',
-                    radius: 160
+                    radius: 160,
+                    bbox: [300, 300]
                 },
                 outer: {
                     color: '#00FF00',
-                    radius: 720
+                    radius: 720,
+                    bbox: [300, 300]
                 }
             }
-        }
+        },
+        eisen: {
+            id: 'eisen',
+            name: "Eisen",
+            text: {
+                color: "#000000",
+                size: 30,
+                font: 'Arial'
+            },
+            location: {
+                x: 1050,
+                y: 900
+            },
+            height: 0,
+            width: 0,
+            children: {
+                ids: [],
+                line: {
+                    color: "#00FF00",
+                    width: 1,
+                    maxLength: 220,
+                    dashed: {
+                        active: false,
+                        data: []
+                    }
+                },
+            },
+            associates: {
+                ids: [],
+                line: {
+                    color: "#0000FF",
+                    width: 1,
+                    maxLength: 220,
+                    dashed: {
+                        active: false,
+                        data: []
+                    }
+                },
+            },
+            orbit: {
+                gravity: 8.7,
+                inner: {
+                    color: '#00FF00',
+                    radius: 160,
+                    bbox: [300, 300]
+                },
+                outer: {
+                    color: '#00FF00',
+                    radius: 720,
+                    bbox: [300, 300]
+                }
+            }
+        },
+        vtw: {
+            id: 'vtw',
+            name: "VTW",
+            text: {
+                color: "#000000",
+                size: 30,
+                font: 'Arial'
+            },
+            location: {
+                x: 1450,
+                y: 950
+            },
+            height: 0,
+            width: 0,
+            children: {
+                ids: [],
+                line: {
+                    color: "#00FF00",
+                    width: 1,
+                    maxLength: 220,
+                    dashed: {
+                        active: false,
+                        data: []
+                    }
+                },
+            },
+            associates: {
+                ids: [],
+                line: {
+                    color: "#0000FF",
+                    width: 1,
+                    maxLength: 220,
+                    dashed: {
+                        active: false,
+                        data: []
+                    }
+                },
+            },
+            orbit: {
+                gravity: 8.7,
+                inner: {
+                    color: '#00FF00',
+                    radius: 160,
+                    bbox: [300, 300]
+                },
+                outer: {
+                    color: '#00FF00',
+                    radius: 720,
+                    bbox: [300, 300]
+                }
+            }
+        },
+
     }
 }
 
-const DEBUG_MODE = true;
+const DEBUG_MODE = false;
+const PAUSED = false;
 
 // canvas
 let canvas = document.getElementById("background-canvas");
@@ -567,6 +903,9 @@ function updateBackground() {
         const currPixel = background.allPixels[i];
         currPixel.update();
         currPixel.bounceEdges(background);
+        //currPixel.bounceFromAssociate();
+        currPixel.bounceFromParentBBoxOuter();
+
 
     }
 
@@ -625,8 +964,8 @@ function updateBackground() {
         
         ctx.fillText(currPixel.name, 0, 0);
 
-        if(currPixel.id === 'workorder')
-            ctx.drawImage(trademark, 0, 0, 30, 30, 260, -40, 30, 30);
+        //if(currPixel.id === 'workorder')
+            //ctx.drawImage(trademark, 0, 0, 30, 30, 260, -40, 30, 30);
 
         ctx.restore();
 
@@ -638,8 +977,7 @@ function updateBackground() {
         const currPixel = background.allPixels[i];
         const currPixelChildren = currPixel.children.objs;
 
-        if(currPixelChildren.length <= 0) return;
-
+        if(currPixelChildren.length <= 0) continue;
         // draw inner orbital circle
         ctx.save();
         ctx.strokeStyle = currPixel.orbit.inner.color.getColorString();
@@ -656,9 +994,27 @@ function updateBackground() {
         ctx.lineWidth = window.lineWidth;
         ctx.translate(currPixel.location.x, currPixel.location.y);
         ctx.beginPath();
-        ctx.arc(currPixel.width/2, -currPixel.height/2, currPixel.orbit.outer.radius, 0, Math.PI * 2, true); // circle
+        //ctx.arc(currPixel.width/2, -currPixel.height/2, currPixel.orbit.outer.radius, 0, Math.PI * 2, true); // circle
         ctx.stroke();
         ctx.restore();
+
+
+        // draw outer orbital boundrybox
+        ctx.save();
+        ctx.strokeStyle = currPixel.orbit.outer.color.getColorString();
+        ctx.lineWidth = window.lineWidth;
+        ctx.translate(currPixel.location.x, currPixel.location.y);
+        ctx.strokeRect(currPixel.width/2 - (currPixel.orbit.outer.bbox[0]/2), -(currPixel.height/2) + -(currPixel.orbit.outer.bbox[1]/2), currPixel.orbit.outer.bbox[0], currPixel.orbit.outer.bbox[1]);
+        ctx.restore();
+
+        // draw inner orbital boundry box
+        ctx.save();
+        ctx.strokeStyle = currPixel.orbit.inner.color.getColorString();
+        ctx.lineWidth = window.lineWidth;
+        ctx.translate(currPixel.location.x, currPixel.location.y);
+        ctx.strokeRect(currPixel.width/2 - (currPixel.orbit.inner.bbox[0]/2), -(currPixel.height/2) + -(currPixel.orbit.inner.bbox[1]/2), currPixel.orbit.inner.bbox[0], currPixel.orbit.inner.bbox[1]);
+        ctx.restore();
+
     }
 }
 
@@ -690,7 +1046,11 @@ function initializeBackground(){
         ctx.restore();
 
         currAstroid.acceleration = Vector2d.zero();
-        currAstroid.velocity = Vector2d.random(); // makes them move randomly around the screen.
+        currAstroid.velocity = PAUSED ? Vector2d.zero() : Vector2d.random(); // makes them move randomly around the screen.
+        if( currAstroid.id === 'apis'){
+            currAstroid.velocity = Vector2d.zero();
+        }
+        
         background.allPixels.push(currAstroid);
     }
 
@@ -723,9 +1083,6 @@ function initializeBackground(){
             background.refreshCanvas();
         }
     };
-    
-
-    console.log(background.allPixels)
     
     setInterval(updateBackground, 20);
 }
@@ -855,7 +1212,7 @@ class Astroid extends Pixel{
             }
         };
         
-        // text style.
+        // text style data
         const textColor = new Color();
         textColor.setColorHex(astroidData.text.color)
         this.text = {
@@ -870,14 +1227,18 @@ class Astroid extends Pixel{
         const outerOrbitColor = new Color();
         outerOrbitColor.setColorHex(astroidData.orbit.outer.color);
         this.orbit = {
-            gravity: astroidData.orbit.gravity,
+            gravity: astroidData.orbit.gravity, // not yet used in any way.
             inner: {
                 color: innerOrbitColor,
-                radius: astroidData.orbit.inner.radius
+                radius: astroidData.orbit.inner.radius,
+                mass: astroidData.orbit.inner.radius * 0.1,
+                bbox: astroidData.orbit.inner.bbox
             },
             outer: {
                 color: outerOrbitColor,
-                radius: astroidData.orbit.outer.radius
+                radius: astroidData.orbit.outer.radius,
+                mass: astroidData.orbit.outer.radius * 0.1,
+                bbox: astroidData.orbit.outer.bbox
             }
 
         }
@@ -891,8 +1252,6 @@ class Astroid extends Pixel{
     */
     bounceEdges(background){
 
-        // include the pixels width in the equation
-
         // mirror on the x axis
         if (this.location.x + this.width > background.width) {
             // Mirror the acceleration
@@ -905,7 +1264,6 @@ class Astroid extends Pixel{
             // Mirror the velocity
             this.velocity.x = -this.velocity.x;
         }
-
         
         // mirror on the y axis
         if (this.location.y  > background.height) { // bounce from bottom of screen
@@ -920,6 +1278,143 @@ class Astroid extends Pixel{
             this.velocity.y = -this.velocity.y;
         }
     }
+    
+    isCollidingWith(circle) {
+        const dx = (this.location.x + this.width/2) - (circle.location.x + circle.width/2);
+        const dy = this.location.y - circle.location.y;
+        const dr = this.orbit.inner.radius + circle.orbit.inner.radius;
+        
+        const squaredDistance = Math.pow(dx, 2) + Math.pow(dy, 2);
+
+        return squaredDistance < Math.pow(dr, 2);
+    }
+    bounceFromAssociate(){
+        const locationSelf = new Vector2d(this.location.x, this.location.y);
+        
+        for(let i = 0; i < this.associates.objs.length; i++){
+            const currAssociate = this.associates.objs[i];
+            const locationCurrAss = new Vector2d(currAssociate.location.x, currAssociate.location.y);
+
+            let distanceVect = Vector2d.sub(currAssociate.location, this.location);
+            let distanceVectMag = distanceVect.mag();
+            let minDistance = this.orbit.inner.radius + currAssociate.orbit.inner.radius;
+
+            //console.log("min dist: ", minDistance)
+            //console.log("dist mag: ", distanceVectMag)
+
+            const result = this.isCollidingWith(currAssociate);
+            if(result){
+                
+                let distanceCorrection = (minDistance - distanceVectMag) / 2.0;
+
+                let d = distanceVect.copy();
+
+                let correctionVector = d.norm();
+                correctionVector.mult(distanceCorrection);
+
+                currAssociate.location.add(correctionVector);
+                this.location.sub(correctionVector);
+
+                // get angle of distanceVect
+                let theta = distanceVect.heading();
+
+                
+                // precalculate trig values
+                let sine = Math.sin(theta);
+                let cosine = Math.cos(theta);
+
+                //bTemp will hold rotated ball this.positions.
+                let bTemp = [new Vector2d(), new Vector2d()];
+
+                bTemp[1].x = cosine * distanceVect.x + sine * distanceVect.y;
+                bTemp[1].y = cosine * distanceVect.y - sine * distanceVect.x;
+
+                // rotate Temporary velocities
+                let vTemp = [new Vector2d(), new Vector2d()];
+
+                vTemp[0].x = cosine * this.velocity.x + sine * this.velocity.y;
+                vTemp[0].y = cosine * this.velocity.y - sine * this.velocity.x;
+                vTemp[1].x = cosine * currAssociate.velocity.x + sine * currAssociate.velocity.y;
+                vTemp[1].y = cosine * currAssociate.velocity.y - sine * currAssociate.velocity.x;
+
+                //calculate the final this.velocity along the x-axis.
+                let vFinal = [new Vector2d(), new Vector2d()];
+
+                // final rotated this.velocity for b[0]
+                const massSelf = this.orbit.inner.mass;
+                const massAss = currAssociate.orbit.inner.mass;
+                vFinal[0].x = ((massSelf - massAss) * vTemp[0].x + 2 * massAss * vTemp[1].x) / (massSelf + massAss);
+                vFinal[0].y = vTemp[0].y;
+                vFinal[1].x = ((massAss - massSelf) * vTemp[1].x + 2 * massSelf * vTemp[0].x) / (massSelf + massAss);
+                vFinal[1].y = vTemp[1].y;
+
+                // hack to avoid clumping
+                bTemp[0].x += vFinal[0].x;
+                bTemp[1].x += vFinal[1].x;
+
+                let bFinal = [new Vector2d(), new Vector2d()];
+
+                bFinal[0].x = cosine * bTemp[0].x - sine * bTemp[0].y;
+                bFinal[0].y = cosine * bTemp[0].y + sine * bTemp[0].x;
+                bFinal[1].x = cosine * bTemp[1].x - sine * bTemp[1].y;
+                bFinal[1].y = cosine * bTemp[1].y + sine * bTemp[1].x;
+
+                console.log(bFinal);
+
+                // update balls to screen this.position
+                currAssociate.location.x = this.location.x + bFinal[1].x;
+                currAssociate.location.y = this.location.y + bFinal[1].y;
+
+                this.location.add(bFinal[0]);
+
+                // update velocities
+                this.velocity.x = cosine * vFinal[0].x - sine * vFinal[0].y;
+                this.velocity.y = cosine * vFinal[0].y + sine * vFinal[0].x;
+                currAssociate.velocity.x = cosine * vFinal[1].x - sine * vFinal[1].y;
+                currAssociate.velocity.y = cosine * vFinal[1].y + sine * vFinal[1].x;
+            }
+        }
+    }
+    
+    bounceFromParentBBoxOuter(){
+        const bboxTop = (this.location.y - this.height/2) - this.orbit.outer.bbox[1]/2;
+        const bboxBottom = (this.location.y - this.height) + this.orbit.outer.bbox[1]/2;
+
+        const bboxLeft = (this.location.x + this.height/2) - this.orbit.outer.bbox[0]/2;
+        const bboxRight = (this.location.x + this.height) + this.orbit.outer.bbox[0]/2;
+
+        for(let i = 0; i < this.children.objs.length; i++){
+            const currChild = this.children.objs[i];
+            // minus cause its up
+
+            const childTop = currChild.location.y - currChild.height;
+            const childBottom = currChild.location.y;
+            const childLeft = currChild.location.x - currChild.width;
+            const childRight = currChild.location.x;
+
+            const speed = Math.random();
+            const rememberVelCurrChild = new Vector2d(currChild.velocity.x, currChild.velocity.y)
+            if(childTop < bboxTop){
+                currChild.location.y = bboxTop + currChild.height + 1;
+                currChild.velocity.y = this.velocity.y + speed;
+            }
+            if(childBottom > bboxBottom){
+                currChild.location.y = bboxBottom - 1;
+                currChild.velocity.y = this.velocity.y - speed;
+            }
+            if(childLeft < bboxLeft){
+                currChild.location.x = bboxLeft + currChild.width + 1;
+                currChild.velocity.x = this.velocity.x + speed;
+            }
+            if(childRight > bboxRight){
+                currChild.location.x = bboxRight - 1;
+                currChild.velocity.x = this.velocity.x - speed;
+            }
+        }
+    }
+    
+   
+    
     /*
     The pixel enters to the oposite of the screen after going over the edge of the screen.
     */
@@ -943,7 +1438,7 @@ class Background extends Spawner{
         this.allPixels = [];
         this.pixelCount = 160;
         this.setHexAsColor(color);
-        this.isPaused = false;
+        this.isPaused = true;
     }
     clearPixels(ctx){
         this.allPixels.length = 0;
@@ -1023,7 +1518,7 @@ class Color{
 }
 
 class Vector2d{
-    constructor(x, y){
+    constructor(x = 0, y = 0){
         this.x = x;
         this.y = y;
     }
@@ -1047,11 +1542,29 @@ class Vector2d{
         return Math.sqrt(this.x * this.x, this.y * this.y);
     };
     norm() {
-        let m = mag();
-        if (m !== 0) {
-            div(m);
-        }
+        const mag = this.mag();
+        return new Vector2d(this.x/mag, this.y/mag);
     };
+    heading(){
+        var h = Math.atan2(this.y, this.x);
+        return h;
+    }
+    /**
+     * Get a copy of this object. 
+     * @returns {Vector2d} Returns a copy of this.
+     */ 
+    copy(){
+        return new Vector2d(this.x, this.y);
+    }
+    /**
+     * Subtract two Vector2d's from eachother.
+     * @param   {Vector2d} v1 
+     * @param   {Vector2d} v2 
+     * @returns {Vector2d}      Contains a new Vector2d with combined values.
+     */
+    static sub(v1, v2){
+        return new Vector2d(v1.x - v2.x, v1.y - v2.y);
+    }
     static zero(){
         return new Vector2d(0,0);
     };
