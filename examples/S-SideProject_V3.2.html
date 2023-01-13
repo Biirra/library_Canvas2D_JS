@@ -15,8 +15,8 @@
 <body>
 <canvas id="background-canvas" />
 <div style="display:none;">
-    <img id="watermark" src="img/AP_beeldmerk_kleur.png" width="300" height="227" />
-    <img id="trademark" src="img/AP_trademark.png" width="300" height="227" />
+    <img id="watermark" src="img/ixaslogo.jpg" width="300" height="227" />
+    <img id="trademark" src="img/Logo_FLUOR.png" width="300" height="227" />
 </div>
 <script>
 
@@ -34,7 +34,7 @@ const DATA = {
                 font: 'Arial'
             },
             location: {
-                x: 900,
+                x: 130,
                 y: 500
             },
             height: 0,
@@ -821,7 +821,7 @@ const DATA = {
             },
             location: {
                 x: 1450,
-                y: 950
+                y: 850
             },
             height: 0,
             width: 0,
@@ -893,8 +893,9 @@ function updateBackground() {
     ctx.save();
     ctx.fillStyle = background.color.getColorString();
     ctx.fillRect(0, 0, background.width, background.height);
-    ctx.globalAlpha = 0.1;
-    ctx.drawImage(watermark, 0, 0, 605, 605, (canvas.width/2)-(605/2), (canvas.height/2)-(605/2), 605, 605);
+    ctx.globalAlpha = 0.4;
+    ctx.drawImage(watermark, 0, 0, 605, 605, 0 , 0 - watermark.height/2, 605, 605);
+    ctx.drawImage(watermark, 0, 0, 605, 605, (0 + canvas.width) - (watermark.width*1.7), (0 + canvas.height) - (watermark.height*1.2), 605, 605);
     ctx.globalAlpha = 1;
     ctx.restore();
    
@@ -939,9 +940,13 @@ function updateBackground() {
                 if(currPixel.associates.line.dashed.active){
                     ctx.setLineDash(currPixel.associates.line.dashed.data);
                 }
+                let offsetX = 0;
+                if(currPixel.id === 'apis'){
+                    offsetX = -70
+                }
                 ctx.lineWidth = window.lineWidth;
                 ctx.beginPath();
-                ctx.moveTo(currPixel.location.x + (currPixel.width/2), currPixel.location.y - (currPixel.height/4));
+                ctx.moveTo(currPixel.location.x + (currPixel.width/2) + offsetX, currPixel.location.y - (currPixel.height/4));
                 ctx.lineTo(currAssociate.location.x + (currAssociate.width/2), currAssociate.location.y - (currAssociate.height/4));
                 ctx.stroke();
                 ctx.setLineDash([]);
@@ -962,10 +967,15 @@ function updateBackground() {
         ctx.fillStyle = currPixel.text.color.getColorString();
         ctx.font = `${currPixel.text.size}px ${currPixel.text.font}`;
         
-        ctx.fillText(currPixel.name, 0, 0);
+        
 
-        //if(currPixel.id === 'workorder')
-            //ctx.drawImage(trademark, 0, 0, 30, 30, 260, -40, 30, 30);
+        if(currPixel.id === 'apis'){
+            const offsetX = 0;
+            ctx.drawImage(trademark, 0, 0, 442, 518, (-221/2) + offsetX, -259/2, 221, 259);
+        }else{
+            ctx.fillText(currPixel.name, 0, 0);
+        }
+            
 
         ctx.restore();
 
@@ -1049,6 +1059,8 @@ function initializeBackground(){
         currAstroid.velocity = PAUSED ? Vector2d.zero() : Vector2d.random(); // makes them move randomly around the screen.
         if( currAstroid.id === 'apis'){
             currAstroid.velocity = Vector2d.zero();
+            currAstroid.location.x = canvas.width/2;
+            currAstroid.location.y = canvas.height/2;
         }
         
         background.allPixels.push(currAstroid);

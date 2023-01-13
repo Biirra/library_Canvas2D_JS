@@ -16,7 +16,7 @@
         Your browser does not support the HTML5 canvas tag.
     </canvas>
 <div style="display:none;">
-    <img id="watermark" src="img/AP_beeldmerk_kleur.png" width="300" height="227" />
+    <img id="watermark" src="img\AP_beeldmerk_kleur.png" />
     <img id="trademark" src="img/AP_trademark.png" width="300" height="227" />
 </div>
 <script>
@@ -24,15 +24,15 @@
 window.onload = function (){
 
     let gameWorld = new World('canvas');
-    gameWorld.canvas.width = window.innerWidth;
-    gameWorld.canvas.height = window.innerHeight;
+    
 
 
 }
 
-const DEBUG = true;
+const DEBUG = false;
+const OBJECT_SPEED_MULTIPLIER = 0;
 
-
+const watermark = document.getElementById("watermark");
 
 const DATA = {
     apis: {
@@ -138,16 +138,16 @@ const DATA = {
             size: 30,
             font: 'Arial'
         },
-        x: 1200,
+        x: 1350,
         y: 250,
         vx: 0,
         vy: 0,
         height: 50, 
         width: 50,
         children: {
-            ids: [], 
+            ids: ['poplusschema', 'fmecatwo', 'expertsystems'], 
             line: {
-                color: "#FF0000",
+                color: "#FFFF00",
                 width: 1,
                 maxLength: 220,
                 dashed: {
@@ -185,16 +185,16 @@ const DATA = {
             size: 30,
             font: 'Arial'
         },
-        x: 750,
-        y: 150,
+        x: 900,
+        y: 200,
         vx: 0,
         vy: 0,
         height: 50, 
         width: 50,
         children: {
-            ids: [], 
+            ids: ['vtw', 'eisen', 'afwijkingen', 'brijfsrisico'], 
             line: {
-                color: "#FF0000",
+                color: "#FF00FF",
                 width: 1,
                 maxLength: 220,
                 dashed: {
@@ -239,7 +239,7 @@ const DATA = {
         height: 50, 
         width: 50,
         children: {
-            ids: [], 
+            ids: ['qcontrol', 'sdecompensition', 'changemanagment', 'industryacc'], 
             line: {
                 color: "#FF0000",
                 width: 1,
@@ -286,7 +286,7 @@ const DATA = {
         height: 50, 
         width: 50,
         children: {
-            ids: [], 
+            ids: ['pms', 'wms', 'sms'], 
             line: {
                 color: "#FF0000",
                 width: 1,
@@ -493,14 +493,14 @@ const DATA = {
             },
         },
         associates: {
-            ids: [],
+            ids: ['poplusschema'],
             line: {
                 color: "#0000FF",
-                width: 1,
+                width: 0.5,
                 maxLength: 220,
                 dashed: {
-                    active: false,
-                    data: []
+                    active: true,
+                    data: [5, 5]
                 }
             },
         },
@@ -552,9 +552,667 @@ const DATA = {
             },
         },
     },
+    poplusschema: {
+        id: 'poplusschema',
+        collisionid: -1,
+        text: {
+            content: "PO+ Schema",
+            color: "#095076",
+            size: 30,
+            font: 'Arial'
+        },
+        x: 400,
+        y: 450,
+        vx: 0,
+        vy: 0,
+        height: 50, 
+        width: 50, 
+        children: {
+            ids: [], 
+            line: {
+                color: "#FF0000",
+                width: 1,
+                maxLength: 220,
+                dashed: {
+                    active: false,
+                    data: []
+                }
+            },
+            bbox: {
+                color: '#FF0000',
+                x: 0,
+                y: 0,
+                w: 0,
+                h: 0
+            },
+        },
+        associates: {
+            ids: [],
+            line: {
+                color: "#FF0000",
+                width: 1,
+                maxLength: 220,
+                dashed: {
+                    active: false,
+                    data: []
+                }
+            },
+        },
+    },
+    fmecatwo: {
+        id: 'fmecatwo',
+        collisionid: -1,
+        text: {
+            content: "FMECA 2.0",
+            color: "#095076",
+            size: 30,
+            font: 'Arial'
+        },
+        x: 400,
+        y: 450,
+        vx: 0,
+        vy: 0,
+        height: 50, 
+        width: 50, 
+        children: {
+            ids: [], 
+            line: {
+                color: "#FF00FF",
+                width: 1,
+                maxLength: 220,
+                dashed: {
+                    active: false,
+                    data: []
+                }
+            },
+            bbox: {
+                color: '#FF0000',
+                x: 0,
+                y: 0,
+                w: 0,
+                h: 0
+            },
+        },
+        associates: {
+            ids: [],
+            line: {
+                color: "#0000FF",
+                width: 1,
+                maxLength: 220,
+                dashed: {
+                    active: false,
+                    data: []
+                }
+            },
+        },
+    },
+    expertsystems: {
+        id: 'expertsystems',
+        collisionid: -1,
+        text: {
+            content: "Expert Systems",
+            color: "#095076",
+            size: 30,
+            font: 'Arial'
+        },
+        x: 400,
+        y: 450,
+        vx: 0,
+        vy: 0,
+        height: 50, 
+        width: 50, 
+        children: {
+            ids: [], 
+            line: {
+                color: "#FF00FF",
+                width: 1,
+                maxLength: 220,
+                dashed: {
+                    active: false,
+                    data: []
+                }
+            },
+            bbox: {
+                color: '#FF0000',
+                x: 0,
+                y: 0,
+                w: 0,
+                h: 0
+            },
+        },
+        associates: {
+            ids: [],
+            line: {
+                color: "#0000FF",
+                width: 1,
+                maxLength: 220,
+                dashed: {
+                    active: false,
+                    data: []
+                }
+            },
+        },
+    },
+    vtw: {
+        id: 'vtw',
+        collisionid: -1,
+        text: {
+            content: "VTW",
+            color: "#095076",
+            size: 30,
+            font: 'Arial'
+        },
+        x: 900,
+        y: 50,
+        vx: 0,
+        vy: 0,
+        height: 50, 
+        width: 50, 
+        children: {
+            ids: [], 
+            line: {
+                color: "#FF00FF",
+                width: 1,
+                maxLength: 220,
+                dashed: {
+                    active: false,
+                    data: []
+                }
+            },
+            bbox: {
+                color: '#FF0000',
+                x: 0,
+                y: 0,
+                w: 0,
+                h: 0
+            },
+        },
+        associates: {
+            ids: [],
+            line: {
+                color: "#0000FF",
+                width: 1,
+                maxLength: 220,
+                dashed: {
+                    active: false,
+                    data: []
+                }
+            },
+        },
+    },
+    eisen: {
+        id: 'eisen',
+        collisionid: -1,
+        text: {
+            content: "Eisen",
+            color: "#095076",
+            size: 30,
+            font: 'Arial'
+        },
+        x: 1200,
+        y: 50,
+        vx: 0,
+        vy: 0,
+        height: 50, 
+        width: 50, 
+        children: {
+            ids: [], 
+            line: {
+                color: "#FF00FF",
+                width: 1,
+                maxLength: 220,
+                dashed: {
+                    active: false,
+                    data: []
+                }
+            },
+            bbox: {
+                color: '#FF0000',
+                x: 0,
+                y: 0,
+                w: 0,
+                h: 0
+            },
+        },
+        associates: {
+            ids: [],
+            line: {
+                color: "#0000FF",
+                width: 1,
+                maxLength: 220,
+                dashed: {
+                    active: false,
+                    data: []
+                }
+            },
+        },
+    },
+    afwijkingen: {
+        id: 'afwijkingen',
+        collisionid: -1,
+        text: {
+            content: "Afwijkingen",
+            color: "#095076",
+            size: 30,
+            font: 'Arial'
+        },
+        x: 400,
+        y: 450,
+        vx: 0,
+        vy: 0,
+        height: 50, 
+        width: 50, 
+        children: {
+            ids: [], 
+            line: {
+                color: "#FF00FF",
+                width: 1,
+                maxLength: 220,
+                dashed: {
+                    active: false,
+                    data: []
+                }
+            },
+            bbox: {
+                color: '#FF0000',
+                x: 0,
+                y: 0,
+                w: 0,
+                h: 0
+            },
+        },
+        associates: {
+            ids: [],
+            line: {
+                color: "#0000FF",
+                width: 1,
+                maxLength: 220,
+                dashed: {
+                    active: false,
+                    data: []
+                }
+            },
+        },
+    },
+    brijfsrisico: {
+        id: 'brijfsrisico',
+        collisionid: -1,
+        text: {
+            content: "Bedrijf's/Risico Matrix",
+            color: "#095076",
+            size: 30,
+            font: 'Arial'
+        },
+        x: 400,
+        y: 450,
+        vx: 0,
+        vy: 0,
+        height: 50, 
+        width: 50, 
+        children: {
+            ids: [], 
+            line: {
+                color: "#FF00FF",
+                width: 1,
+                maxLength: 220,
+                dashed: {
+                    active: false,
+                    data: []
+                }
+            },
+            bbox: {
+                color: '#FF0000',
+                x: 0,
+                y: 0,
+                w: 0,
+                h: 0
+            },
+        },
+        associates: {
+            ids: [],
+            line: {
+                color: "#0000FF",
+                width: 1,
+                maxLength: 220,
+                dashed: {
+                    active: false,
+                    data: []
+                }
+            },
+        },
+    },
+    qcontrol: {
+        id: 'qcontrol',
+        collisionid: -1,
+        text: {
+            content: "Q.Control",
+            color: "#095076",
+            size: 30,
+            font: 'Arial'
+        },
+        x: 400,
+        y: 450,
+        vx: 0,
+        vy: 0,
+        height: 50, 
+        width: 50, 
+        children: {
+            ids: [], 
+            line: {
+                color: "#FF00FF",
+                width: 1,
+                maxLength: 220,
+                dashed: {
+                    active: false,
+                    data: []
+                }
+            },
+            bbox: {
+                color: '#FF0000',
+                x: 0,
+                y: 0,
+                w: 0,
+                h: 0
+            },
+        },
+        associates: {
+            ids: [],
+            line: {
+                color: "#0000FF",
+                width: 1,
+                maxLength: 220,
+                dashed: {
+                    active: false,
+                    data: []
+                }
+            },
+        },
+    },
+    sdecompensition: {
+        id: 'sdecompensition',
+        collisionid: -1,
+        text: {
+            content: "Standaard decompositie",
+            color: "#095076",
+            size: 30,
+            font: 'Arial'
+        },
+        x: 400,
+        y: 450,
+        vx: 0,
+        vy: 0,
+        height: 50, 
+        width: 50, 
+        children: {
+            ids: [], 
+            line: {
+                color: "#FF00FF",
+                width: 1,
+                maxLength: 220,
+                dashed: {
+                    active: false,
+                    data: []
+                }
+            },
+            bbox: {
+                color: '#FF0000',
+                x: 0,
+                y: 0,
+                w: 0,
+                h: 0
+            },
+        },
+        associates: {
+            ids: [],
+            line: {
+                color: "#0000FF",
+                width: 1,
+                maxLength: 220,
+                dashed: {
+                    active: false,
+                    data: []
+                }
+            },
+        },
+    },
+    changemanagment: {
+        id: 'changemanagment',
+        collisionid: -1,
+        text: {
+            content: "Change managment",
+            color: "#095076",
+            size: 30,
+            font: 'Arial'
+        },
+        x: 400,
+        y: 450,
+        vx: 0,
+        vy: 0,
+        height: 50, 
+        width: 50, 
+        children: {
+            ids: [], 
+            line: {
+                color: "#FF00FF",
+                width: 1,
+                maxLength: 220,
+                dashed: {
+                    active: false,
+                    data: []
+                }
+            },
+            bbox: {
+                color: '#FF0000',
+                x: 0,
+                y: 0,
+                w: 0,
+                h: 0
+            },
+        },
+        associates: {
+            ids: [],
+            line: {
+                color: "#0000FF",
+                width: 1,
+                maxLength: 220,
+                dashed: {
+                    active: false,
+                    data: []
+                }
+            },
+        },
+    },
+    industryacc: {
+        id: 'industryacc',
+        collisionid: -1,
+        text: {
+            content: "Industry accelerators",
+            color: "#095076",
+            size: 30,
+            font: 'Arial'
+        },
+        x: 400,
+        y: 450,
+        vx: 0,
+        vy: 0,
+        height: 50, 
+        width: 50, 
+        children: {
+            ids: [], 
+            line: {
+                color: "#FF00FF",
+                width: 1,
+                maxLength: 220,
+                dashed: {
+                    active: false,
+                    data: []
+                }
+            },
+            bbox: {
+                color: '#FF0000',
+                x: 0,
+                y: 0,
+                w: 0,
+                h: 0
+            },
+        },
+        associates: {
+            ids: [],
+            line: {
+                color: "#0000FF",
+                width: 1,
+                maxLength: 220,
+                dashed: {
+                    active: false,
+                    data: []
+                }
+            },
+        },
+    },
+    pms: {
+        id: 'pms',
+        collisionid: -1,
+        text: {
+            content: "PMS",
+            color: "#095076",
+            size: 30,
+            font: 'Arial'
+        },
+        x: 400,
+        y: 450,
+        vx: 0,
+        vy: 0,
+        height: 50, 
+        width: 50, 
+        children: {
+            ids: [], 
+            line: {
+                color: "#FF00FF",
+                width: 1,
+                maxLength: 220,
+                dashed: {
+                    active: false,
+                    data: []
+                }
+            },
+            bbox: {
+                color: '#FF0000',
+                x: 0,
+                y: 0,
+                w: 0,
+                h: 0
+            },
+        },
+        associates: {
+            ids: [],
+            line: {
+                color: "#0000FF",
+                width: 1,
+                maxLength: 220,
+                dashed: {
+                    active: false,
+                    data: []
+                }
+            },
+        },
+    },
+    wms: {
+        id: 'wms',
+        collisionid: -1,
+        text: {
+            content: "WMS",
+            color: "#095076",
+            size: 30,
+            font: 'Arial'
+        },
+        x: 400,
+        y: 450,
+        vx: 0,
+        vy: 0,
+        height: 50, 
+        width: 50, 
+        children: {
+            ids: [], 
+            line: {
+                color: "#FF00FF",
+                width: 1,
+                maxLength: 220,
+                dashed: {
+                    active: false,
+                    data: []
+                }
+            },
+            bbox: {
+                color: '#FF0000',
+                x: 0,
+                y: 0,
+                w: 0,
+                h: 0
+            },
+        },
+        associates: {
+            ids: [],
+            line: {
+                color: "#0000FF",
+                width: 1,
+                maxLength: 220,
+                dashed: {
+                    active: false,
+                    data: []
+                }
+            },
+        },
+    },
+    sms: {
+        id: 'sms',
+        collisionid: -1,
+        text: {
+            content: "SMS",
+            color: "#095076",
+            size: 30,
+            font: 'Arial'
+        },
+        x: 400,
+        y: 450,
+        vx: 0,
+        vy: 0,
+        height: 50, 
+        width: 50, 
+        children: {
+            ids: [], 
+            line: {
+                color: "#FF00FF",
+                width: 1,
+                maxLength: 220,
+                dashed: {
+                    active: false,
+                    data: []
+                }
+            },
+            bbox: {
+                color: '#FF0000',
+                x: 0,
+                y: 0,
+                w: 0,
+                h: 0
+            },
+        },
+        associates: {
+            ids: [],
+            line: {
+                color: "#0000FF",
+                width: 1,
+                maxLength: 220,
+                dashed: {
+                    active: false,
+                    data: []
+                }
+            },
+        },
+    },
+
 }
 
-const OBJECT_SPEED_MULTIPLIER = 150;
 
 class World {
     constructor(canvasId){
@@ -570,6 +1228,9 @@ class World {
 
     init(canvasId) {
         this.canvas = document.getElementById(canvasId);
+        this.canvas.width = window.innerWidth;
+        this.canvas.height = window.innerHeight;
+
         this.context = this.canvas.getContext('2d');
 
         this.createWorld();
@@ -601,21 +1262,28 @@ class World {
 
             // set velocity at random
             const random = Vector2d.random(OBJECT_SPEED_MULTIPLIER);
-            console.log(random);
             let vy = random.y;
             let vx = random.x;
             
             currData.vx = vx;
             currData.vy = vy
             
-            if(currData.id === 'apis'){
-                currData.vx = 0;
-                currData.vy = 0;
-            }
+            
             
             const textItem = new TextItem(this.context, currData);
-            console.log(textItem)
             this.gameObjects.push(textItem);
+
+            if(textItem.id === 'apis'){
+
+            
+                
+                console.log(textItem.width)
+                console.log(this.canvas.width)
+                textItem.x = this.canvas.width/2 - textItem.width/2;
+                textItem.y = this.canvas.height/2 - textItem.height/2;
+                textItem.vx = 0;
+                textItem.vy = 0;
+            }
 
         }
 
@@ -653,17 +1321,22 @@ class World {
         this.secondsPassed = (timeStamp - this.oldTimeStamp) / 1000;
         this.oldTimeStamp = timeStamp;
 
-        // Loop over all game objects to update
-        for (let i = 0; i < this.gameObjects.length; i++) {
-            this.gameObjects[i].update(this.secondsPassed);
+        
 
-            this.gameObjects[i].bounceChildrenFromParentBBox();
-        }
-
-        this.detectCollisions(); // detect collisions with other items.
+        //this.detectCollisions(); // detect collisions with other items.
         this.bounceEdges(); // makes sure everything stay's in screen
 
         this.clearCanvas();
+
+        // Loop over all game objects to update
+        for (let i = 0; i < this.gameObjects.length; i++) {
+
+
+            this.gameObjects[i].bounceChildrenFromParentBBox();
+            this.gameObjects[i].update(this.secondsPassed);
+
+            
+        }
 
         // Loop over all game objects to draw
         for (let i = 0; i < this.gameObjects.length; i++) {
@@ -708,7 +1381,7 @@ class World {
                 // Mirror the velocity
                 currObj.vy = -currObj.vy;
 
-            } else if (currObj.y - currObj.height < 0) { 
+            } else if (currObj.y  < 0) { 
 
                 // Mirror the velocity
                 currObj.vy = -currObj.vy;
@@ -772,6 +1445,14 @@ class World {
     clearCanvas() {
         // Clear the canvas
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+        this.context.save();
+        this.context.fillStyle = '#FFFFFF';
+        this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
+        this.context.globalAlpha = 0.4;
+        this.context.drawImage(watermark, 0, 0, 605, 605, this.canvas.width/2 - watermark.width/2 , this.canvas.height/2 - watermark.height/2, watermark.width, watermark.height);
+        this.context.globalAlpha = 1;
+        this.context.restore();
     }
 
     getObjById(id){
@@ -779,7 +1460,6 @@ class World {
         return result;
     }
 }
-
 
 class Item
 {
@@ -808,6 +1488,21 @@ class Item
 
     update(secondsPassed){
         //Move with set velocity
+
+        const maxspeed = 150;
+
+        if(this.vx > maxspeed){
+            this.vx = maxspeed;
+        }
+        if(this.vy > maxspeed){
+            this.vy = maxspeed;
+        }
+        if(this.vx < -maxspeed){
+            this.vx = -maxspeed;
+        }
+        if(this.vy < -maxspeed){
+            this.vy = -maxspeed;
+        }
         this.x += this.vx * secondsPassed;
         this.y += this.vy * secondsPassed;
 
@@ -877,30 +1572,49 @@ class TextItem extends Item{
             const childLeft = currChild.x;
             const childRight = currChild.x + currChild.width;
 
-            const speed = Vector2d.zero();
+            const speed = Vector2d.random(50);
             const remVelCurrChildX = currChild.vx;
             const remVelCurrChildY = currChild.vy;
 
+            const offset = 2;
 
-            if(childTop < bboxTop){
+            if(childTop <= bboxTop){
                 //console.log("Child hits Top");
-                currChild.y = bboxTop + 1;
-                currChild.vy = (currChild.vy + this.vy) * -1;
+                //currChild.y = bboxTop + 1;
+                //currChild.vy = (currChild.vy + this.vy) * -1;
+                currChild.vy = (this.vy + currChild.vy) + speed.y;
+                currChild.y = bboxTop  + offset;
+                
             }
-            if(childBottom > bboxBottom){
+            else if(childBottom >= bboxBottom){
                 //console.log("Child hits Bottom");
-                currChild.y = bboxBottom - currChild.height -1;
-                currChild.vy = (currChild.vy + this.vy) * -1;
+                //currChild.y = bboxBottom - currChild.height -1;
+                //currChild.vy = (currChild.vy + this.vy) * -1;
+
+                currChild.vy = (this.vy - currChild.vy) + speed.y;
+                currChild.y = bboxBottom - currChild.height - offset;
+                
             }
-            if(childLeft < bboxLeft){
+            if(childLeft <= bboxLeft){
                 //console.log("Child hits Left");
-                currChild.x = bboxLeft + 1;
-                currChild.vx = (currChild.vx + this.vx) * -1;
+                //currChild.x = bboxLeft + 1;
+                //currChild.vx = (currChild.vx + this.vx) * -1;
+
+                //console.log(currChild.id, currChild.vx)
+                currChild.vx = (this.vx + currChild.vx) + speed.x;
+                currChild.x = bboxLeft + offset;
+                
+                //console.log(currChild.id,currChild.vx)
+                
             }
-            if(childRight > bboxRight){
+            else if(childRight >= bboxRight){
                 //console.log("Child hits Right");
-                currChild.x = bboxRight - currChild.width - 1;
-                currChild.vx = (currChild.vx + this.vx) * -1;
+                //currChild.x = bboxRight - currChild.width - 1;
+                //currChild.vx = (currChild.vx + this.vx) * -1;
+
+                currChild.vx = (this.vx - currChild.vx) + speed.x;
+                currChild.x = bboxRight - currChild.width - offset;
+                
             }
         }
     }
