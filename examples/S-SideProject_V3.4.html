@@ -1,13 +1,15 @@
+
 <html>
 <head>
+    <title>Atoom Model - Asset People</title>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
   <style>
     #canvas {
         position: fixed;
         width: 100%;
         height: 100%;
-        top:0;
-        left:0;
+        top: -1px;;
+        left: -1px;;
         z-index: -1;
     }
     #associateLinesBtn{
@@ -25,32 +27,58 @@
     <canvas id="canvas" style="border:1px solid lightgrey;">
         Your browser does not support the HTML5 canvas tag.
     </canvas>
-    <button id="associateLinesBtn" onclick="helloworld()">Press me!</button>
+    <button id="associateLinesBtn" onclick="toggleAssociateLine()">Press me!</button>
     <div style="display:none;">
-        <img id="watermark" src="img\AP_beeldmerk_kleur.png" />
-        <img id="trademark" src="img/AP_trademark.png" width="300" height="227" />
+        <img id="background-stars" src="img/blauwe achtergrond met sterren.png" />
+        <img id="background-beeldmerk" src="img/beeldmerk achtergrond.png" />
+        
+        
+        <img id="planet-center" src="img/Planets-moons\Artboard 1@4x.png" />
+        <img id="planet-one" src="img/Planets-moons/Artboard 9@4x.png" />
+        <img id="planet-two" src="img/Planets-moons/Artboard 12@4x.png" />
+        <img id="planet-three" src="img/Planets-moons/Artboard 13@4x.png" />
+
+
+        <img id="logoSamen" src="img/logo's samen.png" />
+        <img id="logo-asset-people" src="img/Asset People.png" />
+
+
+
+
+        
     </div>
 <script>
 // Listen to the onLoad event, then create a game world
+let gameWorld;
 window.onload = function (){
-
-    let gameWorld = new World('canvas');
-    
-
-
+    gameWorld = new World('canvas');
 }
 
 const DEBUG = false;
-const OBJECT_SPEED_MULTIPLIER = 0;
+const OBJECT_SPEED_MULTIPLIER = 30;
+const OBJECT_MAX_SPEED = 70;
 
-const watermark = document.getElementById("watermark");
+const bgStars = document.getElementById("background-stars");
+const bgBeeldMerk = document.getElementById("background-beeldmerk");
+
+
+const planetCenter = document.getElementById("planet-center");
+
+const planetTwo = document.getElementById("planet-two");
+const planetThree = document.getElementById("planet-three");
+
+const moon1 = document.getElementById("planet-one");
+
+const logoSamen = document.getElementById("logoSamen");
+const logoAP = document.getElementById("logo-asset-people");
 
 let associateLineIsVisible = true;
-function helloworld(){
+function toggleAssociateLine(){
     associateLineIsVisible = !associateLineIsVisible;
 }
 
 const DATA = {
+    /*
     apis: {
         id: 'apis',
         collisionid: -1,
@@ -60,6 +88,7 @@ const DATA = {
             size: 30,
             font: 'Arial'
         },
+        planet: planetCenter,
         x: 800,
         y: 450,
         vx: 0,
@@ -98,14 +127,20 @@ const DATA = {
             },
         },
     },
+    */
     oms: {
         id: 'oms',
         collisionid: 1,
         text: {
             content: "OMS",
             color: "#095076",
-            size: 30,
+            size: 20,
             font: 'Arial'
+        },
+        planet: {
+            img: planetCenter,
+            width: 64,
+            height: 64
         },
         x: 300,
         y: 250,
@@ -133,9 +168,9 @@ const DATA = {
             }
         },
         associates: {
-            ids: [],
+            ids: ['xms', 'oms', 'ams', 'rms'],
             line: {
-                color: "#0000FF",
+                color: "#ADD8E6",
                 width: 1,
                 maxLength: 220,
                 dashed: {
@@ -151,8 +186,13 @@ const DATA = {
         text: {
             content: "AMS",
             color: "#095076",
-            size: 30,
+            size: 20,
             font: 'Arial'
+        },
+        planet: {
+            img: planetCenter,
+            width: 64,
+            height: 64
         },
         x: 1350,
         y: 250,
@@ -163,7 +203,7 @@ const DATA = {
         children: {
             ids: ['poplusschema', 'fmecatwo', 'expertsystems'], 
             line: {
-                color: "#9FA365",
+                color: "#296d98",
                 width: 1,
                 maxLength: 220,
                 dashed: {
@@ -180,9 +220,9 @@ const DATA = {
             }
         },
         associates: {
-            ids: [],
+            ids: ['xms', 'oms', 'ams', 'rms'],
             line: {
-                color: "#0000FF",
+                color: "#ADD8E6",
                 width: 1,
                 maxLength: 220,
                 dashed: {
@@ -198,8 +238,13 @@ const DATA = {
         text: {
             content: "RMS",
             color: "#095076",
-            size: 30,
+            size: 20,
             font: 'Arial'
+        },
+        planet: {
+            img: planetCenter,
+            width: 64,
+            height: 64
         },
         x: 900,
         y: 200,
@@ -210,7 +255,7 @@ const DATA = {
         children: {
             ids: ['vtw', 'eisen', 'afwijkingen', 'brijfsrisico'], 
             line: {
-                color: "#FF00FF",
+                color: "#D7A1F9",
                 width: 1,
                 maxLength: 220,
                 dashed: {
@@ -227,9 +272,9 @@ const DATA = {
             }
         },
         associates: {
-            ids: [],
+            ids: ['xms', 'oms', 'ams', 'rms'],
             line: {
-                color: "#0000FF",
+                color: "#ADD8E6",
                 width: 1,
                 maxLength: 220,
                 dashed: {
@@ -246,8 +291,13 @@ const DATA = {
         text: {
             content: "X-MS",
             color: "#095076",
-            size: 30,
+            size: 20,
             font: 'Arial'
+        },
+        planet: {
+            img: planetCenter,
+            width: 64,
+            height: 64
         },
         x: 1000,
         y: 750,
@@ -258,7 +308,7 @@ const DATA = {
         children: {
             ids: ['pms', 'wms', 'sms'], 
             line: {
-                color: "#00FF00",
+                color: "#45b6fe",
                 width: 1,
                 maxLength: 220,
                 dashed: {
@@ -275,9 +325,9 @@ const DATA = {
             }
         },
         associates: {
-            ids: [],
+            ids: ['xms', 'oms', 'ams', 'rms'],
             line: {
-                color: "#0000FF",
+                color: "#ADD8E6",
                 width: 1,
                 maxLength: 220,
                 dashed: {
@@ -293,8 +343,13 @@ const DATA = {
         text: {
             content: "Meldkamer",
             color: "#095076",
-            size: 30,
+            size: 15,
             font: 'Arial'
+        },
+        planet: {
+            img: moon1,
+            width: 64,
+            height: 64
         },
         x: 50,
         y: 150,
@@ -340,8 +395,13 @@ const DATA = {
         text: {
             content: "NEN-Inspections",
             color: "#095076",
-            size: 25,
+            size: 15,
             font: 'Arial'
+        },
+        planet: {
+            img: moon1,
+            width: 64,
+            height: 64
         },
         x: 50,
         y: 450,
@@ -387,8 +447,13 @@ const DATA = {
         text: {
             content: "Timesheet",
             color: "#095076",
-            size: 30,
+            size: 15,
             font: 'Arial'
+        },
+        planet: {
+            img: moon1,
+            width: 64,
+            height: 64
         },
         x: 250,
         y: 50,
@@ -434,8 +499,13 @@ const DATA = {
         text: {
             content: "MaxiGIS",
             color: "#095076",
-            size: 30,
+            size: 15,
             font: 'Arial'
+        },
+        planet: {
+            img: moon1,
+            width: 64,
+            height: 64
         },
         x: 450,
         y: 100,
@@ -465,12 +535,12 @@ const DATA = {
         associates: {
             ids: ['poplusschema'],
             line: {
-                color: "#FF0000",
+                color: "#6075d2",
                 width: 0.5,
                 maxLength: 220,
                 dashed: {
                     active: true,
-                    data: [5, 5, 10, 20]
+                    data: [2,20,2]
                 }
             },
         },
@@ -481,8 +551,13 @@ const DATA = {
         text: {
             content: "VGM",
             color: "#095076",
-            size: 30,
+            size: 15,
             font: 'Arial'
+        },
+        planet: {
+            img: moon1,
+            width: 64,
+            height: 64
         },
         x: 400,
         y: 450,
@@ -528,8 +603,13 @@ const DATA = {
         text: {
             content: "PO+ Schema",
             color: "#095076",
-            size: 30,
+            size: 15,
             font: 'Arial'
+        },
+        planet: {
+            img: moon1,
+            width: 64,
+            height: 64
         },
         x: 1300,
         y: 450,
@@ -575,8 +655,13 @@ const DATA = {
         text: {
             content: "FMECA 2.0",
             color: "#095076",
-            size: 30,
+            size: 15,
             font: 'Arial'
+        },
+        planet: {
+            img: moon1,
+            width: 64,
+            height: 64
         },
         x: 1500,
         y: 350,
@@ -622,8 +707,13 @@ const DATA = {
         text: {
             content: "Expert Systems",
             color: "#095076",
-            size: 30,
+            size: 15,
             font: 'Arial'
+        },
+        planet: {
+            img: moon1,
+            width: 64,
+            height: 64
         },
         x: 1400,
         y: 150,
@@ -669,8 +759,13 @@ const DATA = {
         text: {
             content: "VTW",
             color: "#095076",
-            size: 30,
+            size: 15,
             font: 'Arial'
+        },
+        planet: {
+            img: moon1,
+            width: 64,
+            height: 64
         },
         x: 900,
         y: 50,
@@ -700,12 +795,12 @@ const DATA = {
         associates: {
             ids: ['timesheet'],
             line: {
-                color: "#FF0000",
+                color: "#6075d2",
                 width: 0.5,
                 maxLength: 220,
                 dashed: {
                     active: true,
-                    data: [2,20]
+                    data: [2,20,2]
                 }
             },
         },
@@ -716,8 +811,13 @@ const DATA = {
         text: {
             content: "Eisen",
             color: "#095076",
-            size: 30,
+            size: 15,
             font: 'Arial'
+        },
+        planet: {
+            img: moon1,
+            width: 64,
+            height: 64
         },
         x: 1200,
         y: 80,
@@ -747,12 +847,12 @@ const DATA = {
         associates: {
             ids: ['pms', 'neninsp'],
             line: {
-                color: "#FF0000",
+                color: "#6075d2",
                 width: 0.5,
                 maxLength: 220,
                 dashed: {
                     active: true,
-                    data: [5,5]
+                    data: [2,20,2]
                 }
             },
         },
@@ -763,8 +863,13 @@ const DATA = {
         text: {
             content: "Afwijkingen",
             color: "#095076",
-            size: 30,
+            size: 15,
             font: 'Arial'
+        },
+        planet: {
+            img: moon1,
+            width: 64,
+            height: 64
         },
         x: 700,
         y: 150,
@@ -810,8 +915,13 @@ const DATA = {
         text: {
             content: "Bedrijf's/Risico Matrix",
             color: "#095076",
-            size: 23,
+            size: 15,
             font: 'Arial'
+        },
+        planet: {
+            img: moon1,
+            width: 64,
+            height: 64
         },
         x: 650,
         y: 300,
@@ -841,7 +951,7 @@ const DATA = {
         associates: {
             ids: ['fmecatwo'],
             line: {
-                color: "#FF0000",
+                color: "#6075d2",
                 width: 0.5,
                 maxLength: 220,
                 dashed: {
@@ -857,8 +967,13 @@ const DATA = {
         text: {
             content: "PMS",
             color: "#095076",
-            size: 30,
+            size: 15,
             font: 'Arial'
+        },
+        planet: {
+            img: moon1,
+            width: 64,
+            height: 64
         },
         x: 1150,
         y: 850,
@@ -904,8 +1019,13 @@ const DATA = {
         text: {
             content: "WMS",
             color: "#095076",
-            size: 30,
+            size: 15,
             font: 'Arial'
+        },
+        planet: {
+            img: moon1,
+            width: 64,
+            height: 64
         },
         x: 900,
         y: 950,
@@ -935,12 +1055,12 @@ const DATA = {
         associates: {
             ids: ['meldkamer'],
             line: {
-                color: "#FF0000",
+                color: "#6075d2",
                 width: 0.5,
                 maxLength: 220,
                 dashed: {
                     active: true,
-                    data: [5,25,5]
+                    data: [2,20,2]
                 }
             },
         },
@@ -951,8 +1071,13 @@ const DATA = {
         text: {
             content: "SMS",
             color: "#095076",
-            size: 30,
+            size: 15,
             font: 'Arial'
+        },
+        planet: {
+            img: moon1,
+            width: 64,
+            height: 64
         },
         x: 1150,
         y: 650,
@@ -982,12 +1107,12 @@ const DATA = {
         associates: {
             ids: ['vgm'],
             line: {
-                color: "#FF0000",
+                color: "#6075d2",
                 width: 0.5,
                 maxLength: 220,
                 dashed: {
                     active: true,
-                    data: [2,10]
+                    data: [2,20,2]
                 }
             },
         },
@@ -1054,7 +1179,7 @@ class World {
             
             
             
-            const textItem = new TextItem(this.context, currData);
+            const textItem = new imgItem(this.context, currData);
             this.gameObjects.push(textItem);
 
             if(textItem.id === 'apis'){
@@ -1125,7 +1250,7 @@ class World {
         // Loop over all game objects to draw
         for (let i = 0; i < this.gameObjects.length; i++) {
             const currObj = this.gameObjects[i];
-            currObj.draw();
+            
             currObj.drawLinesToChildren();
 
             if(associateLineIsVisible || currObj.id === 'apis'){
@@ -1135,6 +1260,13 @@ class World {
             if(DEBUG){
                 currObj.drawBBoxForChildren();
             }
+        }
+
+        // draw the object so its projected on top of every line
+        for (let i = 0; i < this.gameObjects.length; i++) {
+            const currObj = this.gameObjects[i];
+
+            currObj.draw();
         }
 
 
@@ -1151,7 +1283,7 @@ class World {
             const currObj = this.gameObjects[i];
 
             // mirror on the x axis
-            if (currObj.x + currObj.width > this.canvas.width) {
+            if (currObj.x + currObj.planet.width > this.canvas.width) {
 
                 // Mirror the velocity
                 currObj.vx = -currObj.vx;
@@ -1163,7 +1295,7 @@ class World {
             }
 
             // mirror on the y axis
-            if (currObj.y + currObj.height  > this.canvas.height) { 
+            if (currObj.y + currObj.planet.height  > this.canvas.height) { 
 
                 // Mirror the velocity
                 currObj.vy = -currObj.vy;
@@ -1236,8 +1368,12 @@ class World {
         this.context.save();
         this.context.fillStyle = this.bgColor;
         this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
-        this.context.globalAlpha = 0.4;
-        this.context.drawImage(watermark, 0, 0, 605, 605, this.canvas.width/2 - watermark.width/2 , this.canvas.height/2 - watermark.height/2, watermark.width, watermark.height);
+        
+        this.context.drawImage(bgStars, 0, 0, 1920, 1080, 0,0, this.canvas.width, this.canvas.height);
+        this.context.drawImage(logoAP, 0, 0, 3563, 1284, this.canvas.width - 356, this.canvas.height - 128, 356, 128);
+        
+        this.context.drawImage(bgBeeldMerk, 0, 0, 1555, 1500, this.canvas.width/2 - 450, this.canvas.height/2 - 450, 900, 900);
+        
         this.context.globalAlpha = 1;
         this.context.restore();
     }
@@ -1276,7 +1412,7 @@ class Item
     update(secondsPassed){
         //Move with set velocity
 
-        const maxspeed = 150;
+        const maxspeed = OBJECT_MAX_SPEED;
 
         if(this.vx > maxspeed){
             this.vx = maxspeed;
@@ -1302,6 +1438,7 @@ class TextItem extends Item{
 
         this.id = data.id;
         this.collisionid = data.collisionid;
+
         
         this.text = {
             content: data.text.content,
@@ -1359,27 +1496,26 @@ class TextItem extends Item{
             const childLeft = currChild.x;
             const childRight = currChild.x + currChild.width;
 
-            const speed = Vector2d.random(50);
+            const speed = Vector2d.random(OBJECT_SPEED_MULTIPLIER);
             const remVelCurrChildX = currChild.vx;
             const remVelCurrChildY = currChild.vy;
 
-            const offset = 2;
+            const offset = 1;
 
             if(childTop <= bboxTop){
                 //console.log("Child hits Top");
                 //currChild.y = bboxTop + 1;
                 //currChild.vy = (currChild.vy + this.vy) * -1;
-                currChild.vy = (this.vy + currChild.vy) + speed.y;
                 currChild.y = bboxTop  + offset;
+                currChild.vy = (this.vy + currChild.vy) + speed.y;
                 
             }
             else if(childBottom >= bboxBottom){
                 //console.log("Child hits Bottom");
                 //currChild.y = bboxBottom - currChild.height -1;
                 //currChild.vy = (currChild.vy + this.vy) * -1;
-
-                currChild.vy = (this.vy - currChild.vy) + speed.y;
                 currChild.y = bboxBottom - currChild.height - offset;
+                currChild.vy = (this.vy - currChild.vy) + speed.y;
                 
             }
             if(childLeft <= bboxLeft){
@@ -1388,21 +1524,23 @@ class TextItem extends Item{
                 //currChild.vx = (currChild.vx + this.vx) * -1;
 
                 //console.log(currChild.id, currChild.vx)
-                currChild.vx = (this.vx + currChild.vx) + speed.x;
                 currChild.x = bboxLeft + offset;
+                currChild.vx = (this.vx + currChild.vx) + speed.x;
+                
                 
                 //console.log(currChild.id,currChild.vx)
-                
             }
             else if(childRight >= bboxRight){
                 //console.log("Child hits Right");
                 //currChild.x = bboxRight - currChild.width - 1;
                 //currChild.vx = (currChild.vx + this.vx) * -1;
 
-                currChild.vx = (this.vx - currChild.vx) + speed.x;
                 currChild.x = bboxRight - currChild.width - offset;
+                currChild.vx = (this.vx - currChild.vx) + speed.x;
+                
                 
             }
+            //this.update(gameWorld.secondsPassed);
         }
     }
     drawBBoxForChildren(){
@@ -1461,6 +1599,89 @@ class TextItem extends Item{
                 this.context.beginPath();
                 this.context.moveTo(this.x + (this.width/2), this.y + (this.height/2));
                 this.context.lineTo(currChild.x + (currChild.width/2), currChild.y + (currChild.height/2));
+                this.context.stroke();
+                this.context.restore();
+            }
+        }
+    }
+}
+
+class imgItem extends TextItem{
+    constructor(context, data){
+        super(context, data);
+
+        this.planet = data.planet;
+        this.planet = {
+            img: data.planet.img,
+            width: data.planet.width,
+            height: data.planet.height
+        }
+    }
+    draw(){
+
+        this.context.save();
+        // draw the pixel name
+        this.context.fillStyle = '#FFFFFF';
+        this.context.font = `${this.text.size}px ${this.text.font}`;
+
+        // width based on the text.
+        const textWidth = this.context.measureText(this.text.content).width;
+        // heigth based on text size.
+        const textHeight = this.context.measureText('M').width; // a very close estimate 
+
+        // place text
+        this.context.translate((this.x + this.planet.width/2) - textWidth/2, this.y);
+        this.context.fillText(this.text.content, 0, 0);
+        this.context.restore();
+
+        // draw img
+        this.context.save();
+        this.context.translate(this.x, this.y);
+        this.context.drawImage(this.planet.img, 0, 0, this.planet.img.width, this.planet.img.height, 0, 0, this.planet.width, this.planet.height);
+        this.context.restore();
+
+        if(!DEBUG) return;
+        //Draw a simple square
+        this.context.strokeStyle = this.isColliding?'#ff8080':'#0099b0';
+        this.context.strokeRect(this.x, this.y, this.planet.width, this.planet.height);
+    }
+    drawLinesToChildren(){
+        if(this.children.objs.length > 0){
+            
+            for(let i = 0; i < this.children.objs.length; i++){
+                const currChild = this.children.objs[i];
+                // teken een lijn tussen zichzelf en de child
+
+                this.context.save();
+
+                this.context.strokeStyle = this.children.line.color;
+                this.context.lineWidth = this.children.line.width;
+
+                this.context.beginPath();
+                this.context.moveTo(this.x + this.planet.width/2, this.y + this.planet.height/2);
+                this.context.lineTo(currChild.x + this.planet.width/2, currChild.y + this.planet.height/2);
+                this.context.stroke();
+
+                this.context.restore();
+            }
+        }
+    }
+    drawLinesToAssociates(){
+
+        if(this.associates.objs.length > 0){
+            for(let i = 0; i < this.associates.objs.length; i++){
+                const currChild = this.associates.objs[i];
+
+                // teken een lijn tussen zichzelf en de child
+                this.context.save();
+                this.context.strokeStyle = this.associates.line.color;
+                this.context.lineWidth = this.associates.line.width;
+                if(this.associates.line.dashed.active){
+                    this.context.setLineDash(this.associates.line.dashed.data);
+                }
+                this.context.beginPath();
+                this.context.moveTo(this.x + this.planet.width/2, this.y + this.planet.height/2);
+                this.context.lineTo(currChild.x + this.planet.width/2, currChild.y + this.planet.height/2);
                 this.context.stroke();
                 this.context.restore();
             }
